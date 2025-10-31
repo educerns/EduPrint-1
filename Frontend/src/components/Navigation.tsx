@@ -28,7 +28,7 @@ const Navigation = ({ onSearch }: NavigationProps) => {
 
 const navItems = [
     { name: "Home", path: "/", isFunky: true },
-    { name: "Products", path: "/products" },
+    { name: "Paid Article", path: "/paid-promotion" },
     { name: "Free Templates", path: "/templates", isFunky: true },
     { name: "Contact", path: "/contact" },
   ];

@@ -2,6 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import darklogo from "../assets/darkbglogo.png"; // Adjust the path as necessary
+import { Link } from "react-router-dom"; 
 
 const Footer = () => {
   const [toggledCategories, setToggledCategories] = useState({});
@@ -65,7 +66,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-blue-400 flex-shrink-0" />
-                <span>+91 9760240404</span>
+                <span>+91 8855856055</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
@@ -74,12 +75,23 @@ const Footer = () => {
             </div>
 
             <div className="flex space-x-3 lg:space-x-4 mt-4 lg:mt-6">
-              {[Facebook, Twitter, Linkedin, Instagram].map((Icon, index) => (
-                <div key={index} className="bg-gray-800 p-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
-                  <Icon className="h-4 w-4" />
-                </div>
-              ))}
-            </div>
+  {[
+    { Icon: Facebook, url: "https://www.facebook.com/share/1Fbk5dQVCw/?mibextid=wwXIfr" },
+    { Icon: Linkedin, url: "https://www.linkedin.com/company/educerns/" },
+    { Icon: Instagram, url: "https://www.instagram.com/invites/contact/?igsh=x5dq3h7dno2w&utm_content=yf1t310" },
+  ].map(({ Icon, url }, index) => (
+    <a
+      key={index}
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="bg-gray-800 p-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
+    >
+      <Icon className="h-4 w-4" />
+    </a>
+  ))}
+</div>
+
           </div>
 
           {/* Footer Links - Mobile: Toggleable, Desktop: 4 columns */}
@@ -142,9 +154,10 @@ const Footer = () => {
             © 2025 Eduprint by Educerns Technologies. All rights reserved.
           </div>
           <div className="flex flex-row space-x-2 sm:space-x-2 lg:space-x-6 text-center">
-            <a href="/" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="/" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="/" className="hover:text-white transition-colors">Cookie Policy</a>
+           <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            {/* <Link to="/returns" className="hover:text-white transition-colors">Return Refund</Link> */}
+            <Link to="/cookies" className="hover:text-white transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
