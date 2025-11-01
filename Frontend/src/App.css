@@ -44,3 +44,8 @@
 .bg-hero {
   background-image: url('../src/assets/imgbg.jpg');
 }
+
+
+body {
+  font-family: "Poppins", sans-serif;
+}

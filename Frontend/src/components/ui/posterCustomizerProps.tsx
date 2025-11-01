@@ -113,7 +113,7 @@ const handleGenerate = async (): Promise<void> => {
 
         // Shrink text until it fits
         while (fontSize > minFont) {
-          ctx.font = `bold ${fontSize}px Poppins`;
+          ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
           if (ctx.measureText(text).width <= maxWidth) break;
           fontSize -= 2;
         }
@@ -144,7 +144,7 @@ const handleGenerate = async (): Promise<void> => {
         const x = 16;
         const y = 1290;
         const fontSize = 30;
-        ctx.font = `bold ${fontSize}px Poppins`;
+        ctx.font = `bold ${fontSize}px Poppins , sans-serif`;
         ctx.fillStyle = "#000";
         ctx.textAlign = "left";
 
@@ -175,13 +175,13 @@ const handleGenerate = async (): Promise<void> => {
         ctx.fillStyle = "#000";
 
         const anyLineTooWide = (size: number): boolean => {
-          ctx.font = `bold ${size}px Poppins`;
+          ctx.font = `bold ${size}px Poppins, sans-serif`;
           return contactFields.some((line) => ctx.measureText(line).width > maxWidth);
         };
 
         while (anyLineTooWide(fontSize) && fontSize > 18) fontSize -= 2;
 
-        ctx.font = `bold ${fontSize}px Poppins`;
+        ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
         let currentY = startY;
         contactFields.forEach((line) => {
           ctx.fillText(line, x, currentY);
@@ -194,7 +194,7 @@ const handleGenerate = async (): Promise<void> => {
     else if (type === "Demo1") {
       if (formData.dateTime) {
         const text = `🕒 ${formData.dateTime}`;
-        ctx.font = `bold 35px Poppins`;
+        ctx.font = `bold 35px Poppins, sans-serif`;
         ctx.textAlign = "right";
         ctx.fillStyle = "#faa508";
 
@@ -210,31 +210,73 @@ const handleGenerate = async (): Promise<void> => {
         ctx.fillText(text, x, y);
       }
 
-      if (formData.centerName) {
-        const text = formData.centerName;
-        const x = 20;
-        const y = 1150;
-        const maxWidth = 1000;
-        const lineHeight = 60;
-        ctx.font = `bold 56px Poppins`;
-        ctx.fillStyle = "#faa508";
-        ctx.textAlign = "left";
+  if (formData.centerName) {
+  const text = formData.centerName;
+  const x = 20;
+  const y = 1150;
+  const maxWidth = 700;
+  let fontSize = 56;
+  let lineHeight = 50;
 
-        const words = text.split(" ");
-        let line = "";
-        let currentY = y;
+  ctx.font = `bold ${fontSize}px "Poppins", sans-serif`;
+  ctx.fillStyle = "#faa508";
+  ctx.textAlign = "left";
 
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + " ";
-          const testWidth = ctx.measureText(testLine).width;
-          if (testWidth > maxWidth && n > 0) {
-            ctx.fillText(line.trim(), x, currentY);
-            line = words[n] + " ";
-            currentY += lineHeight;
-          } else line = testLine;
-        }
-        ctx.fillText(line.trim(), x, currentY);
+  // 🔹 Split text into words
+  const words = text.split(" ");
+  let lines = [];
+  let line = "";
+
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + " ";
+    const testWidth = ctx.measureText(testLine).width;
+    if (testWidth > maxWidth && n > 0) {
+      lines.push(line.trim());
+      line = words[n] + " ";
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line.trim());
+
+  // 🔹 If more than one line → shrink font size
+  if (lines.length > 1) {
+    fontSize = 40; // Step 1: medium shrink
+    ctx.font = `bold ${fontSize}px "Poppins", sans-serif`;
+    lineHeight = 45;
+
+    // Re-check if still exceeds 2 lines
+    lines = [];
+    line = "";
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + " ";
+      const testWidth = ctx.measureText(testLine).width;
+      if (testWidth > maxWidth && n > 0) {
+        lines.push(line.trim());
+        line = words[n] + " ";
+      } else {
+        line = testLine;
       }
+    }
+    lines.push(line.trim());
+
+    // 🔹 If still more than 2 lines, shrink aggressively
+    if (lines.length > 2) {
+      fontSize = 30;
+      lineHeight = 40;
+      ctx.font = `bold ${fontSize}px "Poppins", sans-serif`;
+    }
+  }
+
+  // 🔹 Draw lines
+  let currentY = y;
+  for (const ln of lines) {
+    ctx.fillText(ln, x, currentY);
+    currentY += lineHeight;
+  }
+}
+
+
 
       const contactText = [formData.email, formData.mobile].filter(Boolean).join(" | ");
       if (contactText)
@@ -252,7 +294,7 @@ const handleGenerate = async (): Promise<void> => {
     else if (type === "Demo2") {
       if (formData.dateTime) {
         const text = `🕒 ${formData.dateTime}`;
-        ctx.font = `bold 35px Poppins`;
+        ctx.font = `bold 35px Poppins, sans-serif`;
         ctx.textAlign = "left";
         ctx.fillStyle = "#fff";
         const x = 45;
@@ -276,7 +318,7 @@ const handleGenerate = async (): Promise<void> => {
   ctx.fillStyle = "#fd7400";
 
   const getLineCount = (size: number): number => {
-    ctx.font = `bold ${size}px Poppins`;
+    ctx.font = `bold ${size}px Poppins, sans-serif`;
     const words = text.split(" ");
     let line = "";
     let count = 1;
@@ -296,7 +338,7 @@ const handleGenerate = async (): Promise<void> => {
     lines = getLineCount(fontSize);
   }
 
-  ctx.font = `bold ${fontSize}px Poppins`;
+  ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
   const words = text.split(" ");
   let line = "";
   let currentY = startY;
@@ -323,12 +365,12 @@ const handleGenerate = async (): Promise<void> => {
         ctx.fillStyle = "#fd7400";
 
         const anyLineTooWide = (size: number): boolean => {
-          ctx.font = `bold ${size}px Poppins`;
+          ctx.font = `bold ${size}px Poppins, sans-serif`;
           return contactFields.some((line) => ctx.measureText(line).width > maxWidth);
         };
         while (anyLineTooWide(fontSize) && fontSize > 18) fontSize -= 2;
 
-        ctx.font = `bold ${fontSize}px Poppins`;
+        ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
         let currentY = startY;
         contactFields.forEach((line) => {
           ctx.fillText(line, x, currentY);
@@ -355,18 +397,18 @@ const handleGenerate = async (): Promise<void> => {
         ctx.fillStyle = "#01596f";
         ctx.textAlign = "left";
         while (fontSize > minFont) {
-          ctx.font = `bold ${fontSize}px Poppins`;
+          ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
           if (ctx.measureText(text).width <= maxWidth) break;
           fontSize -= 2;
         }
         const x = 155;
         const y = 120;
-        ctx.font = `bold ${fontSize}px Poppins`;
+        ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
         ctx.fillText(text, x, y);
       }
 
       if (formData.address) {
-        ctx.font = "bold 32px Poppins";
+        ctx.font = `bold 32px Poppins , sans-serif`;
         ctx.fillStyle = "#fff";
         ctx.textAlign = "left";
         ctx.fillText(` ${formData.address}`, 110, canvas.height - 160);
@@ -377,7 +419,7 @@ const handleGenerate = async (): Promise<void> => {
       if (formData.email) contactParts.push(` ${formData.email}`);
       if (contactParts.length > 0) {
         const contactText = contactParts.join("    |    ");
-        ctx.font = "bold 30px Poppins";
+        ctx.font = `bold 30px Poppins, sans-serif`;
         ctx.fillStyle = "#fff";
         ctx.textAlign = "left";
         ctx.fillText(contactText, 150, canvas.height - 85);
@@ -425,7 +467,7 @@ const handleGenerate = async (): Promise<void> => {
         const x = 16;
         const y = 1290;
         const fontSize = 25;
-        ctx.font = `bold ${fontSize}px Poppins`;
+        ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
         ctx.fillStyle = "#000";
         ctx.textAlign = "left";
 
@@ -454,13 +496,13 @@ const handleGenerate = async (): Promise<void> => {
         ctx.fillStyle = "#000";
 
         const anyLineTooWide = (size: number): boolean => {
-          ctx.font = `bold ${size}px Poppins`;
+          ctx.font = `bold ${size}px Poppins, sans-serif`;
           return contactFields.some((line) => ctx.measureText(line).width > maxWidth);
         };
 
         while (anyLineTooWide(fontSize) && fontSize > 18) fontSize -= 2;
 
-        ctx.font = `bold ${fontSize}px Poppins`;
+        ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
         let currentY = startY;
         contactFields.forEach((line) => {
           ctx.fillText(line, x, currentY);
