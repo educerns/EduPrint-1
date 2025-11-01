@@ -282,7 +282,7 @@ const handleGenerate = async (): Promise<void> => {
       if (contactText)
         drawText(contactText, 20, 1270, { align: "left", size: 28, color: "#000" });
       if (formData.address)
-        drawText(`📍 ${formData.address}`, 20, 1300, {
+        drawText(`Add: ${formData.address}`, 20, 1300, {
           align: "left",
           size: 30,
           
@@ -379,7 +379,7 @@ const handleGenerate = async (): Promise<void> => {
       }
 
       if (formData.address)
-        drawText(`📍 ${formData.address}`, canvas.width - 60, 1300, {
+        drawText(`Add: ${formData.address}`, canvas.width - 60, 1300, {
           align: "right",
           size: 32,
           bold: true,
