@@ -94,7 +94,7 @@ const navItems = [
 
             {/* Search Bar */}
             <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
-              <form onSubmit={handleSearch} className="relative w-full">
+              {/* <form onSubmit={handleSearch} className="relative w-full">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   type="text"
@@ -103,12 +103,12 @@ const navItems = [
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 pr-4 py-2 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-              </form>
+              </form> */}
             </div>
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-4">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsCartOpen(true)}
@@ -120,7 +120,7 @@ const navItems = [
                     {totalItems}
                   </span>
                 )}
-              </Button>
+              </Button> */}
               
               {isAuthenticated ? (
                 <DropdownMenu>
@@ -145,15 +145,17 @@ const navItems = [
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsAuthOpen(true)}
-                  className="hidden md:flex items-center space-x-2"
-                >
-                  <User className="h-5 w-5" />
-                  <span>Login</span>
-                </Button>
+                // <Button
+                //   variant="ghost"
+                //   size="sm"
+                //   onClick={() => setIsAuthOpen(true)}
+                //   className="hidden md:flex items-center space-x-2"
+                // >
+                //   <User className="h-5 w-5" />
+                //   <span>Login</span>
+                // </Button>
+
+                ""
               )}
 
               {/* Mobile menu button */}
