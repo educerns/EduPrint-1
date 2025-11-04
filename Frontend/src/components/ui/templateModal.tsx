@@ -133,12 +133,12 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           transition={{ duration: 0.4, ease: "easeInOut" }}
         >
           <motion.div
-            className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col md:flex-row overflow-hidden my-4"
+            className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden my-4"
             style={{
               perspective: "2000px",
               transformStyle: "preserve-3d",
               minHeight: "auto",
-              maxHeight: "95vh",
+              maxHeight: "80vh",
             }}
             initial={{
               opacity: 0,
@@ -262,7 +262,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                     </motion.button>
 
                     <motion.div
-                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-1 gap-2 sm:gap-3 w-full"
+                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2 sm:gap-3 w-full"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
