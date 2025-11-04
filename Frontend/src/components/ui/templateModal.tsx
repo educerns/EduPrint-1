@@ -126,19 +126,19 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
         >
           <motion.div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col md:flex-row overflow-hidden"
+            className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-full max-w-6xl flex flex-col md:flex-row overflow-hidden my-4"
             style={{
               perspective: "2000px",
               transformStyle: "preserve-3d",
-              minHeight: "750px",
-              maxHeight: "90vh",
+              minHeight: "auto",
+              maxHeight: "95vh",
             }}
             initial={{
               opacity: 0,
@@ -179,7 +179,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
             }}
           >
             {/* Left: Image Preview */}
-            <div className="relative md:w-1/2 bg-gray-100 flex flex-col items-center justify-center overflow-hidden p-4">
+            <div className="relative md:w-1/2 bg-gray-100 flex flex-col items-center justify-center overflow-hidden p-2 sm:p-4 min-h-[250px] md:min-h-[400px] max-h-[40vh] md:max-h-none">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={
@@ -197,7 +197,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       : template.sampleImage
                   }
                   alt={template.title}
-                  className="object-contain w-full h-full max-h-[700px] rounded-xl"
+                  className="object-contain w-full h-full max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[700px] rounded-lg sm:rounded-xl"
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.02 }}
@@ -209,7 +209,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
             {/* Right: Info + Customize */}
             <motion.div
-              className="relative md:w-1/2 w-full px-8 py-6 flex flex-col justify-start bg-white h-full"
+              className="relative md:w-1/2 w-full px-4 sm:px-6 md:px-8 py-4 sm:py-6 flex flex-col justify-start bg-white h-full overflow-y-auto"
               initial={{ opacity: 0, x: 60 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
@@ -219,19 +219,19 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   handleBack();
                   onClose();
                 }}
-                className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow hover:bg-white transition"
+                className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow hover:bg-white transition z-10"
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
 
-              <div className="mt-10 mb-4">
-                <h2 className="text-4xl font-bold text-[#2C4E86] mb-2">
+              <div className="mt-8 sm:mt-10 mb-3 sm:mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2C4E86] mb-1 sm:mb-2">
                   {template.title}
                 </h2>
-                <p className="text-gray-600 text-lg leading-relaxed mb-3">
+                <p className="text-gray-600 text-sm sm:text-base md:text-lg leading-relaxed mb-2 sm:mb-3">
                   {template.description}
                 </p>
-                <p className="text-[#2C4E86] font-semibold text-2xl">
+                <p className="text-[#2C4E86] font-semibold text-xl sm:text-2xl">
                   ₹{template.price}
                 </p>
               </div>
@@ -241,7 +241,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                 {!isCustomize ? (
                   <motion.div
                     key="preview"
-                    className="flex flex-col items-center mt-6 gap-7"
+                    className="flex flex-col items-center mt-4 sm:mt-6 gap-4 sm:gap-7"
                     initial={{ opacity: 0, y: 30, rotateX: -10 }}
                     animate={{ opacity: 1, y: 0, rotateX: 0 }}
                     exit={{ opacity: 0, y: -20, rotateX: 10 }}
@@ -252,17 +252,17 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   >
                     <motion.button
                       onClick={() => setIsCustomize(true)}
-                      className="flex items-center gap-2 bg-[#2C4E86] text-white px-6 py-2 rounded-md hover:bg-[#1f3a5f] transition text-sm md:text-base"
+                      className="flex items-center gap-2 bg-[#2C4E86] text-white px-4 sm:px-6 py-2 rounded-md hover:bg-[#1f3a5f] transition text-sm sm:text-base"
                       whileHover={{ scale: 1.05, rotateY: 5 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 150, damping: 12 }}
                     >
-                      <FiEdit3 className="w-5 h-5" />
+                      <FiEdit3 className="w-4 h-4 sm:w-5 sm:h-5" />
                       Customize Template
                     </motion.button>
 
                     <motion.div
-                      className="grid grid-cols-1 gap-3 w-full"
+                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-1 gap-2 sm:gap-3 w-full"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
@@ -275,7 +275,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       ].map((item, i) => (
                         <motion.div
                           key={i}
-                          className="border border-[#2C4E86] border-dashed rounded-lg py-3 text-center text-sm text-gray-600 hover:shadow-md transition"
+                          className="border border-[#2C4E86] border-dashed rounded-lg py-2 sm:py-3 text-center text-xs sm:text-sm text-gray-600 hover:shadow-md transition"
                           whileHover={{
                             scale: 1.08,
                             rotateY: 8,
@@ -284,8 +284,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                           }}
                           transition={{ type: "spring", stiffness: 120 }}
                         >
-                          <div className="text-lg">{item.icon}</div>
-                          <div>{item.label}</div>
+                          <div className="text-base sm:text-lg">{item.icon}</div>
+                          <div className="px-1">{item.label}</div>
                         </motion.div>
                       ))}
                     </motion.div>
@@ -293,7 +293,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                 ) : (
                   <motion.div
                     key="form"
-                    className="-top-4 flex flex-col justify-start"
+                    className="flex flex-col justify-start"
                     initial={{ opacity: 0, y: 30, rotateX: -10 }}
                     animate={{ opacity: 1, y: 0, rotateX: 0 }}
                     exit={{ opacity: 0, y: -20, rotateX: 10 }}
@@ -304,80 +304,81 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   >
                     <motion.button
                       onClick={handleBack}
-                      className="flex items-center gap-2 text-[#2C4E86] mb-3 hover:underline"
+                      className="flex items-center gap-2 text-[#2C4E86] mb-2 sm:mb-3 hover:underline"
                       whileHover={{ x: -3 }}
                       transition={{ type: "spring", stiffness: 120 }}
                     >
-                      <span className="text-lg">←</span>
+                      <span className="text-base sm:text-lg">←</span>
                       Back to Template
                     </motion.button>
 
                     <motion.div
-                      className="space-y-5 mb-4"
+                      className="space-y-3 sm:space-y-5 mb-3 sm:mb-4"
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.2, duration: 0.4 }}
                     >
-                      <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 focus-within:border-[#2C4E86]">
-                        <FaUserAlt className="text-gray-500 mr-3" />
+                      <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
+                        <FaUserAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
                         <input
                           type="text"
                           name="centerName"
                           placeholder="Center Name"
                           value={formData.centerName}
                           onChange={handleChange}
-                          className="w-full text-base focus:outline-none"
+                          className="w-full text-sm sm:text-base focus:outline-none"
                         />
                       </div>
 
-                      <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 focus-within:border-[#2C4E86]">
-                        <FaEnvelope className="text-gray-500 mr-3" />
+                      <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
+                        <FaEnvelope className="text-gray-500 mr-2 sm:mr-3 text-sm" />
                         <input
                           type="email"
                           name="email"
                           placeholder="Email"
                           value={formData.email}
                           onChange={handleChange}
-                          className="w-full text-base focus:outline-none"
+                          className="w-full text-sm sm:text-base focus:outline-none"
                         />
                       </div>
 
-                      <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 focus-within:border-[#2C4E86]">
-                        <FaPhoneAlt className="text-gray-500 mr-3" />
+                      <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
+                        <FaPhoneAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
                         <input
                           type="text"
                           name="mobile"
                           placeholder="Mobile Number"
                           value={formData.mobile}
                           onChange={handleChange}
-                          className="w-full text-base focus:outline-none"
+                          className="w-full text-sm sm:text-base focus:outline-none"
                         />
                       </div>
 
                       {(template.type === "Demo1" ||
                         template.type === "Demo2" ||
                         template.type === "Announcement") && (
-                        <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 focus-within:border-[#2C4E86]">
-                          <FaCalendarAlt className="text-gray-500 mr-3" />
+                        <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
+                          <FaCalendarAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
                           <input
                             type="text"
                             name="dateTime"
                             placeholder="Date / Time or Message"
                             value={formData.dateTime || ""}
                             onChange={handleChange}
-                            className="w-full text-base focus:outline-none"
+                            className="w-full text-sm sm:text-base focus:outline-none"
                           />
                         </div>
                       )}
 
-                      <div className="flex items-start border border-gray-300 rounded-md px-3 py-2 focus-within:border-[#2C4E86]">
-                        <FaMapMarkerAlt className="text-gray-500 mt-1 mr-3" />
+                      <div className="flex items-start border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
+                        <FaMapMarkerAlt className="text-gray-500 mt-1 mr-2 sm:mr-3 text-sm" />
                         <textarea
                           name="address"
                           placeholder="Address"
                           value={formData.address}
                           onChange={handleChange}
-                          className="w-full text-base focus:outline-none resize-none"
+                          rows={2}
+                          className="w-full text-sm sm:text-base focus:outline-none resize-none"
                         />
                       </div>
                     </motion.div>
