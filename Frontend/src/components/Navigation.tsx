@@ -30,6 +30,7 @@ const navItems = [
     { name: "Home", path: "/", isFunky: true },
     { name: "Paid Article", path: "/paid-promotion" },
     { name: "Free Templates", path: "/templates", isFunky: true },
+    { name: "Free Video's", path: "/free-videos", isFunky: true },
     { name: "Contact", path: "/contact" },
   ];
 
