@@ -10,7 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import CartDrawer from "./CartDrawer";
 import AuthModal from "./AuthModal";
 import OrderHistory from "./OrderHistory";
-import logo from "@/assets/edulogo.png"; // Adjust the path as necessary
+import logo from "@/assets/eduprint1.png"; // Adjust the path as necessary
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 interface NavigationProps {
@@ -66,7 +66,7 @@ const navItems = [
             {/* Logo */}
             <div className="flex items-center justify-center pr-4 focus:outline-none">
         <a href="/" className="flex items-center focus:outline-none">
-          <img src={logo} alt="Educerns Logo" className="w-38 h-8 focus:outline-none" />
+          <img src={logo} alt="Educerns Logo" className="w-38 h-10 focus:outline-none" />
         </a>
       </div>
 
