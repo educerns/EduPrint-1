@@ -21,6 +21,8 @@ import PrivacyPolicy from "./components/ui/privacyPolicy";
 import ReturnRefund from "./components/ui/returnRefund";
 import CookiePolicy from "./components/ui/cookiePolicy";
 import PaidPomotion from "./components/PaidPomotion";
+import Editor from "./editor/editor";
+// import Store from "./store/store";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,7 @@ const App = () => (
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/returns" element={<ReturnRefund />} />
         <Route path="/cookies" element={<CookiePolicy />} />
+        <Route path="/editor/:id" element={<Editor />} />
         </Route>
       </Routes>
     </BrowserRouter>
