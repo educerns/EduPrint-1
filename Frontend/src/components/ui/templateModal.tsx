@@ -126,60 +126,46 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4 overflow-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
         >
           <motion.div
-            className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden my-4"
-            style={{
-              perspective: "2000px",
-              transformStyle: "preserve-3d",
-              minHeight: "auto",
-              maxHeight: "80vh",
-            }}
-            initial={{
-              opacity: 0,
-              rotateX: -45,
-              rotateY: 10,
-              scale: 0.8,
-              y: 80,
-            }}
-            animate={{
-              opacity: 1,
-              rotateX: 0,
-              rotateY: 0,
-              scale: 1,
-              y: 0,
-              transition: {
-                duration: 0.9,
-                type: "spring",
-                stiffness: 120,
-                damping: 15,
-                ease: [0.22, 1, 0.36, 1],
-              },
-            }}
-            exit={{
-              opacity: 0,
-              rotateX: 25,
-              rotateY: -10,
-              scale: 0.9,
-              y: 60,
-              transition: {
-                duration: 0.5,
-                ease: [0.55, 0.06, 0.68, 0.19],
-              },
-            }}
-            whileHover={{
-              rotateY: 3,
-              scale: 1.02,
-              transition: { type: "spring", stiffness: 100 },
-            }}
-          >
+  className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-[95vw] md:w-[90vw] lg:w-[80vw] max-w-5xl flex flex-col md:flex-row overflow-hidden my-4"
+  style={{
+    perspective: "2000px",
+    transformStyle: "preserve-3d",
+    minHeight: "60vh",
+    maxHeight: "85vh",
+  }}
+  initial={{ opacity: 0, rotateX: -45, rotateY: 10, scale: 0.8, y: 80 }}
+  animate={{
+    opacity: 1,
+    rotateX: 0,
+    rotateY: 0,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.9,
+      type: "spring",
+      stiffness: 120,
+      damping: 15,
+    },
+  }}
+  exit={{
+    opacity: 0,
+    rotateX: 25,
+    rotateY: -10,
+    scale: 0.9,
+    y: 60,
+    transition: { duration: 0.5 },
+  }}
+>
+
             {/* Left: Image Preview */}
-            <div className="relative md:w-1/2 bg-gray-100 flex flex-col items-center justify-center overflow-hidden p-2 sm:p-4 min-h-[250px] md:min-h-[400px] max-h-[40vh] md:max-h-none">
+<div className="relative md:w-1/2 w-full bg-gray-100 flex items-center justify-center overflow-hidden p-3">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={
@@ -197,7 +183,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       : template.sampleImage
                   }
                   alt={template.title}
-                  className="object-contain w-full h-full max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[700px] rounded-lg sm:rounded-xl"
+                  className="object-contain w-full h-auto max-h-[70vh] rounded-lg"
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.02 }}
@@ -262,7 +248,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                     </motion.button>
 
                     <motion.div
-                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2 sm:gap-3 w-full"
+                      className="grid grid-cols-1 sm:grid-cols-2  gap-2 sm:gap-3 w-full"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
