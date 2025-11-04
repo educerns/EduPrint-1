@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import VideoModal from "../components/ui/videoModal";
 import { groupedVideos } from "../data/promotion_videos";
 import { FiDownload } from "react-icons/fi";
-
+import Swal from "sweetalert2";
 
 export interface Video {
   id: number;
@@ -36,15 +36,42 @@ const VideoGallery: React.FC = () => {
     setTimeout(() => setSelectedVideo(null), 300);
   };
 
-    // 📥 Handle video download
-  const handleDownload = (url: string, title: string) => {
+  // 📥 Handle video download
+  const handleDownload = async (url: string, title: string) => {
     if (!url) return;
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${title || "video"}.mp4`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const objectUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = `${title.replace(/\s+/g, "_")}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(objectUrl);
+
+      Swal.fire({
+        icon: "success",
+        title: "Download Started!",
+        text: "Your video is being downloaded successfully.",
+        timer: 2500, // auto close after 3 seconds
+        showConfirmButton: false,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Download Failed!",
+        text: "Unable to download the video. Please try again.",
+        timer: 2500, // auto close after 3 seconds
+        showConfirmButton: false,
+        timerProgressBar: true,
+
+      });
+    }
   };
 
 
@@ -160,28 +187,28 @@ const VideoGallery: React.FC = () => {
                   </div>
 
                   {/* 📘 Info below thumbnail */}
-                <div className="mt-3 flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-gray-800 truncate">
-                      {video.title}
-                    </h3>
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
-                      {video.description}
-                    </p>
-                  </div>
+                  <div className="mt-3 flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-gray-800 truncate">
+                        {video.title}
+                      </h3>
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
+                        {video.description}
+                      </p>
+                    </div>
 
-                  {/* ⬇️ Download Button */}
-                  <button
-                   onClick={(e) => {
-                      e.stopPropagation(); // prevent modal from opening
-                      handleDownload(video.videoUrl, video.title);
-                    }}
-                    className="flex-shrink-0 ml-3 flex items-center gap-1  px-3 py-1.5 "
-                  >
-                    <FiDownload className="w-3.5 h-3.5" />
-                    <span className="text-xs font-medium"></span>
-                  </button>
-                </div>
+                    {/* ⬇️ Download Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent modal from opening
+                        handleDownload(video.videoUrl, video.title);
+                      }}
+                      className="flex-shrink-0 ml-3 flex items-center gap-1  px-3 py-1.5 "
+                    >
+                      <FiDownload className="w-3.5 h-3.5" />
+                      <span className="text-xs font-medium"></span>
+                    </button>
+                  </div>
 
                 </motion.div>
               ))}

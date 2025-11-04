@@ -51,14 +51,20 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
         icon: "success",
         title: "Download Started!",
         text: "Your video is being downloaded successfully.",
-        confirmButtonColor: "#2C4E86",
+        timer: 2500, // auto close after 3 seconds
+        showConfirmButton: false,
+        timerProgressBar: true,
+
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Download Failed!",
         text: "Unable to download the video. Please try again.",
-        confirmButtonColor: "#2C4E86",
+        timer: 2500, // auto close after 3 seconds
+        showConfirmButton: false,
+        timerProgressBar: true,
+
       });
     }
   };
