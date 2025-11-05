@@ -5,8 +5,7 @@ import Header from "./header";
 import FabricCanvas from "./canvas";
 import { useEditorStore } from "@/store/store";
 import { staticTemplates } from "@/data/freeTemplate";
-// ✅ Safer option (always works)
-import * as fabric from "fabric";
+import * as  fabric  from "fabric";
 
 // ✅ Type for Template
 interface TemplateData {
