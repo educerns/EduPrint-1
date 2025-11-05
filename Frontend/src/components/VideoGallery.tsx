@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo,useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import VideoModal from "../components/ui/videoModal";
 import { groupedVideos } from "../data/promotion_videos";
@@ -20,6 +20,18 @@ const VideoGallery: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+    const userData = JSON.parse(localStorage.getItem("parsedate") || "{}");
+    const isSuperAdmin = userData?.role === "superadmin";
+  
+    // 🧮 Load counts
+    const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>(() => {
+      return JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
+    });
+    useEffect(() => {
+      const storedCounts = JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
+      setDownloadCounts(storedCounts);
+    }, []);
+
   // 🧩 Combine all videos from all categories
   const allVideos = useMemo(
     () => groupedVideos.flatMap((group) => group.videos),
@@ -36,8 +48,8 @@ const VideoGallery: React.FC = () => {
     setTimeout(() => setSelectedVideo(null), 300);
   };
 
-  // 📥 Handle video download
-  const handleDownload = async (url: string, title: string) => {
+  // 📥 Shared Download Handler
+  const handleDownload = async (url: string, title: string, id: number) => {
     if (!url) return;
 
     try {
@@ -53,11 +65,17 @@ const VideoGallery: React.FC = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(objectUrl);
 
+      // ✅ Increment count after successful download
+      setDownloadCounts((prev) => ({
+        ...prev,
+        [id]: (prev[id] || 0) + 1,
+      }));
+
       Swal.fire({
         icon: "success",
         title: "Download Started!",
         text: "Your video is being downloaded successfully.",
-        timer: 2500, // auto close after 3 seconds
+        timer: 2500,
         showConfirmButton: false,
         timerProgressBar: true,
       });
@@ -66,14 +84,12 @@ const VideoGallery: React.FC = () => {
         icon: "error",
         title: "Download Failed!",
         text: "Unable to download the video. Please try again.",
-        timer: 2500, // auto close after 3 seconds
+        timer: 2500,
         showConfirmButton: false,
         timerProgressBar: true,
-
       });
     }
   };
-
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -195,21 +211,24 @@ const VideoGallery: React.FC = () => {
                       <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
                         {video.description}
                       </p>
+                      {isSuperAdmin && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Downloads: {downloadCounts[video.id] || 0}
+                      </p>
+                      )}
                     </div>
 
                     {/* ⬇️ Download Button */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // prevent modal from opening
-                        handleDownload(video.videoUrl, video.title);
+                        e.stopPropagation();
+                        handleDownload(video.videoUrl, video.title, video.id);
                       }}
-                      className="flex-shrink-0 ml-3 flex items-center gap-1  px-3 py-1.5 "
+                      className="flex-shrink-0 ml-3 flex items-center gap-1 px-3 py-1.5"
                     >
                       <FiDownload className="w-3.5 h-3.5" />
-                      <span className="text-xs font-medium"></span>
                     </button>
                   </div>
-
                 </motion.div>
               ))}
             </motion.div>
@@ -222,6 +241,7 @@ const VideoGallery: React.FC = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         video={selectedVideo}
+        onDownload={handleDownload} // ✅ pass shared handler
       />
     </div>
   );

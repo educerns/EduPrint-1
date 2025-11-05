@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Swal from "sweetalert2";
 
 interface Template {
@@ -29,6 +29,10 @@ const PosterCustomizer: React.FC<PosterCustomizerProps> = ({
 }) => {
   // ✅ Debug Log
   console.log("PosterCustomizer mounted with:", { template, formData });
+
+  const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>(() => {
+  return JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
+});
 
 const handleGenerate = async (): Promise<void> => {
   const canvas = canvasRef.current;
@@ -535,21 +539,29 @@ const handleGenerate = async (): Promise<void> => {
 
 
 
-  const handleDownload = (): void => {
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      console.warn("⚠️ Download failed: no canvas");
-      return;
-    }
+const handleDownload = (): void => {
+  const canvas = canvasRef.current;
+  if (!canvas) {
+    console.warn("⚠️ Download failed: no canvas");
+    return;
+  }
 
-    const url = canvas.toDataURL("image/png", 1.0);
-    console.log("⬇️ Downloading image of length:", url.length);
+  const url = canvas.toDataURL("image/png", 1.0);
+  const templateKey = template.customImage; // unique identifier
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${formData.centerName || "Customized"}_Poster.png`;
-    link.click();
-  };
+  // 🧠 Update counts in state and localStorage
+  setDownloadCounts((prev) => {
+    const updated = { ...prev, [templateKey]: (prev[templateKey] || 0) + 1 };
+    localStorage.setItem("templateDownloadCounts", JSON.stringify(updated));
+    return updated;
+  });
+
+  // ⬇️ Trigger download
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${formData.centerName || "Customized"}_Poster.png`;
+  link.click();
+};
 
   return (
     <>

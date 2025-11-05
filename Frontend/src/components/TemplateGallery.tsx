@@ -20,6 +20,19 @@ const TemplateGallery: React.FC = () => {
   const [filter, setFilter] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("A-Z");
 
+  // 🧠 Load superadmin info from localStorage
+  const userData = JSON.parse(localStorage.getItem("parsedate") || "{}");
+  const isSuperAdmin = userData?.role === "superadmin";
+
+  // 🧮 Load counts
+  const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>(() => {
+    return JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
+  });
+  useEffect(() => {
+    const storedCounts = JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
+    setDownloadCounts(storedCounts);
+  }, []);
+
   // 🧩 Flatten all templates for "All" view
   const allTemplates = useMemo(
     () => groupedTemplates.flatMap(group => group.templates),
@@ -104,11 +117,10 @@ const TemplateGallery: React.FC = () => {
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                  filter === cat
+                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${filter === cat
                     ? "bg-[#2C4E86] text-white border-[#2C4E86]"
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 {cat}
               </button>
@@ -171,6 +183,12 @@ const TemplateGallery: React.FC = () => {
                   <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
                     {template.description}
                   </p>
+                  {/* 👀 Show download count only for superadmin */}
+                  {isSuperAdmin && (
+                  <p className="text-xs text-gray-500">
+                    Downloads: {downloadCounts[template.customImage] || 0}
+                  </p>
+                   )} 
                 </div>
               </motion.div>
             ))}
