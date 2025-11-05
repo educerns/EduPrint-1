@@ -126,61 +126,64 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4 overflow-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4 overflow-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
+          onClick={onClose} // ✅ Added here
         >
           <motion.div
-  className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-[95vw] md:w-[90vw] lg:w-[80vw] max-w-5xl flex flex-col md:flex-row overflow-hidden my-4"
-  style={{
-    perspective: "2000px",
-    transformStyle: "preserve-3d",
-    minHeight: "60vh",
-    maxHeight: "85vh",
-  }}
-  initial={{ opacity: 0, rotateX: -45, rotateY: 10, scale: 0.8, y: 80 }}
-  animate={{
-    opacity: 1,
-    rotateX: 0,
-    rotateY: 0,
-    scale: 1,
-    y: 0,
-    transition: {
-      duration: 0.9,
-      type: "spring",
-      stiffness: 120,
-      damping: 15,
-    },
-  }}
-  exit={{
-    opacity: 0,
-    rotateX: 25,
-    rotateY: -10,
-    scale: 0.9,
-    y: 60,
-    transition: { duration: 0.5 },
-  }}
->
+            className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-[95vw] md:w-[90vw] lg:w-[80vw] max-w-5xl flex flex-col md:flex-row overflow-hidden my-4"
+            style={{
+              perspective: "2000px",
+              transformStyle: "preserve-3d",
+              minHeight: "60vh",
+              maxHeight: "85vh",
+            }}
+            initial={{ opacity: 0, rotateX: -45, rotateY: 10, scale: 0.8, y: 80 }}
+            animate={{
+              opacity: 1,
+              rotateX: 0,
+              rotateY: 0,
+              scale: 1,
+              y: 0,
+              transition: {
+                duration: 0.9,
+                type: "spring",
+                stiffness: 120,
+                damping: 15,
+              },
+            }}
+            exit={{
+              opacity: 0,
+              rotateX: 25,
+              rotateY: -10,
+              scale: 0.9,
+              y: 60,
+              transition: { duration: 0.5 },
+            }}
+            onClick={(e) => e.stopPropagation()} // ✅ Prevent close when clicking inside
+          >
+
 
             {/* Left: Image Preview */}
-<div className="relative md:w-1/2 w-full bg-gray-100 flex items-center justify-center overflow-hidden p-3">
+            <div className="relative md:w-1/2 w-full bg-gray-100 flex items-center justify-center overflow-hidden p-3">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={
                     generatedUrl
                       ? "generated"
                       : isCustomize
-                      ? "customize"
-                      : "sample"
+                        ? "customize"
+                        : "sample"
                   }
                   src={
                     generatedUrl
                       ? generatedUrl
                       : isCustomize
-                      ? template.customImage
-                      : template.sampleImage
+                        ? template.customImage
+                        : template.sampleImage
                   }
                   alt={template.title}
                   className="object-contain w-full h-auto max-h-[70vh] rounded-lg"
@@ -205,10 +208,11 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   handleBack();
                   onClose();
                 }}
-                className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow hover:bg-white transition z-10"
+                className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow hover:bg-white transition z-[999]" // ✅ ensure z-index is high
               >
                 <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
+
 
               <div className="mt-8 sm:mt-10 mb-3 sm:mb-4">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2C4E86] mb-1 sm:mb-2">
@@ -343,18 +347,18 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       {(template.type === "Demo1" ||
                         template.type === "Demo2" ||
                         template.type === "Announcement") && (
-                        <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
-                          <FaCalendarAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
-                          <input
-                            type="text"
-                            name="dateTime"
-                            placeholder="Date / Time or Message"
-                            value={formData.dateTime || ""}
-                            onChange={handleChange}
-                            className="w-full text-sm sm:text-base focus:outline-none"
-                          />
-                        </div>
-                      )}
+                          <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
+                            <FaCalendarAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
+                            <input
+                              type="text"
+                              name="dateTime"
+                              placeholder="Date / Time or Message"
+                              value={formData.dateTime || ""}
+                              onChange={handleChange}
+                              className="w-full text-sm sm:text-base focus:outline-none"
+                            />
+                          </div>
+                        )}
 
                       <div className="flex items-start border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
                         <FaMapMarkerAlt className="text-gray-500 mt-1 mr-2 sm:mr-3 text-sm" />

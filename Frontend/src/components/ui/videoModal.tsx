@@ -148,21 +148,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
               transition={{ duration: 0.4, delay: 0.1 }}
             />
 
-            {/* Video Title Overlay (Optional - appears on hover) */}
-            <motion.div
-              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pb-20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 0, y: 20 }}
-              whileHover={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3 className="text-white text-xl font-bold mb-1">
-                {video.title}
-              </h3>
-              <p className="text-gray-300 text-sm">
-                {video.description}
-              </p>
-            </motion.div>
+           
           </motion.div>
         </motion.div>
       )}
