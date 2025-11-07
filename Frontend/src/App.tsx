@@ -22,6 +22,7 @@ import ReturnRefund from "./components/ui/returnRefund";
 import CookiePolicy from "./components/ui/cookiePolicy";
 import PaidPomotion from "./components/PaidPomotion";
 import VideoGallery from "./components/VideoGallery";
+import MyVideoGallery from "./components/MyVideoGallery";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,7 @@ const App = () => (
           <Route path="contact" element={<Contact />} />
           <Route path="/paid-promotion" element={<PaidPomotion />} />
           <Route path="/free-videos" element={<VideoGallery />} />
-
+          <Route path="/my-videos" element={<MyVideoGallery />} />
 
           <Route path="/terms" element={<TermsOfService />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
