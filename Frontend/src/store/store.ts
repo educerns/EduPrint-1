@@ -1,17 +1,26 @@
 import { create } from "zustand";
-import type { Canvas } from "fabric"; // 👈 import Fabric.js Canvas type
+import type { Canvas } from "fabric";
 
 interface EditorStore {
-  canvas: Canvas | null; // 👈 Use Fabric's Canvas, not HTMLCanvasElement
+  canvas: Canvas | null;
   designId: string | null;
-  setCanvas: (canvas: Canvas | null) => void; // 👈 updated to match
+  isEditing: boolean;
+  name: string;
+  showProperties: boolean;
+  setCanvas: (canvas: Canvas | null) => void;
   setDesignId: (id: string | null) => void;
+  setIsEditing: (flag: boolean) => void;
+  setName: (value: string) => void;
+  setShowProperties: (flag: boolean) => void;
   resetStore: () => void;
 }
 
 export const useEditorStore = create<EditorStore>((set) => ({
   canvas: null,
   designId: null,
+  isEditing: true,
+  name: "untitled design", // ✅ initial value
+  showProperties: false,
 
   setCanvas: (canvas) => {
     set({ canvas });
@@ -19,20 +28,24 @@ export const useEditorStore = create<EditorStore>((set) => ({
   },
 
   setDesignId: (id) => set({ designId: id }),
+  setIsEditing: (flag) => set({ isEditing: flag }),
+  setName: (value) => set({ name: value }),
+  setShowProperties: (flag) => set({ showProperties: flag }),
+
 
   resetStore: () => {
     set({
       canvas: null,
       designId: null,
+      isEditing: true,
+      name: "untitled design",
+      showProperties: false, 
     });
   },
 }));
 
-function centerCanvas(canvas: Canvas) {
-  // ✅ You can now use Fabric.js APIs safely
-  console.log("Centering Fabric.js canvas:", canvas);
-
-  // Example centering logic:
+// ✅ Export it so others can use it
+export function centerCanvas(canvas: Canvas) {
   const { width, height } = canvas;
   const wrapper = canvas.wrapperEl;
   if (wrapper) {
@@ -43,3 +56,4 @@ function centerCanvas(canvas: Canvas) {
     wrapper.style.height = `${height}px`;
   }
 }
+

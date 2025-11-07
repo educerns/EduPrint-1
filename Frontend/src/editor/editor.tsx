@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Sidebar from "./sidebar";
+import Sidebar from "@/editor/sidebar/sidebar";
 import Header from "./header";
 import FabricCanvas from "./canvas";
 import { useEditorStore } from "@/store/store";
 import { staticTemplates } from "@/data/freeTemplate";
 import * as  fabric  from "fabric";
+import Properties from "./sidebar/properties";
 
 // ✅ Type for Template
 interface TemplateData {
@@ -60,12 +61,13 @@ const Editor: React.FC = () => {
   const [loadAttempted, setLoadAttempted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { canvas, setDesignId, resetStore } = useEditorStore();
+  const { canvas, setDesignId, resetStore, setName, setShowProperties, showProperties, isEditing } = useEditorStore();
 
   // 🧹 Reset + set design ID when route changes
   useEffect(() => {
     resetStore();
     if (designId) {
+      
       setDesignId(designId);
       console.log("🎨 Editor opened with design ID:", designId);
     }
@@ -91,22 +93,26 @@ const Editor: React.FC = () => {
   }, [canvas]);
 
   // 🎨 Load design data once canvas + id available
-  const loadDesign = useCallback(async () => {
-    if (!canvas || !designId || loadAttempted) return;
+const loadDesign = useCallback(async () => {
+  if (!canvas || !designId || loadAttempted) return;
 
-    try {
-      setIsLoading(true);
-      setLoadAttempted(true);
+  try {
+    setIsLoading(true);
+    setLoadAttempted(true);
 
-      const response = await getUserDesignById(designId);
-      const design = response.data;
+    const response = await getUserDesignById(designId);
+    const design = response.data;
 
-      if (!design) {
-        setError("No design found");
-        return;
-      }
+    if (!design) {
+      setError("No design found");
+      return;
+    }
 
-      setDesignId(designId);
+    // ✅ Move it here
+    setName(design.title || "Untitled design");
+    setDesignId(designId);
+console.log("Setting name to:", design.title);
+
 
       // ✅ CASE 1: Fabric JSON design
       if (design.canvasData) {
@@ -189,6 +195,33 @@ const Editor: React.FC = () => {
     else if (!designId) navigate("/");
   }, [canvas, designId, loadAttempted, loadDesign, navigate]);
 
+  useEffect(() => {
+    if(!canvas) return;
+
+    const handleSelectionCreated = () =>{
+      const activeObject = canvas.getActiveObject();
+
+      if(activeObject){
+          setShowProperties(true)
+      }
+    }
+    const handleSelectionCleared = () =>{
+      setShowProperties(false)
+    }
+
+    canvas.on('selection:created', handleSelectionCreated)
+    canvas.on('selection:updated', handleSelectionCreated)
+    canvas.on('selection:cleared', handleSelectionCleared)
+
+    return () =>{
+       canvas.off('selection:created', handleSelectionCreated)
+    canvas.off('selection:updated', handleSelectionCreated)
+    canvas.off('selection:cleared', handleSelectionCleared)
+    }
+
+
+  }, [canvas])
+
   // 🌀 Loading UI
   if (isLoading)
     return (
@@ -210,11 +243,16 @@ const Editor: React.FC = () => {
     <div className="flex flex-col h-screen overflow-hidden">
       <Header />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-hidden bg-[#f0f0f0] flex items-center justify-center relative">
+        {isEditing && <Sidebar />}
+       <div className="flex-1 flex flex-col overflow-hidden relative">
+         <main className="flex-1 overflow-hidden bg-[#f0f0f0] flex items-center justify-center relative">
           <FabricCanvas />
         </main>
+       </div>
       </div>
+      {
+        showProperties && isEditing && <Properties />
+      }
     </div>
   );
 };

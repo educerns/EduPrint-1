@@ -1,11 +1,17 @@
 // src/fabric/fabric-utils.ts
-import { Canvas as FabricCanvas, PencilBrush } from "fabric";
+import { Canvas as FabricCanvas, PencilBrush, Rect } from "fabric";
 
 export const initializeFabric = async (
   canvasEl: HTMLCanvasElement,
   containerEl?: HTMLElement
 ) => {
   try {
+    const containerWidth = containerEl?.clientWidth || 600;
+    const containerHeight = containerEl?.clientHeight || 600;
+
+    canvasEl.width = containerWidth;
+    canvasEl.height = containerHeight;
+
     // 🖌️ Initialize Fabric canvas
     const fabricCanvas = new FabricCanvas(canvasEl, {
       preserveObjectStacking: true,
@@ -13,11 +19,32 @@ export const initializeFabric = async (
       renderOnAddRemove: true,
     });
 
+    // 🟢 Set visible background color
+    fabricCanvas.backgroundColor = "#ffcccc";
+    fabricCanvas.renderAll();
+
     // ✏️ Setup a default brush
     const brush = new PencilBrush(fabricCanvas);
     brush.color = "#000000";
     brush.width = 10;
     fabricCanvas.freeDrawingBrush = brush;
+
+    console.log(
+      "✅ Fabric initialized with size:",
+      fabricCanvas.width,
+      fabricCanvas.height
+    );
+
+    // 🟩 Add a debug rectangle (optional)
+    // const rect = new Rect({
+    //   left: 50,
+    //   top: 50,
+    //   fill: "green",
+    //   width: 100,
+    //   height: 100,
+    // });
+    // fabricCanvas.add(rect);
+    // fabricCanvas.renderAll();
 
     return fabricCanvas;
   } catch (e) {
@@ -26,35 +53,32 @@ export const initializeFabric = async (
   }
 };
 
-// 🧭 Optional utility to center and resize canvas dynamically
-export const centerCanvas = (canvas: FabricCanvas | null) => {
-  if (!canvas || !canvas.wrapperEl) return;
+export const addTextToCanvas = async(canvas, text, option={}, withBackground =false) =>{
+  if (!canvas) return null;
+  try{
+    const {IText} = await import ('fabric')
+    const defaultProps={
+      left: 100,
+      top: 100,
+      fontSize: 24,
+      fontFamily: 'Arial',
+      fill: '#000000',
+      padding: withBackground?10: 0,
+      textAlign: 'left',
+      id: `text-${Date.now()}`
+    }
 
-  const canvasWrapper = canvas.wrapperEl;
+    const textObj = new IText(text,{
+      ...defaultProps,
+      ...option,
+    })
 
-  canvasWrapper.style.width = `${canvas.width}px`;
-  canvasWrapper.style.height = `${canvas.height}px`;
+    canvas.add(textObj)
+    canvas.setActiveObject(textObj)
+    canvas.renderAll()
 
-  canvasWrapper.style.position = `absolute`;
-
-  canvasWrapper.style.top = "50%";
-  canvasWrapper.style.width = "50%";
-
-   canvasWrapper.style.transform = "translate(-50%, -50% )";
-
-
-
-
-  const container = canvas.getElement().parentElement;
-  if (!container) return;
-
-  const containerWidth = container.clientWidth;
-  const containerHeight = container.clientHeight;
-
-  canvas.setDimensions({
-    width: containerWidth,
-    height: containerHeight,
-  });
-
-  canvas.renderAll();
-};
+    return textObj
+  }catch(e){
+return null
+  }
+}
