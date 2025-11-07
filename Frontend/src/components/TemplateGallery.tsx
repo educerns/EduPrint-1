@@ -57,13 +57,13 @@ const TemplateGallery: React.FC = () => {
     },
   };
 const handleTemplateClick = (template: Template) => {
-  console.log("🖱 Template clicked:", template);
+  // console.log("🖱 Template clicked:", template);
 
   // Use either _id (from database) or id (from local data)
   const templateId = template._id || template.id;
 
   if (templateId) {
-    console.log("✅ Navigating to:", `/editor/${templateId}`);
+    // console.log("✅ Navigating to:", `/editor/${templateId}`);
     navigate(`/editor/${templateId}`);
   } else {
     console.warn("⚠️ Template has no id or _id!");
@@ -123,8 +123,8 @@ const handleTemplateClick = (template: Template) => {
                       layout: { duration: 0.5, ease: [0.33, 1, 0.68, 1] },
                     }}
                     className="flex flex-col cursor-pointer"
-                    // onClick={() => openModal(template)}
-                    onClick={() => handleTemplateClick(template)}
+                     onClick={() => openModal(template)}
+                    // onClick={() => handleTemplateClick(template)}
                   >
                    {/* 🖼️ Template Image */}
                     <div className="w-full aspect-square overflow-hidden"> 

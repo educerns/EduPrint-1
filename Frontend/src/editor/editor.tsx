@@ -1,258 +1,239 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "@/editor/sidebar/sidebar";
 import Header from "./header";
 import FabricCanvas from "./canvas";
 import { useEditorStore } from "@/store/store";
 import { staticTemplates } from "@/data/freeTemplate";
-import * as  fabric  from "fabric";
+import * as fabric from "fabric";
 import Properties from "./sidebar/properties";
-
-// ✅ Type for Template
-interface TemplateData {
-  id?: number;
-  _id?: string;
-  title?: string;
-  width?: number;
-  height?: number;
-  canvasData?: any;
-  background?: string;
-  customImage?: string;
-}
-
-// ✅ Mocked API helper
-async function getUserDesignById(
-  id: string | number
-): Promise<{ status: number; data: TemplateData }> {
-  return new Promise((resolve, reject) => {
-    try {
-      setTimeout(() => {
-        const template = staticTemplates.find(
-          (item) => item.id === Number(id) || item._id === id
-        );
-
-        if (template) {
-          resolve({
-            status: 200,
-            data: template,
-          });
-        } else {
-          reject({
-            status: 404,
-            message: `Template with id ${id} not found`,
-          });
-        }
-      }, 300);
-    } catch (error) {
-      reject({
-        status: 500,
-        message: "Internal mock API error",
-        error,
-      });
-    }
-  });
-}
 
 const Editor: React.FC = () => {
   const { id: designId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadAttempted, setLoadAttempted] = useState(false);
+  const [templateLoaded, setTemplateLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { canvas, setDesignId, resetStore, setName, setShowProperties, showProperties, isEditing } = useEditorStore();
+  const {
+    canvas,
+    setDesignId,
+    setName,
+    setShowProperties,
+    showProperties,
+    isEditing,
+  } = useEditorStore();
 
-  // 🧹 Reset + set design ID when route changes
+  // 🎨 Load template image when canvas is ready
   useEffect(() => {
-    resetStore();
-    if (designId) {
-      
-      setDesignId(designId);
-      console.log("🎨 Editor opened with design ID:", designId);
-    }
-  }, [designId, resetStore, setDesignId]);
-
-  // 🕓 Simulate loading
-  useEffect(() => {
-    if (!designId) {
-      setError("No template ID found in route");
-      setIsLoading(false);
-      return;
-    }
-    const timer = setTimeout(() => {
-      setLoadAttempted(true);
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [designId]);
-
-  // 🧩 Canvas ready log
-  useEffect(() => {
-    if (canvas) console.log("✅ Canvas is now available in editor");
-  }, [canvas]);
-
-  // 🎨 Load design data once canvas + id available
-const loadDesign = useCallback(async () => {
-  if (!canvas || !designId || loadAttempted) return;
-
-  try {
-    setIsLoading(true);
-    setLoadAttempted(true);
-
-    const response = await getUserDesignById(designId);
-    const design = response.data;
-
-    if (!design) {
-      setError("No design found");
+    if (!canvas || !designId || templateLoaded) {
       return;
     }
 
-    // ✅ Move it here
-    setName(design.title || "Untitled design");
+    // console.log("✅ Canvas is ready, loading template...");
+
+    const template = staticTemplates.find(
+      (item) => item.id === Number(designId) || item._id === designId
+    );
+
+    // console.log("🔍 Template found:", template);
+
+    if (!template) {
+      setError("Template not found");
+      return;
+    }
+
+    setName(template.title || "Untitled design");
     setDesignId(designId);
-console.log("Setting name to:", design.title);
+    // console.log("📝 Loading template:", template.title);
+    // console.log("🖼️ Custom image path:", template.customImage);
 
+    if (template.customImage) {
+      canvas.clear();
 
-      // ✅ CASE 1: Fabric JSON design
-      if (design.canvasData) {
-        canvas.clear();
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = template.customImage;
 
-        // Optional width/height
-        if (design.width && design.height) {
-          canvas.setDimensions({
-            width: design.width,
-            height: design.height,
-          });
-        }
+      // console.log("⏳ Starting to load image:", img.src);
 
-        const canvasData =
-          typeof design.canvasData === "string"
-            ? JSON.parse(design.canvasData)
-            : design.canvasData;
+      img.onload = () => {
+        // console.log("✅ Image loaded:", img.width, "x", img.height);
 
-        const hasObjects =
-          canvasData.objects && canvasData.objects.length > 0;
-
-        canvas.backgroundColor = canvasData.background || "#ffffff";
-
-        if (!hasObjects) {
-          canvas.renderAll();
+        const container = canvas.getElement().parentElement;
+        if (!container) {
+          console.error("❌ Canvas container not found.");
           return;
         }
 
-        canvas.loadFromJSON(canvasData, () => {
-          canvas.renderAll();
-          console.log("🖼️ Canvas JSON loaded successfully");
+        // Create the fabric image
+        const fabricImage = new fabric.Image(img, {
+          selectable: false,
+          evented: false,
         });
-      }
 
-      // ✅ CASE 2: Static template image
-      else if (design.customImage) {
-        console.log("🖼️ Loading static template image...");
-        canvas.clear();
+        canvas.add(fabricImage);
 
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = design.customImage;
+        // 🧠 Function to scale and center image dynamically
+        const scaleAndCenterImage = () => {
+          const containerW = container.clientWidth || 800;
+          const containerH = container.clientHeight || 600;
 
-        img.onload = () => {
-          const fabricImage = new fabric.Image(img, {
-            left: 0,
-            top: 0,
-            selectable: false,
-            scaleX: canvas.width / img.width,
-            scaleY: canvas.height / img.height,
+          const paddingFactor = 0.95;
+          const scale = Math.min(
+            (containerW * paddingFactor) / img.width,
+            (containerH * paddingFactor) / img.height
+          );
+
+          const scaledWidth = img.width * scale;
+          const scaledHeight = img.height * scale;
+
+          canvas.setDimensions({ width: containerW, height: containerH });
+
+          fabricImage.set({
+            left: (containerW - scaledWidth) / 2,
+            top: (containerH - scaledHeight) / 2,
+            scaleX: scale,
+            scaleY: scale,
           });
-          canvas.add(fabricImage);
-          canvas.sendToBack(fabricImage);
+
           canvas.renderAll();
-          console.log("✅ Template image loaded:", design.title);
         };
 
-        img.onerror = () => {
-          setError("Failed to load template image");
-        };
-      }
+        // ⚙️ Initial render
+        scaleAndCenterImage();
 
-      // ✅ CASE 3: Fallback
-      else {
-        canvas.clear();
-        canvas.backgroundColor = "#ffffff";
-        canvas.renderAll();
-      }
-    } catch (e) {
-      console.error("❌ Failed to load design", e);
-      setError("Failed to load design");
-    } finally {
-      setIsLoading(false);
+        // ✅ Ensure background is at index 0
+        const objects = canvas.getObjects();
+        if (objects.length > 1) {
+          canvas.remove(fabricImage);
+         canvas.sendToBack(fabricImage);
+        }
+
+        // 🪄 Auto-recenter on resize
+        const handleResize = () => {
+          if (!(canvas as any).disposed) scaleAndCenterImage();
+        };
+        window.addEventListener("resize", handleResize);
+
+        // 🧹 Cleanup on unmount / reload
+        const cleanup = () => {
+          // console.log("🧹 Cleaning up image and listeners...");
+          window.removeEventListener("resize", handleResize);
+          if (canvas.getObjects().includes(fabricImage)) {
+            canvas.remove(fabricImage);
+            canvas.renderAll();
+          }
+        };
+
+        canvas.on("canvas:cleared", cleanup);
+        canvas.on("object:removed", (e: any) => {
+          if (e.target === fabricImage) cleanup();
+        });
+
+        // ✅ Mark template as loaded
+        setTemplateLoaded(true);
+        // console.log("✅ Template loaded successfully with scaling and centering");
+
+        // 🧩 Center new or existing text boxes when editing starts
+        canvas.on("text:editing:entered", (e: any) => {
+          const active = e.target as fabric.IText;
+          if (!active) return;
+
+          const canvasWidth = canvas.getWidth();
+          const canvasHeight = canvas.getHeight();
+          const bounds = active.getBoundingRect();
+
+          // Right panel offset (adjust if your sidebar width differs)
+          const rightPanelOffset = 280;
+
+          const isOffScreen =
+            bounds.left + bounds.width / 2 < 0 ||
+            bounds.top + bounds.height / 2 < 0 ||
+            bounds.left > canvasWidth ||
+            bounds.top > canvasHeight;
+
+          if (isOffScreen || bounds.left < 100) {
+            active.set({
+              left:
+                (canvasWidth - rightPanelOffset) / 2 -
+                (active.width ?? 0) / 2,
+              top: canvasHeight / 2 - (active.height ?? 0) / 2,
+            });
+            active.setCoords();
+            canvas.renderAll();
+            // console.log("📝 Text box auto-centered:", active.left, active.top);
+          }
+        });
+      };
+
+      img.onerror = (e) => {
+        console.error("❌ Failed to load image:", template.customImage);
+        console.error("❌ Error details:", e);
+        setError("Failed to load template image");
+      };
+    } else {
+      // console.log("⚠️ No custom image found");
+      canvas.clear();
+      canvas.backgroundColor = "#ffffff";
+      canvas.renderAll();
+      setTemplateLoaded(true);
     }
-  }, [canvas, designId, loadAttempted, setDesignId]);
+  }, [canvas, designId, templateLoaded, setName, setDesignId]);
 
-  // ⏳ Run loader once both are ready
+  // 🎯 Selection handlers
   useEffect(() => {
-    if (designId && canvas && !loadAttempted) loadDesign();
-    else if (!designId) navigate("/");
-  }, [canvas, designId, loadAttempted, loadDesign, navigate]);
+    if (!canvas) return;
 
-  useEffect(() => {
-    if(!canvas) return;
-
-    const handleSelectionCreated = () =>{
+    const handleSelectionCreated = () => {
       const activeObject = canvas.getActiveObject();
-
-      if(activeObject){
-          setShowProperties(true)
+      if (activeObject) {
+        setShowProperties(true);
       }
-    }
-    const handleSelectionCleared = () =>{
-      setShowProperties(false)
-    }
+    };
 
-    canvas.on('selection:created', handleSelectionCreated)
-    canvas.on('selection:updated', handleSelectionCreated)
-    canvas.on('selection:cleared', handleSelectionCleared)
+    const handleSelectionCleared = () => {
+      setShowProperties(false);
+    };
 
-    return () =>{
-       canvas.off('selection:created', handleSelectionCreated)
-    canvas.off('selection:updated', handleSelectionCreated)
-    canvas.off('selection:cleared', handleSelectionCleared)
-    }
+    canvas.on("selection:created", handleSelectionCreated);
+    canvas.on("selection:updated", handleSelectionCreated);
+    canvas.on("selection:cleared", handleSelectionCleared);
 
-
-  }, [canvas])
-
-  // 🌀 Loading UI
-  if (isLoading)
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 text-lg text-gray-700">
-        Loading design...
-      </div>
-    );
+    return () => {
+      canvas.off("selection:created", handleSelectionCreated);
+      canvas.off("selection:updated", handleSelectionCreated);
+      canvas.off("selection:cleared", handleSelectionCleared);
+    };
+  }, [canvas, setShowProperties]);
 
   // ⚠️ Error UI
-  if (error)
+  if (error) {
     return (
       <div className="flex items-center justify-center h-screen bg-red-100 text-red-600 text-lg">
         ⚠️ Error: {error}
       </div>
     );
+  }
 
-  // ✅ Main Editor layout
+  // ✅ Main Editor
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {isEditing && <Sidebar />}
-       <div className="flex-1 flex flex-col overflow-hidden relative">
-         <main className="flex-1 overflow-hidden bg-[#f0f0f0] flex items-center justify-center relative">
-          <FabricCanvas />
-        </main>
-       </div>
+        <div className="flex-1 flex flex-col overflow-hidden relative">
+          <main className="flex-1 overflow-hidden bg-[#f0f0f0] flex items-center justify-center relative">
+            <FabricCanvas />
+            {!templateLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75">
+                <div className="text-lg text-gray-700">Loading template...</div>
+              </div>
+            )}
+          </main>
+        </div>
       </div>
-      {
-        showProperties && isEditing && <Properties />
-      }
+      {showProperties && isEditing && <Properties />}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,10 +6,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, Eye, Pencil, Save, Star } from "lucide-react";
+import { ChevronDown, Download, Eye, Pencil, Save, Share, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut } from "lucide-react";
 import { useEditorStore } from "@/store/store";
+import ExportModel from "./export";
 
 interface SessionUser {
   name?: string;
@@ -18,6 +19,7 @@ interface SessionUser {
 
 export default function Header() {
   const { isEditing, setIsEditing, name, setName, canvas } = useEditorStore();
+  const [showExportModel, setShowExportModel] = useState(false);
 
     // Mock session object (replace this later with your real auth data)
   const session: { user?: SessionUser } = {
@@ -26,8 +28,8 @@ export default function Header() {
       image: "",
     },
   };
-  console.log("Setting name to:", name);
-  console.log("isEditing",isEditing);
+  // console.log("Setting name to:", name);
+  // console.log("isEditing",isEditing);
   
   useEffect(() =>{
     if(!canvas) return;
@@ -79,6 +81,9 @@ export default function Header() {
         </DropdownMenu>
            <button className="flex items-center justify-center  hover:bg-white/20 px-3 py-1.5  transition-colors duration-200">
       <Save className="w-5 h-5 text-white" />
+    </button>
+    <button onClick={() => setShowExportModel(true)} className="flex items-center justify-center  hover:bg-white/20 px-3 py-1.5  transition-colors duration-200">
+      <Download className="w-5 h-5 text-white" />
     </button>
   
       </div>
@@ -159,6 +164,12 @@ className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+   <ExportModel 
+  isOpen={showExportModel}
+  onClose={() => setShowExportModel(false)}
+/>
+
     </header>
   );
 }

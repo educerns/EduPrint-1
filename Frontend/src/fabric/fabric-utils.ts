@@ -1,5 +1,6 @@
 // src/fabric/fabric-utils.ts
 import { Canvas as FabricCanvas, PencilBrush, Rect } from "fabric";
+import { Canvas } from "node_modules/fabric/dist/fabric";
 
 export const initializeFabric = async (
   canvasEl: HTMLCanvasElement,
@@ -29,11 +30,11 @@ export const initializeFabric = async (
     brush.width = 10;
     fabricCanvas.freeDrawingBrush = brush;
 
-    console.log(
-      "✅ Fabric initialized with size:",
-      fabricCanvas.width,
-      fabricCanvas.height
-    );
+    // console.log(
+    //   "✅ Fabric initialized with size:",
+    //   fabricCanvas.width,
+    //   fabricCanvas.height
+    // );
 
     // 🟩 Add a debug rectangle (optional)
     // const rect = new Rect({
@@ -82,3 +83,48 @@ export const addTextToCanvas = async(canvas, text, option={}, withBackground =fa
 return null
   }
 }
+
+export const cloneSelectedObject = async(canvas) => {
+  if(!canvas) return;
+
+  const activeObject = canvas.getActiveObject();
+  if(!activeObject) return;
+  
+  try{
+    const cloneObj = await activeObject.clone();
+
+    cloneObj.set({
+      left:activeObject.left + 10,
+      top:activeObject.top + 10,
+      id:`${activeObject.type || `object`}-${Date.now()}`
+
+    })
+
+    canvas.add(cloneObj);
+    canvas.renderAll();
+
+    return cloneObj;
+  }catch(e){
+    // console.log("Error while cloning", e);
+    return null;
+  }
+}
+
+export const deleteSelectedObject = async (canvas) => {
+  if (!canvas) return;
+
+  const activeObject = canvas.getActiveObject();
+  if (!activeObject) return;
+
+  try {
+    canvas.remove(activeObject);
+    canvas.discardActiveObject();
+    canvas.renderAll();
+
+    return true;
+  } catch (e) {
+    console.error("Error while deleting:", e);
+    return false;
+  }
+};
+

@@ -27,10 +27,10 @@ const Sidebar: React.FC = () => {
   const [activeSidebar, setActiveSidebar] = useState<string | null>(null);
 
   const sidebarItems: SidebarItem[] = [
-    { id: "elements", icon: Grid, label: "Elements", panel: ElementsPanel },
+    // { id: "elements", icon: Grid, label: "Elements", panel: ElementsPanel },
     { id: "text", icon: Type, label: "Text", panel: TextPanel },
-    { id: "upload", icon: Upload, label: "Upload", panel: UploadPanel },
-    { id: "ai", icon: Sparkle, label: "AI", panel: AiPanel },
+    // { id: "upload", icon: Upload, label: "Upload", panel: UploadPanel },
+    // { id: "ai", icon: Sparkle, label: "AI", panel: AiPanel },
     { id: "settings", icon: Settings, label: "Settings", panel: SettingPanel },
   ];
 
@@ -100,16 +100,18 @@ const Sidebar: React.FC = () => {
     </div>
 
     {/* Collapse Toggle Arrow (middle right) */}
-    <button
-      onClick={togglePanelCollapsed}
-      className="absolute top-1/2 -right-3 transform -translate-y-1/2 bg-white border border-gray-300 rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-all"
-    >
-      <ChevronLeft
-        className={`w-5 h-5 text-gray-700 transition-transform duration-300 ${
-          isPanelCollapsed ? "rotate-180" : ""
-        }`}
-      />
-    </button>
+   <button
+  onClick={togglePanelCollapsed}
+  className="absolute top-1/2 -right-3 transform -translate-y-1/2 bg-white border border-gray-300 rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-all z-[9999]"
+  style={{ overflow: "visible" }}
+>
+  <ChevronLeft
+    className={`w-5 h-5 text-gray-700 transition-transform duration-300 ${
+      isPanelCollapsed ? "rotate-180" : ""
+    }`}
+  />
+</button>
+
   </div>
 )}
 

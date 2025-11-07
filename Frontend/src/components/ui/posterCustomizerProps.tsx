@@ -543,7 +543,7 @@ const handleGenerate = async (): Promise<void> => {
     }
 
     const url = canvas.toDataURL("image/png", 1.0);
-    console.log("⬇️ Downloading image of length:", url.length);
+    // console.log("⬇️ Downloading image of length:", url.length);
 
     const link = document.createElement("a");
     link.href = url;
