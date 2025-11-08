@@ -128,8 +128,8 @@ placeholder="#FFFFFF"
 />
           </div>
       </div>
-      <Separator className="my-4"/>
-      <button className="w-full" onClick={handleChangeApply}>
+      <Separator className="my-4  "/>
+      <button className="w-1/2 flex ml-12 rounded-md py-2 justify-center bg-blue-900 hover:bg-blue-950 text-white" onClick={handleChangeApply}>
         Apply Changes
       </button>
     </div>

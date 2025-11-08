@@ -30,8 +30,8 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
   const exportFormats = [
     { id: "jpeg", name: "JPEG Template", icon: FileIcon, description: "Template" },
     { id: "png", name: "PNG Image", icon: FileImage, description: "Best for web" },
-    { id: "svg", name: "SVG Image", icon: FileIcon, description: "Scalable vector format" },
-    { id: "pdf", name: "PDF File", icon: FileText, description: "Best for printing" },
+    // { id: "svg", name: "SVG Image", icon: FileIcon, description: "Scalable vector format" },
+    // { id: "pdf", name: "PDF File", icon: FileText, description: "Best for printing" },
   ];
 
   const handleExport = async () => {

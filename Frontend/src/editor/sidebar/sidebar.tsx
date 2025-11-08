@@ -7,6 +7,7 @@ import {
   Settings,
   ArrowLeft,
   ChevronLeft,
+  Palette,
 } from "lucide-react";
 
 import ElementsPanel from "./panel";
@@ -31,7 +32,7 @@ const Sidebar: React.FC = () => {
     { id: "text", icon: Type, label: "Text", panel: TextPanel },
     // { id: "upload", icon: Upload, label: "Upload", panel: UploadPanel },
     // { id: "ai", icon: Sparkle, label: "AI", panel: AiPanel },
-    { id: "settings", icon: Settings, label: "Settings", panel: SettingPanel },
+    { id: "settings", icon: Palette, label: "Background", panel: SettingPanel },
   ];
 
   const handleItemClick = (id: string) => {

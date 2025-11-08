@@ -24,7 +24,7 @@ export default function Header() {
     // Mock session object (replace this later with your real auth data)
   const session: { user?: SessionUser } = {
     user: {
-      name: "John Doe",
+      name: "Educerns",
       image: "",
     },
   };
@@ -42,7 +42,7 @@ export default function Header() {
 
 
   return (
-    <header className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white shadow-md flex items-center justify-between px-4 h-14 relative z-[10000]">
+    <header className="bg-gradient-to-r from-blue-800 via-blue-900 to-blue-950 text-white shadow-md flex items-center justify-between px-4 h-14 relative z-[10000]">
       
       {/* LEFT: Mode switch */}
       <div className="flex items-center space-x-2">
@@ -79,9 +79,9 @@ export default function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-           <button className="flex items-center justify-center  hover:bg-white/20 px-3 py-1.5  transition-colors duration-200">
+           {/* <button className="flex items-center justify-center  hover:bg-white/20 px-3 py-1.5  transition-colors duration-200">
       <Save className="w-5 h-5 text-white" />
-    </button>
+    </button> */}
     <button onClick={() => setShowExportModel(true)} className="flex items-center justify-center  hover:bg-white/20 px-3 py-1.5  transition-colors duration-200">
       <Download className="w-5 h-5 text-white" />
     </button>
@@ -90,20 +90,19 @@ export default function Header() {
 
 
   
-      {/* CENTER: File name */}
-       <div className="flex-1 flex justify-center">
-    <input
-      className="text-center bg-white/10 border border-white/20 rounded px-3 py-1 text-white placeholder-white focus:outline-none focus:ring-1 focus:ring-white w-64"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      placeholder="Untitled design"
-    />
-  </div>
+    <div className="flex-1 flex justify-center">
+        <input
+          className="text-center bg-transparent border-none text-white placeholder-white/60 w-64 focus:outline-none focus:border-b focus:border-white/40 px-3 py-1"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={`Template Name - "${name || 'Untitled design'}"`}
+        />
+      </div>
 
   
  
 
-      <div>
+      {/* <div>
        <button
 className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium px-3 py-1.5 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md"
     >
@@ -135,7 +134,7 @@ className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border
         align="end"
         className="bg-white text-gray-800 rounded-md shadow-lg mt-2 p-1 min-w-[160px] border border-gray-200 z-[9999]"
       >
-        {/* Profile Info */}
+        
         <DropdownMenuItem
           disabled
           className="flex items-center px-2 py-1.5 rounded cursor-default"
@@ -154,7 +153,7 @@ className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border
 
         <DropdownMenuSeparator className="my-1 border-t border-gray-200" />
 
-        {/* Logout Button (no logic yet) */}
+        
         <DropdownMenuItem
           onClick={() => console.log("Logout clicked")}
           className="flex items-center px-2 py-1.5 rounded cursor-pointer hover:bg-red-100 text-red-600"
@@ -163,7 +162,7 @@ className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
-    </DropdownMenu>
+    </DropdownMenu> */}
 
    <ExportModel 
   isOpen={showExportModel}
