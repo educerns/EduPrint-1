@@ -341,7 +341,7 @@ const ProductDetailPage = ( ProductDetailPageProps) => {
                                 } else {
                                   // Add directly to cart for non-customizable items
                                   handleAddToCart(product);
-                                  console.log('Add to cart:', product);
+                                  // console.log('Add to cart:', product);
                                 }
                               }}
               >

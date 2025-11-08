@@ -60,6 +60,7 @@ export const staticTemplates: readonly Template[] = [
     price: 0,
     type: "Demo2",
   },
+  
   {
     id: 2,
     customImage: DemoCustom1,

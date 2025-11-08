@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TemplateModal from "../components/ui/templateModal";
 import { groupedTemplates } from "../data/freeTemplate";
+import { useNavigate } from "react-router-dom";
 
 export interface Template {
   id: number;
@@ -42,6 +43,8 @@ const TemplateGallery: React.FC = () => {
 
     return templates;
   }, [filter, sortOrder, allTemplates]);
+    const navigate = useNavigate();
+
 
   const openModal = (template: Template) => {
     setSelectedTemplate(template);
@@ -77,6 +80,21 @@ const TemplateGallery: React.FC = () => {
       },
     },
   };
+const handleTemplateClick = (template: Template) => {
+  // console.log("🖱 Template clicked:", template);
+
+  // Use either _id (from database) or id (from local data)
+  const templateId = template._id || template.id;
+
+  if (templateId) {
+    // console.log("✅ Navigating to:", `/editor/${templateId}`);
+    navigate(`/editor/${templateId}`);
+  } else {
+    console.warn("⚠️ Template has no id or _id!");
+  }
+};
+
+
 
   return (
     <div className="px-4 py-10 bg-white overflow-x-auto">

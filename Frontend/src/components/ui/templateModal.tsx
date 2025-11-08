@@ -11,6 +11,8 @@ import {
   FaMapMarkerAlt,
   FaCalendarAlt,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 
 // ✅ Define prop & data types
 interface Template {
@@ -53,6 +55,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   });
   const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+      const navigate = useNavigate();
+  
 
   useEffect(() => {
     if (!isOpen || !template) {
@@ -120,6 +124,20 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       text: "Your poster is being downloaded successfully.",
       confirmButtonColor: "#2C4E86",
     });
+  };
+  const handleCustomize = () => {
+    // console.log("🎨 Customizing template:", template);
+    
+    // Use either _id (from database) or id (from local data)
+    const templateId = template._id || template.id;
+    
+    if (templateId) {
+      // console.log("✅ Navigating to:", `/editor/${templateId}`);
+      onClose(); // Close modal first
+      navigate(`/editor/${templateId}`); // Then navigate
+    } else {
+      console.warn("⚠️ Template has no id or _id!");
+    }
   };
 
   return (
@@ -228,7 +246,6 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
               {/* Show form only when customizing */}
               <AnimatePresence mode="wait">
-                {!isCustomize ? (
                   <motion.div
                     key="preview"
                     className="flex flex-col items-center mt-4 sm:mt-6 gap-4 sm:gap-7"
@@ -241,8 +258,9 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                     }}
                   >
                     <motion.button
-                      onClick={() => setIsCustomize(true)}
-                      className="flex items-center gap-2 bg-[#2C4E86] text-white px-4 sm:px-6 py-2 rounded-md hover:bg-[#1f3a5f] transition text-sm sm:text-base"
+                      // onClick={() => setIsCustomize(true)}
+                       onClick={handleCustomize}
+                      className="flex items-center gap-2 bg-[#2C4E86] text-white px-6 py-2 rounded-md hover:bg-[#1f3a5f] transition text-sm md:text-base"
                       whileHover={{ scale: 1.05, rotateY: 5 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 150, damping: 12 }}
@@ -280,107 +298,6 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       ))}
                     </motion.div>
                   </motion.div>
-                ) : (
-                  <motion.div
-                    key="form"
-                    className="flex flex-col justify-start"
-                    initial={{ opacity: 0, y: 30, rotateX: -10 }}
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                    exit={{ opacity: 0, y: -20, rotateX: 10 }}
-                    transition={{
-                      duration: 0.6,
-                      ease: [0.33, 1, 0.68, 1],
-                    }}
-                  >
-                    <motion.button
-                      onClick={handleBack}
-                      className="flex items-center gap-2 text-[#2C4E86] mb-2 sm:mb-3 hover:underline"
-                      whileHover={{ x: -3 }}
-                      transition={{ type: "spring", stiffness: 120 }}
-                    >
-                      <span className="text-base sm:text-lg">←</span>
-                      Back to Template
-                    </motion.button>
-
-                    <motion.div
-                      className="space-y-3 sm:space-y-5 mb-3 sm:mb-4"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.2, duration: 0.4 }}
-                    >
-                      <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
-                        <FaUserAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
-                        <input
-                          type="text"
-                          name="centerName"
-                          placeholder="Center Name"
-                          value={formData.centerName}
-                          onChange={handleChange}
-                          className="w-full text-sm sm:text-base focus:outline-none"
-                        />
-                      </div>
-
-                      <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
-                        <FaEnvelope className="text-gray-500 mr-2 sm:mr-3 text-sm" />
-                        <input
-                          type="email"
-                          name="email"
-                          placeholder="Email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="w-full text-sm sm:text-base focus:outline-none"
-                        />
-                      </div>
-
-                      <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
-                        <FaPhoneAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
-                        <input
-                          type="text"
-                          name="mobile"
-                          placeholder="Mobile Number"
-                          value={formData.mobile}
-                          onChange={handleChange}
-                          className="w-full text-sm sm:text-base focus:outline-none"
-                        />
-                      </div>
-
-                      {(template.type === "Demo1" ||
-                        template.type === "Demo2" ||
-                        template.type === "Announcement") && (
-                          <div className="flex items-center border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
-                            <FaCalendarAlt className="text-gray-500 mr-2 sm:mr-3 text-sm" />
-                            <input
-                              type="text"
-                              name="dateTime"
-                              placeholder="Date / Time or Message"
-                              value={formData.dateTime || ""}
-                              onChange={handleChange}
-                              className="w-full text-sm sm:text-base focus:outline-none"
-                            />
-                          </div>
-                        )}
-
-                      <div className="flex items-start border border-gray-300 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 focus-within:border-[#2C4E86]">
-                        <FaMapMarkerAlt className="text-gray-500 mt-1 mr-2 sm:mr-3 text-sm" />
-                        <textarea
-                          name="address"
-                          placeholder="Address"
-                          value={formData.address}
-                          onChange={handleChange}
-                          rows={2}
-                          className="w-full text-sm sm:text-base focus:outline-none resize-none"
-                        />
-                      </div>
-                    </motion.div>
-
-                    <PosterCustomizer
-                      template={template}
-                      formData={formData}
-                      setGeneratedUrl={setGeneratedUrl}
-                      canvasRef={canvasRef}
-                    />
-                  </motion.div>
-                )}
               </AnimatePresence>
             </motion.div>
           </motion.div>
