@@ -96,10 +96,24 @@ const FabricCanvas: React.FC = () => {
   }, [setCanvas]);
 
   return (
-    <div ref={containerRef} className="relative w-full h-full overflow-auto">
-      <canvas ref={canvasRef} className="" />
-    </div>
-  );
+  <div
+    ref={containerRef}
+    className="
+      relative 
+      flex justify-center items-center
+      h-screen overflow-auto
+      w-full md:w-10/12 lg:w-7/12 xl:w-8/12
+      mx-auto
+     
+    "
+  >
+    <canvas
+      ref={canvasRef}
+      className="max-w-full max-h-full object-contain"
+    />
+  </div>
+);
+
 };
 
 export default FabricCanvas;

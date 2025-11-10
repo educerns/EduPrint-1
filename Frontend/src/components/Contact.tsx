@@ -96,7 +96,7 @@ const Contact: React.FC = () => {
                   placeholder="Enter your name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent transition-all duration-200"
                 />
               </div>
               
@@ -110,7 +110,7 @@ const Contact: React.FC = () => {
                   placeholder="Enter your email address"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent transition-all duration-200"
                 />
               </div>
               
@@ -124,7 +124,7 @@ const Contact: React.FC = () => {
                   placeholder="Enter your phone number"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent transition-all duration-200"
                 />
               </div>
               
@@ -138,13 +138,13 @@ const Contact: React.FC = () => {
                   value={formData.comment}
                   onChange={handleInputChange}
                   rows={5}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-transparent transition-all duration-200"
                 />
               </div>
               
               <motion.button
                 onClick={handleSubmit}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3.5 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full bg-gradient-to-r from-blue-900 to-blue-950 text-white px-6 py-3.5 rounded-lg font-semibold flex items-center justify-center space-x-2 hover:from-blue-900 hover:to-blue-950 transition-all duration-200 shadow-lg hover:shadow-xl"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -170,11 +170,11 @@ const Contact: React.FC = () => {
                   whileHover={{ x: 5 }}
                 >
                   <div className="bg-blue-100 p-3 rounded-full">
-                    <Phone className="h-5 w-5 text-blue-600" />
+                    <Phone className="h-5 w-5 text-blue-900" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500 mb-1">Phone</p>
-                    <a href="tel:+918855856055" className="text-gray-900 font-medium hover:text-blue-600 transition-colors">
+                    <a href="tel:+918855856055" className="text-gray-900 font-medium hover:text-blue-950 transition-colors">
                       +91 8855856055
                     </a>
                   </div>
@@ -185,11 +185,11 @@ const Contact: React.FC = () => {
                   whileHover={{ x: 5 }}
                 >
                   <div className="bg-blue-100 p-3 rounded-full">
-                    <Mail className="h-5 w-5 text-blue-600" />
+                    <Mail className="h-5 w-5 text-blue-900" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500 mb-1">Email</p>
-                    <a href="mailto:support@educerns.org" className="text-gray-900 font-medium hover:text-blue-600 transition-colors break-all">
+                    <a href="mailto:support@educerns.org" className="text-gray-900 font-medium hover:text-blue-950 transition-colors break-all">
                       support@educerns.org
                     </a>
                   </div>
@@ -200,7 +200,7 @@ const Contact: React.FC = () => {
                   whileHover={{ x: 5 }}
                 >
                   <div className="bg-blue-100 p-3 rounded-full flex-shrink-0">
-                    <MapPin className="h-5 w-5 text-blue-600" />
+                    <MapPin className="h-5 w-5 text-blue-900" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500 mb-1">Address</p>

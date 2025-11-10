@@ -79,7 +79,7 @@ const navItems = [
               to={item.path}
               className={({ isActive }) => `
                 relative font-medium transition-colors duration-200
-                ${isActive ? "text-blue-700" : "text-gray-700 hover:text-blue-700"}
+                ${isActive ? "text-blue-900" : "text-gray-700 hover:text-blue-950"}
               `}
             >
               {({ isActive }) => (
@@ -173,27 +173,24 @@ const navItems = [
           </div>
 
           {/* Mobile Navigation */}
-          {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
-            {/* ... mobile search */}
-            
-            {/* Mobile Nav Items */}
-            {navItems.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                className={({ isActive }) => `
-                  block ${isActive ? "text-blue-700" : "text-gray-700 hover:text-blue-700"} 
-                  font-medium py-2
-                `}
-              >
-                {item.name}
-              </NavLink>
-            ))}
-            
-            {/* ... rest of mobile nav */}
-          </div>
-        )}
+  {isMobileMenuOpen && (
+    <div className="md:hidden border-t border-gray-200 bg-white p-4 space-y-2">
+      {navItems.map((item) => (
+        <NavLink
+          key={item.name}
+          to={item.path}
+          onClick={() => setIsMobileMenuOpen(false)}
+          className={({ isActive }) =>
+            `block py-2 ${
+              isActive ? "text-blue-700" : "text-gray-700 hover:text-blue-700"
+            }`
+          }
+        >
+          {item.name}
+        </NavLink>
+      ))}
+    </div>
+  )}
         </div>
       </nav>
 
