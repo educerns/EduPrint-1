@@ -174,34 +174,21 @@ export const staticVideos: readonly Video[] = [
 export const groupedVideos = [
   {
     category: "Demo",
-    videos: staticVideos.filter(
-      (item) => item.type === "Demo1" || item.type === "Demo2" || item.type === "Demo3"
-    ),
+    videos: staticVideos.filter((item) => item.type === "Demo"),
   },
   {
     category: "Promotion",
-    videos: staticVideos.filter(
-      (item) =>
-        item.type === "Promotion" 
-        
-    ),
+    videos: staticVideos.filter((item) => item.type === "Promotion"),
   },
   {
     category: "Registration",
-    videos: staticVideos.filter(
-      (item) =>
-        item.type === "Registration" 
-        
-    ),
+    videos: staticVideos.filter((item) => item.type === "Registration"),
   },
   {
     category: "Announcement",
-    videos: staticVideos.filter(
-      (item) =>
-        item.type === "Announcement" 
-       
-    ),
+    videos: staticVideos.filter((item) => item.type === "Announcement"),
   },
 ] as const;
+
 
 export default staticVideos;
