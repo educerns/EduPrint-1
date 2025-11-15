@@ -4,6 +4,8 @@ import VideoModal from "../components/ui/videoModal";
 import { groupedVideos } from "../data/promotion_videos";
 import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 
 export interface Video {
   id: number;
@@ -19,6 +21,8 @@ export interface Video {
 const VideoGallery: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+      const navigate = useNavigate();
+  
 
   // 🧩 Combine all videos from all categories
   const allVideos = useMemo(
@@ -148,16 +152,21 @@ const VideoGallery: React.FC = () => {
                   <div className="w-full aspect-square overflow-hidden relative bg-gray-900">
                     {video.videoUrl ? (
                       <>
-                        <video
-                          src={video.videoUrl}
-                          muted
-                          playsInline
-                          preload="metadata"
-                          className="w-full h-full object-cover"
-                          onLoadedMetadata={(e) => {
-                            e.currentTarget.currentTime = 0.1;
-                          }}
-                        />
+                       <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate("/video-editor", {
+                            state: {
+                              videoUrl: video.videoUrl,
+                              videoTitle: video.title,
+                            },
+                          });
+                        }}
+                        className="flex-shrink-0 ml-3 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-800"
+                      >
+                        Edit
+                      </button>
+
                         {/* ▶️ Play Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors">
                           <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg hover:bg-white transition-colors">

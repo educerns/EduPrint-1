@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import VideoEditor from '../components/VideoEditor';
+import RemotionVideoEditor from '../components/RemotionVideoEditor';
 
 interface LocationState {
   videoUrl: string;
@@ -29,11 +29,13 @@ const VideoEditorPage: React.FC = () => {
   }
 
   return (
-    <VideoEditor
-      videoUrl={state.videoUrl}
-      videoTitle={state.videoTitle}
-      onClose={() => navigate(-1)}
-    />
+  <RemotionVideoEditor
+   videoUrl="https://example.com/promo.mp4"
+   videoTitle="Promo Video"
+   onClose={() => navigate(-1)}
+/>
+
+
   );
 };
 
