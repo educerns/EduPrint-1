@@ -25,7 +25,7 @@ import MyVideoGallery from "./components/MyVideoGallery";
 import Editor from "./editor/editor";
 import VideoGallery from "./pages/VideoGallery";
 import VideoEditorPage from "./pages/VideoEditorPage";
-import RemotionVideoEditor from "./components/RemotionVideoEditor";
+// import RemotionVideoEditor from "./components/RemotionVideoEditor";
 
 const queryClient = new QueryClient();
 
@@ -61,9 +61,9 @@ const App = () => (
                 {/* Special pages */}
                 <Route path="paid-promotion" element={<PaidPomotion />} />
                 <Route path="free-videos" element={<VideoGallery />} />
-                {/* <Route path="video-editor" element={<VideoEditorPage />} /> */}
+                <Route path="video-editor" element={<VideoEditorPage />} />
                 <Route path="my-videos" element={<MyVideoGallery />} />
-                <Route path="video-editor" element={<RemotionVideoEditor />} />
+                {/* <Route path="video-editor" element={<RemotionVideoEditor />} /> */}
 
 
                 {/* Legal pages */}

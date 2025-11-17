@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Type,
@@ -20,11 +19,13 @@ import {
 } from 'lucide-react';
 import ExportButton from './ui/exportButton';
 
+
 interface Video {
   id: number;
   title: string;
   videoUrl: string;
 }
+
 
 interface TextOverlay {
   id: string;
@@ -40,20 +41,12 @@ interface TextOverlay {
   backgroundColor: string;
   position: { x: number; y: number };
   opacity: number;
-  letterSpacing?: number; // ← optional (default handled in code)
-  lineHeight?: number; // ← added this to fix TS error
-  animation:
-  | "none"
-  | "fade-in"
-  | "fade-out"
-  | "fade-in-out"
-  | "slide-left"
-  | "slide-right"
-  | "zoom-in"
-  | "floating"
-  | "ticker";
+  letterSpacing?: number;
+  lineHeight?: number;
+  animation: string;
   animationDuration: number;
 }
+
 
 const fontFamilies = ["Arial", "Helvetica", "Times New Roman", "Georgia", "Verdana", "Courier New", "Tahoma", "Impact", "Comic Sans MS",];
 
@@ -75,6 +68,9 @@ const positionPresets = [
   { name: 'Bottom Center', x: 50, y: 85 },
   { name: 'Bottom Right', x: 85, y: 85 },
 ];
+
+
+
 
 const VideoEditor: React.FC = () => {
   const location = useLocation();
@@ -109,6 +105,13 @@ const VideoEditor: React.FC = () => {
   const [panelCollapsed, setPanelCollapsed] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+    const [exportProgress, setExportProgress] = useState(0);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isRecording, setIsRecording] = useState(false);
+    const audioSourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+const audioContextRef = useRef<AudioContext | null>(null);
+
+
 
   const [newText, setNewText] = useState({
     text: 'Your Text Here',
@@ -386,6 +389,15 @@ textOverlays.forEach((overlay) => {
     };
   }, [textOverlays]); 
 
+  useEffect(() => {
+  return () => {
+    audioSourceRef.current?.disconnect();
+  };
+}, []);
+
+
+
+
 
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!selectedOverlay || !canvasRef.current) return;
@@ -420,17 +432,40 @@ textOverlays.forEach((overlay) => {
     setIsDragging(false);
   };
 
-  const togglePlayPause = () => {
-    const video = videoRef.current;
-    if (!video) return;
+const togglePlayPause = async () => {
+  const video = videoRef.current;
+  if (!video) return;
 
-    if (isPlaying) {
-      video.pause();
-    } else {
-      video.play();
+  // Initialize audio context if needed
+  if (!audioContextRef.current) {
+    audioContextRef.current = new AudioContext();
+  }
+
+  // Resume audio context if suspended
+  if (audioContextRef.current.state === "suspended") {
+    await audioContextRef.current.resume();
+  }
+
+  // Create audio source only once
+  if (!audioSourceRef.current) {
+    audioSourceRef.current = audioContextRef.current.createMediaElementSource(video);
+    // Connect to destination for playback
+    audioSourceRef.current.connect(audioContextRef.current.destination);
+  }
+
+  if (isPlaying) {
+    video.pause();
+    setIsPlaying(false);
+  } else {
+    try {
+      await video.play();
+      setIsPlaying(true);
+    } catch (err) {
+      console.error("Video play failed:", err);
+      setIsPlaying(false);
     }
-    setIsPlaying(!isPlaying);
-  };
+  }
+};
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const video = videoRef.current;
@@ -481,50 +516,85 @@ textOverlays.forEach((overlay) => {
     ));
   };
 
- const exportVideo = async () => {
+// FULLY WORKING EXPORT FUNCTION
+const exportVideo = async () => {
+  try {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video) return;
+
     setIsExporting(true);
-    try {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      if (!canvas || !video) return;
 
-      const stream = canvas.captureStream(30);
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=vp9'
-      });
+    // 1️⃣ Canvas → video track
+    const canvasStream = canvas.captureStream(30);
 
-      const chunks: Blob[] = [];
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+    // 2️⃣ Reuse existing audio context and source node (important!)
+    const audioContext = audioContextRef.current;
+    const sourceNode = audioSourceRef.current;
 
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${currentVideo.title}_edited.webm`;
-        a.click();
-        URL.revokeObjectURL(url);
-        setIsExporting(false);
-      };
-
-      video.currentTime = 0;
-      setCurrentTime(0);
-      mediaRecorder.start();
-
-      video.play();
-      setIsPlaying(true);
-
-      video.onended = () => {
-        mediaRecorder.stop();
-        setIsPlaying(false);
-      };
-
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Export failed. Please try again.');
+    if (!audioContext || !sourceNode) {
+      alert("Please click PLAY once before exporting!");
       setIsExporting(false);
+      return;
     }
-  };
+
+    const destination = audioContext.createMediaStreamDestination();
+    sourceNode.connect(destination);
+
+    await audioContext.resume();
+
+    const audioTrack = destination.stream.getAudioTracks()[0];
+
+    // 3️⃣ Final combined stream
+    const finalStream = new MediaStream([
+      ...canvasStream.getVideoTracks(),
+      audioTrack
+    ]);
+
+    // 4️⃣ Record stream
+    const recorder = new MediaRecorder(finalStream, {
+      mimeType: "video/webm;codecs=vp9"
+    });
+
+    const chunks: Blob[] = [];
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${currentVideo.title}_edited_with_audio.webm`;
+      a.click();
+
+      URL.revokeObjectURL(url);
+      setIsExporting(false);
+    };
+
+    // 5️⃣ Start export
+    video.currentTime = 0;
+    await video.play();
+
+    recorder.start();
+
+    video.onended = () => {
+      recorder.stop();
+      setIsPlaying(false);
+    };
+
+    setIsPlaying(true);
+
+  } catch (error) {
+    console.error("Export failed:", error);
+    alert("Export failed. Please try again.");
+    setIsExporting(false);
+  }
+};
+
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -588,14 +658,15 @@ textOverlays.forEach((overlay) => {
               >
 
                 <canvas
-                  ref={canvasRef}
-                  className="object-contain transition-all duration-300"
-                  onMouseDown={handleCanvasMouseDown}
-                  onMouseMove={handleCanvasMouseMove}
-                  onMouseUp={handleCanvasMouseUp}
-                  onMouseLeave={handleCanvasMouseUp}
-                  style={{ position: "absolute", inset: 0 }}
-                />
+  ref={canvasRef}
+  className="object-contain transition-all duration-300"
+  onMouseDown={handleCanvasMouseDown}
+  onMouseMove={handleCanvasMouseMove}
+  onMouseUp={handleCanvasMouseUp}
+  onMouseLeave={handleCanvasMouseUp}
+  style={{ position: "absolute", inset: 0 }}
+/>
+
 
                 <video
                   ref={videoRef}
@@ -674,7 +745,7 @@ textOverlays.forEach((overlay) => {
 
                       <ExportButton
                         isExporting={isExporting}
-                        onClick={exportVideo}
+                         onClick={exportVideo}
                       />
                     </div>
                   </div>
