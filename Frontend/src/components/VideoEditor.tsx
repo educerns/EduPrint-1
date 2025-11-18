@@ -928,7 +928,6 @@ const VideoEditor: React.FC = () => {
                                                     </div>
                                                     <div>
                                                         <label className="block text-xs font-medium text-gray-700 mb-1">Y (%)</label>
-                           // With:
                                                         <input
                                                             type="number"
                                                             min="0"
