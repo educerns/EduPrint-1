@@ -73,24 +73,46 @@ const positionPresets = [
 
 
 const VideoEditor: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const location = useLocation();
+const navigate = useNavigate();
 
-  // ✅ Get video data from route state
-  const { videoUrl, videoTitle } = location.state || {};
+// ✅ Get video data from route state OR sessionStorage (for deployment persistence)
+const getVideoData = () => {
+  const stateData = location.state;
+  if (stateData?.videoUrl) {
+    // Save to sessionStorage for page reloads
+    sessionStorage.setItem('currentVideoUrl', stateData.videoUrl);
+    sessionStorage.setItem('currentVideoTitle', stateData.videoTitle || 'Untitled Video');
+    return stateData;
+  }
+  
+  // Fallback to sessionStorage
+  const savedUrl = sessionStorage.getItem('currentVideoUrl');
+  const savedTitle = sessionStorage.getItem('currentVideoTitle');
+  if (savedUrl) {
+    return { videoUrl: savedUrl, videoTitle: savedTitle };
+  }
+  
+  return { videoUrl: '', videoTitle: 'Untitled Video' };
+};
 
-  const [currentVideo, setCurrentVideo] = useState({
-    videoUrl: videoUrl || "",
-    title: videoTitle || "Untitled Video",
-  });
+const { videoUrl, videoTitle } = getVideoData();
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+const [currentVideo, setCurrentVideo] = useState({
+  videoUrl: videoUrl || "",
+  title: videoTitle || "Untitled Video",
+});
 
-  useEffect(() => {
-    if (!videoUrl) {
-      navigate("/"); // if no video selected, go back to gallery
-    }
-  }, [videoUrl, navigate]);
+const videoRef = useRef<HTMLVideoElement>(null);
+const [videoError, setVideoError] = useState<string | null>(null);
+
+useEffect(() => {
+  if (!videoUrl) {
+    console.error("No video URL provided");
+    setVideoError("No video selected. Redirecting...");
+    setTimeout(() => navigate("/"), 2000);
+  }
+}, [videoUrl, navigate]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -605,6 +627,13 @@ const exportVideo = async () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 overflow-x-hidden">
 
+      {/* Error Display */}
+        {videoError && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            ⚠️ {videoError}
+          </div>
+        )}
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-gray-800">
           🎬 Editing: {currentVideo.title}
@@ -668,11 +697,19 @@ const exportVideo = async () => {
                 />
 
 
-                <video
+               <video
                   ref={videoRef}
                   src={currentVideo.videoUrl}
                   className="hidden"
                   crossOrigin="anonymous"
+                  onError={(e) => {
+                    console.error("Video load error:", e);
+                    setVideoError("Failed to load video. Please check the URL or CORS settings.");
+                  }}
+                  onLoadedData={() => {
+                    console.log("Video loaded successfully");
+                    setVideoError(null);
+                  }}
                 />
 
 

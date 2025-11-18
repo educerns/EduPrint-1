@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-// import RemotionVideoEditor from '../components/RemotionVideoEditor';
 import VideoEditor from '@/components/VideoEditor';
 
 interface LocationState {
@@ -13,7 +12,9 @@ const VideoEditorPage: React.FC = () => {
   const navigate = useNavigate();
   const state = location.state as LocationState;
 
-  if (!state?.videoUrl) {
+  // Optional: Pre-check before rendering (but VideoEditor already handles this)
+  // You can remove this if you want VideoEditor to handle everything
+  if (!state?.videoUrl && !sessionStorage.getItem('currentVideoUrl')) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-center">
@@ -29,15 +30,8 @@ const VideoEditorPage: React.FC = () => {
     );
   }
 
-  return (
-  <VideoEditor
-   videoUrl="https://example.com/promo.mp4"
-   videoTitle="Promo Video"
-   onClose={() => navigate(-1)}
-/>
-
-
-  );
+  // ✅ Just render VideoEditor - it handles everything internally
+  return <VideoEditor />;
 };
 
 export default VideoEditorPage;
