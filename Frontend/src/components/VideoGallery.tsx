@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import VideoModal from "../components/ui/videoModal";
 import { groupedVideos } from "../data/promotion_videos";
@@ -21,7 +21,19 @@ export interface Video {
 const VideoGallery: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-      const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  const navigate = useNavigate();
+
+     // ⏱️ Simulate loading for 1-2 seconds
+        useEffect(() => {
+          const timer = setTimeout(() => {
+            setIsLoading(false);
+          }, 1500); // 1.5 seconds
+      
+          return () => clearTimeout(timer);
+        }, []);
+  
   
 
   // 🧩 Combine all videos from all categories

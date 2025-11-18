@@ -1,4 +1,4 @@
-import "fabric";
+import * as fabric from "fabric";
 
 declare module "fabric" {
   interface Canvas {
@@ -7,7 +7,13 @@ declare module "fabric" {
   }
 
   interface Image {
-    filters: any[];
+    // MUST match Fabric’s type EXACTLY
+    filters: fabric.filters.BaseFilter<
+      string,
+      Record<string, any>,
+      Record<string, any>
+    >[];
+
     applyFilters(): void;
   }
 }

@@ -1,6 +1,6 @@
 // src/fabric/fabric-utils.ts
 import { Canvas as FabricCanvas, PencilBrush, Rect } from "fabric";
-import { Canvas } from "node_modules/fabric/dist/fabric";
+// import { Canvas } from "node_modules/fabric/dist/fabric";
 import { createShape } from "./shapes/shape-factory";
 import { shapeDefinitions } from "./shapes/shape-defination";
 
