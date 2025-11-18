@@ -1,9 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import VideoModal from "../components/ui/myVideoModel";
 import { groupedVideos } from "../data/myVideo";
 import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
+import InfinityLoader from "./ui/EduPrintSpinner";
+
+
 
 export interface Video {
   id: number;
@@ -19,12 +22,22 @@ export interface Video {
 const MyVideoGallery: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // 🧩 Combine all videos from all categories
   const allVideos = useMemo(
     () => groupedVideos.flatMap((group) => group.videos),
     []
   );
+
+  // ⏱️ Simulate loading for 1-2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // 1.5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const openModal = (video: Video) => {
     setSelectedVideo(video);
@@ -57,7 +70,7 @@ const MyVideoGallery: React.FC = () => {
         icon: "success",
         title: "Download Started!",
         text: "Your video is being downloaded successfully.",
-        timer: 2500, // auto close after 3 seconds
+        timer: 2500,
         showConfirmButton: false,
         timerProgressBar: true,
       });
@@ -66,15 +79,12 @@ const MyVideoGallery: React.FC = () => {
         icon: "error",
         title: "Download Failed!",
         text: "Unable to download the video. Please try again.",
-        timer: 2500, // auto close after 3 seconds
+        timer: 2500,
         showConfirmButton: false,
         timerProgressBar: true,
-
       });
     }
   };
-
-
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -103,7 +113,7 @@ const MyVideoGallery: React.FC = () => {
 
   return (
     <div className="min-h-screen px-4 py-10 bg-white">
-      <div className="max-w-7xl mx-auto">
+      <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
         {/* 🏷️ Header */}
         <motion.div
           className="mb-10 text-center"
@@ -201,16 +211,15 @@ const MyVideoGallery: React.FC = () => {
                     {/* ⬇️ Download Button */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // prevent modal from opening
+                        e.stopPropagation();
                         handleDownload(video.videoUrl, video.title);
                       }}
-                      className="flex-shrink-0 ml-3 flex items-center gap-1  px-3 py-1.5 "
+                      className="flex-shrink-0 ml-3 flex items-center gap-1 px-3 py-1.5"
                     >
                       <FiDownload className="w-3.5 h-3.5" />
                       <span className="text-xs font-medium"></span>
                     </button>
                   </div>
-
                 </motion.div>
               ))}
             </motion.div>
@@ -224,6 +233,21 @@ const MyVideoGallery: React.FC = () => {
         onClose={closeModal}
         video={selectedVideo}
       />
+
+      {/* 🔄 Loader Overlay */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <InfinityLoader/>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
