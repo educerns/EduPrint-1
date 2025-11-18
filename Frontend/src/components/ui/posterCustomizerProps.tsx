@@ -538,7 +538,7 @@ const handleGenerate = async (): Promise<void> => {
   const handleDownload = (): void => {
     const canvas = canvasRef.current;
     if (!canvas) {
-      console.warn("⚠️ Download failed: no canvas");
+      // console.warn("⚠️ Download failed: no canvas");
       return;
     }
 

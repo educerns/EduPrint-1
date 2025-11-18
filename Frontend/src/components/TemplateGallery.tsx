@@ -89,9 +89,10 @@ const handleTemplateClick = (template: Template) => {
   if (templateId) {
     // console.log("✅ Navigating to:", `/editor/${templateId}`);
     navigate(`/editor/${templateId}`);
-  } else {
-    console.warn("⚠️ Template has no id or _id!");
   }
+  // } else {
+  //   // console.warn("⚠️ Template has no id or _id!");
+  // }
 };
 
 

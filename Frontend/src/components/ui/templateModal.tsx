@@ -136,7 +136,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       onClose(); // Close modal first
       navigate(`/editor/${templateId}`); // Then navigate
     } else {
-      console.warn("⚠️ Template has no id or _id!");
+      // console.warn("⚠️ Template has no id or _id!");
     }
   };
 

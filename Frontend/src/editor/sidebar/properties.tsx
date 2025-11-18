@@ -801,7 +801,7 @@ useEffect(() => {
 
         const active = canvas.getActiveObject();
         if (!active || !(active instanceof fabric.Image)) {
-            console.warn("Selected object is not an image");
+            // console.warn("Selected object is not an image");
             return;
         }
 

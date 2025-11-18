@@ -9,7 +9,7 @@ export const createShape = (
 ) => {
   const definition = shapeDefinitions[type];
   if (!definition) {
-    console.warn(`Shape definition not found for type: ${type}`);
+    // console.warn(`Shape definition not found for type: ${type}`);
     return null;
   }
 
@@ -77,7 +77,7 @@ export const createShape = (
       return new fabric.Path(path, props);
 
     default:
-      console.warn(`Unsupported shape type: ${definition.type}`);
+      // console.warn(`Unsupported shape type: ${definition.type}`);
       return null;
   }
 };
