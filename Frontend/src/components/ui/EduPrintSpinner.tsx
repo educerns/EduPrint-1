@@ -4,54 +4,53 @@ const InfinityLoader = () => {
   return (
     <div className="flex justify-center items-center w-full h-[150px]">
       <svg
-        width="140"
-        height="70"
+        width="200"
+        height="100"
         viewBox="0 0 200 100"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id="infinityGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#0057a1" />
-            <stop offset="25%" stopColor="#00b9f1" />
-            <stop offset="50%" stopColor="#ff8800" />
+            <stop offset="33%" stopColor="#00b9f1" />
+            <stop offset="66%" stopColor="#ff8800" />
             <stop offset="100%" stopColor="#ff3333" />
           </linearGradient>
         </defs>
 
-        {/* Infinity Shape Path */}
+        {/* TRUE INFINITY SYMBOL */}
         <path
-          id="infinityPath"
           d="
-            M 50 50
-            C 20 10, 0 90, 50 50
-            C 100 10, 120 90, 150 50
-            C 180 10, 200 90, 150 50
-            C 100 10, 80 90, 50 50
+            M 20 50
+            C 20 20, 80 20, 100 50
+            C 120 80, 180 80, 180 50
+            C 180 20, 120 20, 100 50
+            C 80 80, 20 80, 20 50
           "
           fill="none"
-          stroke="url(#infinityGradient)"
-          strokeWidth="8"
+          stroke="url(#grad)"
+          strokeWidth="10"
           strokeLinecap="round"
-          strokeDasharray="260"
-          strokeDashoffset="260"
+          strokeDasharray="566" 
+          strokeDashoffset="566"
         >
+          {/* Draw stroke */}
           <animate
             attributeName="stroke-dashoffset"
-            values="260;0;260"
-            dur="2.2s"
+            from="566"
+            to="0"
+            dur="1.2s"
+            fill="freeze"
+          />
+          {/* Fade out after drawing */}
+          <animate
+            attributeName="stroke-opacity"
+            values="0;0"
+            dur="1.2s"
+            begin="1.2s"
             repeatCount="indefinite"
           />
         </path>
-
-        {/* Slight rotation for premium feel */}
-        <animateTransform
-          attributeName="transform"
-          type="rotate"
-          from="0 100 50"
-          to="360 100 50"
-          dur="6s"
-          repeatCount="indefinite"
-        />
       </svg>
     </div>
   );

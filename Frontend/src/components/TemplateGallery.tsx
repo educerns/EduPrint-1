@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import TemplateModal from "../components/ui/templateModal";
 import { groupedTemplates } from "../data/freeTemplate";
 import { useNavigate } from "react-router-dom";
+import InfinityLoader from "./ui/EduPrintSpinner";
 
 export interface Template {
   id: number;
@@ -20,12 +21,23 @@ const TemplateGallery: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("A-Z");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
 
   // 🧩 Flatten all templates for "All" view
   const allTemplates = useMemo(
     () => groupedTemplates.flatMap(group => group.templates),
     []
   );
+
+      // ⏱️ Simulate loading for 1-2 seconds
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1500); // 1.5 seconds
+  
+      return () => clearTimeout(timer);
+    }, []);
 
   // 🔍 Filter templates based on category
   const filteredTemplates = useMemo(() => {
@@ -98,7 +110,7 @@ const handleTemplateClick = (template: Template) => {
 
   return (
     <div className="px-4 py-10 bg-white overflow-x-auto">
-      <div className="max-w-7xl mx-auto">
+      <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
         {/* 🏷️ Header */}
         <motion.div
           className="mb-10 text-center"
@@ -202,6 +214,21 @@ const handleTemplateClick = (template: Template) => {
         onClose={closeModal}
         template={selectedTemplate}
       />
+
+            {/* 🔄 Loader Overlay */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <InfinityLoader/>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
