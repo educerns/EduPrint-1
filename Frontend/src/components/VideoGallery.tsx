@@ -4,6 +4,8 @@ import VideoModal from "../components/ui/videoModal";
 import { groupedVideos } from "../data/promotion_videos";
 import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import { Pencil } from "lucide-react";
 
 export interface Video {
   id: number;
@@ -22,7 +24,8 @@ const VideoGallery: React.FC = () => {
 
     const userData = JSON.parse(localStorage.getItem("parsedate") || "{}");
     const isSuperAdmin = userData?.role === "superadmin";
-  
+   const navigate = useNavigate();
+
     // 🧮 Load counts
     const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>(() => {
       return JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
@@ -203,6 +206,7 @@ const VideoGallery: React.FC = () => {
                   </div>
 
                   {/* 📘 Info below thumbnail */}
+                   {/* Info + Icons */}
                   <div className="mt-3 flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className="text-base font-semibold text-gray-800 truncate">
@@ -211,23 +215,36 @@ const VideoGallery: React.FC = () => {
                       <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
                         {video.description}
                       </p>
-                      {isSuperAdmin && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Downloads: {downloadCounts[video.id] || 0}
-                      </p>
-                      )}
                     </div>
 
-                    {/* ⬇️ Download Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownload(video.videoUrl, video.title, video.id);
-                      }}
-                      className="flex-shrink-0 ml-3 flex items-center gap-1 px-3 py-1.5"
-                    >
-                      <FiDownload className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center gap-2 ml-3">
+                      {/* Edit */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate("/video-editor", {
+                            state: {
+                              videoUrl: video.videoUrl,
+                              videoTitle: video.title,
+                            },
+                          });
+                        }}
+                        className="p-1.5 rounded hover:bg-gray-100"
+                      >
+                        <Pencil className="w-4 h-4 text-blue-600" />
+                      </button>
+
+                      {/* Download */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownload(video.videoUrl, video.title, video.id);
+                        }}
+                        className="p-1.5 rounded hover:bg-gray-100"
+                      >
+                        <FiDownload className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -241,7 +258,6 @@ const VideoGallery: React.FC = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         video={selectedVideo}
-        onDownload={handleDownload} // ✅ pass shared handler
       />
     </div>
   );
