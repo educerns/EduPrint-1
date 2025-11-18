@@ -702,14 +702,6 @@ const exportVideo = async () => {
                   src={currentVideo.videoUrl}
                   className="hidden"
                   crossOrigin="anonymous"
-                  onError={(e) => {
-                    console.error("Video load error:", e);
-                    setVideoError("Failed to load video. Please check the URL or CORS settings.");
-                  }}
-                  onLoadedData={() => {
-                    console.log("Video loaded successfully");
-                    setVideoError(null);
-                  }}
                 />
 
 
