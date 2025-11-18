@@ -97,7 +97,7 @@ const VideoEditor: React.FC = () => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+const [duration, setDuration] = useState<number>(0);
   const [textOverlays, setTextOverlays] = useState<TextOverlay[]>([]);
   const [selectedOverlay, setSelectedOverlay] = useState<string | null>(null);
   const [showTextPanel, setShowTextPanel] = useState(false);
@@ -658,14 +658,14 @@ const exportVideo = async () => {
               >
 
                 <canvas
-  ref={canvasRef}
-  className="object-contain transition-all duration-300"
-  onMouseDown={handleCanvasMouseDown}
-  onMouseMove={handleCanvasMouseMove}
-  onMouseUp={handleCanvasMouseUp}
-  onMouseLeave={handleCanvasMouseUp}
-  style={{ position: "absolute", inset: 0 }}
-/>
+                  ref={canvasRef}
+                  className="object-contain transition-all duration-300"
+                  onMouseDown={handleCanvasMouseDown}
+                  onMouseMove={handleCanvasMouseMove}
+                  onMouseUp={handleCanvasMouseUp}
+                  onMouseLeave={handleCanvasMouseUp}
+                  style={{ position: "absolute", inset: 0 }}
+                />
 
 
                 <video
@@ -820,15 +820,15 @@ const exportVideo = async () => {
                 exit={{ x: 320, opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="
-    lg:col-span-1 
-    fixed lg:relative 
-    right-0 top-0 lg:top-auto 
-    bottom-0 lg:bottom-auto 
-    bg-white rounded-l-xl shadow-lg 
-    w-80 lg:w-auto lg:rounded-xl 
-    z-50 flex flex-col
-    max-h-[45vh] sm:max-h-[50vh] md:max-h-[60vh] lg:max-h-[76vh]
-  ">
+                    lg:col-span-1 
+                    fixed lg:relative 
+                    right-0 top-0 lg:top-auto 
+                    bottom-0 lg:bottom-auto 
+                    bg-white rounded-l-xl shadow-lg 
+                    w-80 lg:w-auto lg:rounded-xl 
+                    z-50 flex flex-col
+                    max-h-[45vh] sm:max-h-[50vh] md:max-h-[60vh] lg:max-h-[76vh]
+                  ">
 
 
 
@@ -867,25 +867,25 @@ const exportVideo = async () => {
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <label className="block text-xs font-medium text-gray-700 mb-1">Start (s)</label>
-                            <input
+                          <input
                               type="number"
                               min="0"
-                              max={duration}
+                              max={duration || 0}
                               step="0.1"
-                              value={overlay.startTime}
-                              onChange={(e) => updateOverlay(overlay.id, { startTime: parseFloat(e.target.value) })}
+                              value={Number.isFinite(overlay.startTime) ? overlay.startTime : 0}
+                              onChange={(e) => updateOverlay(overlay.id, { startTime: parseFloat(e.target.value) || 0 })}
                               className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                             />
                           </div>
                           <div>
                             <label className="block text-xs font-medium text-gray-700 mb-1">End (s)</label>
-                            <input
+                           <input
                               type="number"
                               min="0"
-                              max={duration}
+                              max={duration || 1}
                               step="0.1"
-                              value={overlay.endTime}
-                              onChange={(e) => updateOverlay(overlay.id, { endTime: parseFloat(e.target.value) })}
+                              value={Number.isFinite(overlay.endTime) ? overlay.endTime : 0}
+                              onChange={(e) => updateOverlay(overlay.id, { endTime: parseFloat(e.target.value) || 0 })}
                               className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                             />
                           </div>
@@ -920,22 +920,23 @@ const exportVideo = async () => {
                               min="0"
                               max="100"
                               step="1"
-                              value={Math.round(overlay.position.x)}
-                              onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, x: parseFloat(e.target.value) } })}
+                              value={Math.round(overlay.position.x) || 0}
+                              onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, x: parseFloat(e.target.value) || 0 } })}
                               className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                             />
                           </div>
                           <div>
                             <label className="block text-xs font-medium text-gray-700 mb-1">Y (%)</label>
                             <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="1"
-                              value={Math.round(overlay.position.y)}
-                              onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, y: parseFloat(e.target.value) } })}
-                              className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                            />
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="1"
+                                value={Math.round(overlay.position.y) || 0}
+                                onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, y: parseFloat(e.target.value) || 0 } })}
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                              />
+
                           </div>
                         </div>
 
@@ -1137,16 +1138,16 @@ const exportVideo = async () => {
                                 Duration (s)
                               </label>
                               <input
-                                type="number"
-                                step="0.1"
-                                min="0.1"
-                                max="5"
-                                value={overlay.animationDuration}
-                                onChange={(e) =>
-                                  updateOverlay(overlay.id, { animationDuration: parseFloat(e.target.value) })
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                              />
+                                  type="number"
+                                  step="0.1"
+                                  min="0.1"
+                                  max="5"
+                                  value={Number.isFinite(overlay.animationDuration) ? overlay.animationDuration : 0.5}
+                                  onChange={(e) =>
+                                    updateOverlay(overlay.id, { animationDuration: parseFloat(e.target.value) || 0.5 })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                />
                             </div>
                           )}
                         </div>
