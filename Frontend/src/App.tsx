@@ -21,11 +21,8 @@ import PrivacyPolicy from "./components/ui/privacyPolicy";
 import ReturnRefund from "./components/ui/returnRefund";
 import CookiePolicy from "./components/ui/cookiePolicy";
 import PaidPomotion from "./components/PaidPomotion";
-import MyVideoGallery from "./components/MyVideoGallery";
-import Editor from "./editor/editor";
-import VideoGallery from "./pages/VideoGallery";
-// import VideoEditorPage from "./pages/VideoEditorPage";
-// import RemotionVideoEditor from "./components/RemotionVideoEditor";
+import VideoGallery from "./components/VideoGallery";
+import VideoEditor from "./components/VideoEditor";
 
 const queryClient = new QueryClient();
 
@@ -47,36 +44,29 @@ const App = () => (
         <CartProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
+          <BrowserRouter
+            future={{
+              v7_relativeSplatPath: true,
+              v7_startTransition: true,   // ✅ Add this
+            }}
+          >
+
             <Routes>
               <Route path="/" element={<Layout />}>
-                {/* Main pages */}
                 <Route index element={<HomePage />} />
                 <Route path="products" element={<ProductsPage />} />
                 <Route path="products/:id" element={<ProductDetailPage />} />
                 <Route path="templates" element={<TemplatesPage />} />
                 <Route path="contact" element={<Contact />} />
-
-                {/* Special pages */}
-                <Route path="paid-promotion" element={<PaidPomotion />} />
-                <Route path="free-videos" element={<VideoGallery />} />
-                {/* <Route path="video-editor" element={<VideoEditorPage />} /> */}
-                <Route path="my-videos" element={<MyVideoGallery />} />
-                {/* <Route path="video-editor" element={<RemotionVideoEditor />} /> */}
+                <Route path="/paid-promotion" element={<PaidPomotion />} />
+                <Route path="/free-videos" element={<VideoGallery />} />
+                <Route path="/video-editor" element={<VideoEditor />} />
 
 
-                {/* Legal pages */}
-                <Route path="terms" element={<TermsOfService />} />
-                <Route path="privacy" element={<PrivacyPolicy />} />
-                <Route path="returns" element={<ReturnRefund />} />
-                <Route path="cookies" element={<CookiePolicy />} />
-
-                {/* Editor page */}
-                <Route path="editor/:id" element={<Editor />} />
-
-                {/* 404 fallback */}
-                <Route path="*" element={<NotFound />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/returns" element={<ReturnRefund />} />
+                <Route path="/cookies" element={<CookiePolicy />} />
               </Route>
             </Routes>
           </BrowserRouter>
