@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import ProductDetailPage from "@/components/ProductDetailPage";
 import Layout from "./pages/Layout";
@@ -23,8 +23,21 @@ import CookiePolicy from "./components/ui/cookiePolicy";
 import PaidPomotion from "./components/PaidPomotion";
 import VideoGallery from "./components/VideoGallery";
 import VideoEditor from "./components/VideoEditor";
+import { useEffect } from "react";
+import Editor from "./editor/editor";
+
 
 const queryClient = new QueryClient();
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -50,6 +63,7 @@ const App = () => (
                 <Route path="/paid-promotion" element={<PaidPomotion />} />
                 <Route path="/free-videos" element={<VideoGallery />} />
                 <Route path="/video-editor" element={<VideoEditor />} />
+                                <Route path="/editor/:id" element={<Editor />} />
 
 
                 <Route path="/terms" element={<TermsOfService />} />
