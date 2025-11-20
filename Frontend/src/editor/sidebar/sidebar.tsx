@@ -9,8 +9,9 @@ import {
   ChevronLeft,
   Palette,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-import ElementsPanel from "./panel";
+import ElementsPanel from "./element";
 import TextPanel from "./text";
 import UploadPanel from "./upload";
 import AiPanel from "./aipanel";
@@ -28,9 +29,9 @@ const Sidebar: React.FC = () => {
   const [activeSidebar, setActiveSidebar] = useState<string | null>(null);
 
   const sidebarItems: SidebarItem[] = [
-    // { id: "elements", icon: Grid, label: "Elements", panel: ElementsPanel },
+    { id: "element", icon: Grid, label: "Elements", panel: ElementsPanel },
     { id: "text", icon: Type, label: "Text", panel: TextPanel },
-    // { id: "upload", icon: Upload, label: "Upload", panel: UploadPanel },
+    { id: "upload", icon: Upload, label: "Upload", panel: UploadPanel },
     // { id: "ai", icon: Sparkle, label: "AI", panel: AiPanel },
     { id: "settings", icon: Palette, label: "Background", panel: SettingPanel },
   ];
@@ -78,14 +79,22 @@ const Sidebar: React.FC = () => {
       </aside>
 
      {/* RIGHT SECONDARY PANEL */}
+      <AnimatePresence>
 {activeSidebar && (
-  <div
-    className={`relative bg-white border-r border-gray-300 transition-all duration-300 ${
-      isPanelCollapsed ? "w-0 opacity-0 overflow-hidden" : "w-80 opacity-100"
-    }`}
-  >
+  <motion.div
+            key={activeSidebar}
+            initial={{ x: 300, opacity: 0 }}
+            animate={{
+              x: isPanelCollapsed ? 300 : 0,
+              opacity: isPanelCollapsed ? 0 : 1,
+              width: isPanelCollapsed ? 0 : 320,
+            }}
+            exit={{ x: 300, opacity: 0 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="relative bg-white border-r border-gray-300 overflow-visible"
+          >
     {/* Panel Header */}
-    <div className="flex items-center justify-between bg-gray-100 px-3 py-2 border-b">
+    <div className="flex items-center justify-between px-3 py-2 border-b">
       <button
         className="flex items-center text-gray-600 hover:text-black"
         onClick={closeSecondaryPanel}
@@ -96,26 +105,33 @@ const Sidebar: React.FC = () => {
     </div>
 
     {/* Panel Content */}
-    <div className="p-3 overflow-y-auto h-full">
-      {ActivePanel && <ActivePanel />}
-    </div>
+     <motion.div
+              className="p-3 overflow-y-auto h-full"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              {ActivePanel && <ActivePanel />}
+            </motion.div>
 
     {/* Collapse Toggle Arrow (middle right) */}
-   <button
-  onClick={togglePanelCollapsed}
-  className="absolute top-1/2 -right-3 transform -translate-y-1/2 bg-white border border-gray-300 rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-all z-[9999]"
-  style={{ overflow: "visible" }}
->
+  <motion.button
+              onClick={togglePanelCollapsed}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute top-1/2 -right-3 transform -translate-y-1/2 bg-white border border-gray-300 rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-all z-[100]"
+              style={{ overflow: "visible" }}
+            >
   <ChevronLeft
     className={`w-5 h-5 text-gray-700 transition-transform duration-300 ${
       isPanelCollapsed ? "rotate-180" : ""
     }`}
   />
-</button>
+</motion.button>
 
-  </div>
+  </motion.div>
 )}
-
+</AnimatePresence>
     </div>
   );
 };

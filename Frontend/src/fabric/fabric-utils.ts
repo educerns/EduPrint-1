@@ -128,3 +128,7 @@ export const deleteSelectedObject = async (canvas) => {
   }
 };
 
+export const addShapeToCanvas = async(canvas, shapeType, customProps={}) =>{
+}
+
+
