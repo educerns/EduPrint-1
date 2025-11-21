@@ -18,6 +18,7 @@ import {
     ArrowRight
 } from 'lucide-react';
 import ExportButton from './ui/ExportButton';
+import QuarterBurstLoaderStatic from './ui/multiArcLoader';
 
 
 interface Video {
@@ -78,6 +79,8 @@ const VideoEditor: React.FC = () => {
 
     // ✅ Get video data from route state
     const { videoUrl, videoTitle } = location.state || {};
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
 
     const [currentVideo, setCurrentVideo] = useState({
         videoUrl: videoUrl || "",
@@ -85,6 +88,16 @@ const VideoEditor: React.FC = () => {
     });
 
     const videoRef = useRef<HTMLVideoElement>(null);
+
+      // ⏱️ Simulate loading for 1-2 seconds
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          setIsLoading(false);
+        }, 1500); // 1.5 seconds
+    
+        return () => clearTimeout(timer);
+      }, []);
+    
 
     useEffect(() => {
         if (!videoUrl) {
@@ -603,665 +616,684 @@ const VideoEditor: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 overflow-x-hidden">
-
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-xl font-bold text-gray-800">
-                    🎬 Editing: {currentVideo.title}
-                </h1>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#2C4E86] text-white rounded-lg hover:bg-blue-900 whitespace-nowrap"
-                >
-
-                    <span>Back</span>
-                    <ArrowRight />
-                </button>
-
-            </div>
-
-            {/* <div className="flex flex-col items-center">
-        {currentVideo.videoUrl ? (
-          <video
-            ref={videoRef}
-            src={currentVideo.videoUrl}
-            controls
-            className="rounded-lg shadow-md w-full max-w-4xl"
-          />
-        ) : (
-          <p className="text-gray-500 mt-10">No video selected.</p>
-        )}
-      </div> */}
+        <>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 overflow-x-hidden">
+               <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
 
 
-            <div className="max-w-7xl mx-auto w-full">
-                {/* <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Video Editor</h1>
-          <p className="text-gray-600">Add text overlays with advanced styling, positioning, and animations</p>
-        </motion.div> */}
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-xl font-bold text-gray-800">
+                        🎬 Editing: {currentVideo.title}
+                    </h1>
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#2C4E86] text-white rounded-lg hover:bg-blue-900 whitespace-nowrap"
+                    >
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-4">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="bg-white rounded-xl shadow-lg p-4"
-                        >
-                            <div
-                                ref={canvasContainerRef}
-                                style={{
-                                    width: "100%",
-                                    aspectRatio: "16 / 9",
-                                    background: "black",
-                                    position: "relative",
-                                }}
+                        <span>Back</span>
+                        <ArrowRight />
+                    </button>
+
+                </div>
+
+                {/* <div className="flex flex-col items-center">
+            {currentVideo.videoUrl ? (
+            <video
+                ref={videoRef}
+                src={currentVideo.videoUrl}
+                controls
+                className="rounded-lg shadow-md w-full max-w-4xl"
+            />
+            ) : (
+            <p className="text-gray-500 mt-10">No video selected.</p>
+            )}
+        </div> */}
+
+
+                <div className="max-w-7xl mx-auto w-full">
+                    {/* <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Video Editor</h1>
+            <p className="text-gray-600">Add text overlays with advanced styling, positioning, and animations</p>
+            </motion.div> */}
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 space-y-4">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="bg-white rounded-xl shadow-lg p-4"
                             >
+                                <div
+                                    ref={canvasContainerRef}
+                                    style={{
+                                        width: "100%",
+                                        aspectRatio: "16 / 9",
+                                        background: "black",
+                                        position: "relative",
+                                    }}
+                                >
 
-                                <canvas
-                                    ref={canvasRef}
-                                    className="object-contain transition-all duration-300"
-                                    onMouseDown={handleCanvasMouseDown}
-                                    onMouseMove={handleCanvasMouseMove}
-                                    onMouseUp={handleCanvasMouseUp}
-                                    onMouseLeave={handleCanvasMouseUp}
-                                    style={{ position: "absolute", inset: 0 }}
-                                />
-
-
-                                <video
-                                    ref={videoRef}
-                                    src={currentVideo.videoUrl}
-                                    className="hidden"
-                                    crossOrigin="anonymous"
-                                />
-
-
-                                {selectedOverlay && isDragging && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg pointer-events-none">
-                                        <Move className="w-8 h-8 text-white animate-bounce" />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="mt-4 space-y-3">
-                                <div className="relative">
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max={duration || 100}
-                                        step="0.1"
-                                        value={currentTime}
-                                        onChange={handleSeek}
-                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#2C4E86]"
+                                    <canvas
+                                        ref={canvasRef}
+                                        className="object-contain transition-all duration-300"
+                                        onMouseDown={handleCanvasMouseDown}
+                                        onMouseMove={handleCanvasMouseMove}
+                                        onMouseUp={handleCanvasMouseUp}
+                                        onMouseLeave={handleCanvasMouseUp}
+                                        style={{ position: "absolute", inset: 0 }}
                                     />
 
-                                    {textOverlays.map(overlay => (
-                                        <div
-                                            key={overlay.id}
-                                            className="absolute top-0 h-2 bg-green-500 opacity-50"
-                                            style={{
-                                                left: `${(overlay.startTime / duration) * 100}%`,
-                                                width: `${((overlay.endTime - overlay.startTime) / duration) * 100}%`
-                                            }}
-                                        />
-                                    ))}
+
+                                    <video
+                                        ref={videoRef}
+                                        src={currentVideo.videoUrl}
+                                        className="hidden"
+                                        crossOrigin="anonymous"
+                                    />
+
+
+                                    {selectedOverlay && isDragging && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg pointer-events-none">
+                                            <Move className="w-8 h-8 text-white animate-bounce" />
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-                                    <span className="text-sm text-gray-600 w-full sm:w-auto text-center sm:text-left">
-                                        {formatTime(currentTime)} / {formatTime(duration)}
-                                    </span>
+                                <div className="mt-4 space-y-3">
+                                    <div className="relative">
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max={duration || 100}
+                                            step="0.1"
+                                            value={currentTime}
+                                            onChange={handleSeek}
+                                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#2C4E86]"
+                                        />
 
-                                    <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
-                                        <button
-                                            onClick={() => {
-                                                if (videoRef.current) {
-                                                    videoRef.current.currentTime = 0;
-                                                    setCurrentTime(0);
-                                                }
-                                            }}
-                                            className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                                        >
-                                            <RotateCcw className="w-5 h-5" />
-                                        </button>
+                                        {textOverlays.map(overlay => (
+                                            <div
+                                                key={overlay.id}
+                                                className="absolute top-0 h-2 bg-green-500 opacity-50"
+                                                style={{
+                                                    left: `${(overlay.startTime / duration) * 100}%`,
+                                                    width: `${((overlay.endTime - overlay.startTime) / duration) * 100}%`
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
 
-                                        <button
-                                            onClick={togglePlayPause}
-                                            className="px-3 sm:px-4 py-2 bg-[#2C4E86] hover:bg-blue-900 text-white rounded-lg transition-colors"
-                                        >
-                                            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                                        </button>
-
-                                        <button
-                                            onClick={() => setShowTextPanel(true)}
-                                            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                            <span className="hidden xs:inline">Add Text</span>
-                                        </button>
+                                    <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+                                        <span className="text-sm text-gray-600 w-full sm:w-auto text-center sm:text-left">
+                                            {formatTime(currentTime)} / {formatTime(duration)}
+                                        </span>
 
                                         <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
-                                            {/* ... other buttons ... */}
+                                            <button
+                                                onClick={() => {
+                                                    if (videoRef.current) {
+                                                        videoRef.current.currentTime = 0;
+                                                        setCurrentTime(0);
+                                                    }
+                                                }}
+                                                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                            >
+                                                <RotateCcw className="w-5 h-5" />
+                                            </button>
 
-                                            <ExportButton
-                                                isExporting={isExporting}
-                                                onClick={exportVideo}
-                                            />
+                                            <button
+                                                onClick={togglePlayPause}
+                                                className="px-3 sm:px-4 py-2 bg-[#2C4E86] hover:bg-blue-900 text-white rounded-lg transition-colors"
+                                            >
+                                                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                            </button>
+
+                                            <button
+                                                onClick={() => setShowTextPanel(true)}
+                                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                                <span className="hidden xs:inline">Add Text</span>
+                                            </button>
+
+                                            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
+                                                {/* ... other buttons ... */}
+
+                                                <ExportButton
+                                                    isExporting={isExporting}
+                                                    onClick={exportVideo}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </motion.div>
+                            </motion.div>
 
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-xl shadow-lg p-4"
-                        >
-                            <h3 className="text-lg font-semibold mb-3">Text Overlays</h3>
-                            {textOverlays.length === 0 ? (
-                                <p className="text-gray-500 text-center py-8">No text overlays added yet</p>
-                            ) : (
-                                <div className="space-y-2 max-h-64 overflow-y-auto">
-                                    {textOverlays.map(overlay => (
-                                        <div
-                                            key={overlay.id}
-                                            className={`p-3 border-2 rounded-lg transition-all flex items-center justify-between ${selectedOverlay === overlay.id
-                                                ? 'border-blue-500 bg-blue-50'
-                                                : 'border-gray-200 hover:border-gray-300'
-                                                }`}
-                                        >
-                                            <div className="flex-1 cursor-pointer" onClick={() => {
-                                                setSelectedOverlay(overlay.id);
-                                                setPanelCollapsed(false);
-                                            }}>
-                                                <p className="font-medium text-gray-800">{overlay.text}</p>
-                                                <p className="text-sm text-gray-500">
-                                                    {formatTime(overlay.startTime)} → {formatTime(overlay.endTime)}
-                                                    {overlay.animation !== 'none' && (
-                                                        <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
-                                                            {overlay.animation}
-                                                        </span>
-                                                    )}
-                                                </p>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedOverlay(overlay.id);
-                                                        setPanelCollapsed(false);
-                                                    }}
-                                                    className="p-2 text-[#2C4E86] hover:bg-blue-100 rounded-lg transition-colors"
-                                                    title="Edit"
-                                                >
-                                                    <Edit2 className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => removeOverlay(overlay.id)}
-                                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </motion.div>
-                    </div>
-
-                    {/* Properties Panel - Only shows when overlay selected */}
-                    <AnimatePresence>
-                        {!panelCollapsed && selectedOverlay && (
                             <motion.div
-                                initial={{ x: 320, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                exit={{ x: 320, opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="
-    lg:col-span-1 
-    fixed lg:relative 
-    right-0 top-0 lg:top-auto 
-    bottom-0 lg:bottom-auto 
-    bg-white rounded-l-xl shadow-lg 
-    w-80 lg:w-auto lg:rounded-xl 
-    z-50 flex flex-col
-    max-h-[45vh] sm:max-h-[50vh] md:max-h-[60vh] lg:max-h-[76vh]
-  ">
-
-
-
-                                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
-                                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                                        <Type className="w-5 h-5" />
-                                        Text Properties
-                                    </h3>
-                                    <button
-                                        onClick={() => setPanelCollapsed(true)}
-                                        className="p-1 hover:bg-gray-100 rounded-lg lg:hidden"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-
-                                {/* 🔹 Scrollable content */}
-                                <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                                    {(() => {
-                                        const overlay = textOverlays.find(o => o.id === selectedOverlay);
-                                        if (!overlay) return null;
-
-                                        return (
-                                            <div className="space-y-4">
-                                                {/* Text Content */}
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Text</label>
-                                                    <textarea
-                                                        value={overlay.text}
-                                                        onChange={(e) => updateOverlay(overlay.id, { text: e.target.value })}
-                                                        className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-[#2C4E86]"
-                                                    />
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-white rounded-xl shadow-lg p-4"
+                            >
+                                <h3 className="text-lg font-semibold mb-3">Text Overlays</h3>
+                                {textOverlays.length === 0 ? (
+                                    <p className="text-gray-500 text-center py-8">No text overlays added yet</p>
+                                ) : (
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {textOverlays.map(overlay => (
+                                            <div
+                                                key={overlay.id}
+                                                className={`p-3 border-2 rounded-lg transition-all flex items-center justify-between ${selectedOverlay === overlay.id
+                                                    ? 'border-blue-500 bg-blue-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                                    }`}
+                                            >
+                                                <div className="flex-1 cursor-pointer" onClick={() => {
+                                                    setSelectedOverlay(overlay.id);
+                                                    setPanelCollapsed(false);
+                                                }}>
+                                                    <p className="font-medium text-gray-800">{overlay.text}</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {formatTime(overlay.startTime)} → {formatTime(overlay.endTime)}
+                                                        {overlay.animation !== 'none' && (
+                                                            <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">
+                                                                {overlay.animation}
+                                                            </span>
+                                                        )}
+                                                    </p>
                                                 </div>
-
-                                                {/* Time Controls */}
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Start (s)</label>
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            max={duration || 0}
-                                                            step="0.1"
-                                                            value={Number.isFinite(overlay.startTime) ? overlay.startTime : 0}
-                                                            onChange={(e) => updateOverlay(overlay.id, { startTime: parseFloat(e.target.value) || 0 })}
-                                                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                                                        />
-
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">End (s)</label>
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            max={duration || 0}
-                                                            step="0.1"
-                                                            value={Number.isFinite(overlay.endTime) ? overlay.endTime : 0}
-                                                            onChange={(e) => updateOverlay(overlay.id, { endTime: parseFloat(e.target.value) || 0 })}
-                                                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                                                        />
-                                                    </div>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedOverlay(overlay.id);
+                                                            setPanelCollapsed(false);
+                                                        }}
+                                                        className="p-2 text-[#2C4E86] hover:bg-blue-100 rounded-lg transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => removeOverlay(overlay.id)}
+                                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
                                                 </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </motion.div>
+                        </div>
 
-                                                {/* Position Presets */}
-                                                <div className="border-t pt-4">
-                                                    <label className="block text-sm font-medium text-gray-700 mb-3">Position Presets</label>
-                                                    <div className="grid grid-cols-3 gap-2">
-                                                        {positionPresets.map(preset => (
+                        {/* Properties Panel - Only shows when overlay selected */}
+                        <AnimatePresence>
+                            {!panelCollapsed && selectedOverlay && (
+                                <motion.div
+                                    initial={{ x: 320, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    exit={{ x: 320, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="
+        lg:col-span-1 
+        fixed lg:relative 
+        right-0 top-0 lg:top-auto 
+        bottom-0 lg:bottom-auto 
+        bg-white rounded-l-xl shadow-lg 
+        w-80 lg:w-auto lg:rounded-xl 
+        z-50 flex flex-col
+        max-h-[45vh] sm:max-h-[50vh] md:max-h-[60vh] lg:max-h-[76vh]
+    ">
+
+
+
+                                    <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+                                        <h3 className="text-lg font-semibold flex items-center gap-2">
+                                            <Type className="w-5 h-5" />
+                                            Text Properties
+                                        </h3>
+                                        <button
+                                            onClick={() => setPanelCollapsed(true)}
+                                            className="p-1 hover:bg-gray-100 rounded-lg lg:hidden"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    {/* 🔹 Scrollable content */}
+                                    <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                                        {(() => {
+                                            const overlay = textOverlays.find(o => o.id === selectedOverlay);
+                                            if (!overlay) return null;
+
+                                            return (
+                                                <div className="space-y-4">
+                                                    {/* Text Content */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">Text</label>
+                                                        <textarea
+                                                            value={overlay.text}
+                                                            onChange={(e) => updateOverlay(overlay.id, { text: e.target.value })}
+                                                            className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-[#2C4E86]"
+                                                        />
+                                                    </div>
+
+                                                    {/* Time Controls */}
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <div>
+                                                            <label className="block text-xs font-medium text-gray-700 mb-1">Start (s)</label>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                max={duration || 0}
+                                                                step="0.1"
+                                                                value={Number.isFinite(overlay.startTime) ? overlay.startTime : 0}
+                                                                onChange={(e) => updateOverlay(overlay.id, { startTime: parseFloat(e.target.value) || 0 })}
+                                                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                            />
+
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-medium text-gray-700 mb-1">End (s)</label>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                max={duration || 0}
+                                                                step="0.1"
+                                                                value={Number.isFinite(overlay.endTime) ? overlay.endTime : 0}
+                                                                onChange={(e) => updateOverlay(overlay.id, { endTime: parseFloat(e.target.value) || 0 })}
+                                                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Position Presets */}
+                                                    <div className="border-t pt-4">
+                                                        <label className="block text-sm font-medium text-gray-700 mb-3">Position Presets</label>
+                                                        <div className="grid grid-cols-3 gap-2">
+                                                            {positionPresets.map(preset => (
+                                                                <button
+                                                                    key={preset.name}
+                                                                    onClick={() => updateOverlay(overlay.id, { position: { x: preset.x, y: preset.y } })}
+                                                                    className={`text-xs py-2 px-1 rounded border-2 transition-all ${Math.abs(overlay.position.x - preset.x) < 1 && Math.abs(overlay.position.y - preset.y) < 1
+                                                                        ? 'border-[#2C4E86] bg-blue-50 font-semibold'
+                                                                        : 'border-gray-200 hover:border-gray-300'
+                                                                        }`}
+                                                                >
+                                                                    {preset.name}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                        <p className="text-xs text-gray-500 mt-2 italic">💡 Drag text on video to reposition</p>
+                                                    </div>
+
+                                                    {/* Manual Position */}
+                                                    <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-lg">
+                                                        <div>
+                                                            <label className="block text-xs font-medium text-gray-700 mb-1">X (%)</label>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                max="100"
+                                                                step="1"
+                                                                value={Math.round(overlay.position.x) || 0}
+                                                                onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, x: parseFloat(e.target.value) || 0 } })}
+                                                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-medium text-gray-700 mb-1">Y (%)</label>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                max="100"
+                                                                step="1"
+                                                                value={Math.round(overlay.position.y) || 0}
+                                                                onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, y: parseFloat(e.target.value) || 0 } })}
+                                                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Font Size */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                            Font Size: {overlay.fontSize}px
+                                                        </label>
+                                                        <input
+                                                            type="range"
+                                                            min="12"
+                                                            max="72"
+                                                            value={overlay.fontSize}
+                                                            onChange={(e) => updateOverlay(overlay.id, { fontSize: parseInt(e.target.value) })}
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    {/* Font Family */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">Font Family</label>
+                                                        <select
+                                                            value={overlay.fontFamily}
+                                                            onChange={(e) => updateOverlay(overlay.id, { fontFamily: e.target.value })}
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                                        >
+                                                            {fontFamilies.map(font => (
+                                                                <option key={font} value={font}>{font}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+
+                                                    {/* Font Style */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">Style</label>
+                                                        <div className="flex gap-2">
                                                             <button
-                                                                key={preset.name}
-                                                                onClick={() => updateOverlay(overlay.id, { position: { x: preset.x, y: preset.y } })}
-                                                                className={`text-xs py-2 px-1 rounded border-2 transition-all ${Math.abs(overlay.position.x - preset.x) < 1 && Math.abs(overlay.position.y - preset.y) < 1
-                                                                    ? 'border-[#2C4E86] bg-blue-50 font-semibold'
-                                                                    : 'border-gray-200 hover:border-gray-300'
+                                                                onClick={() => updateOverlay(overlay.id, { fontWeight: overlay.fontWeight === 'bold' ? 'normal' : 'bold' })}
+                                                                className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.fontWeight === 'bold'
+                                                                    ? 'bg-[#2C4E86] text-white'
+                                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                                     }`}
                                                             >
-                                                                {preset.name}
+                                                                <Bold className="w-4 h-4 mx-auto" />
                                                             </button>
-                                                        ))}
+                                                            <button
+                                                                onClick={() => updateOverlay(overlay.id, { fontStyle: overlay.fontStyle === 'italic' ? 'normal' : 'italic' })}
+                                                                className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.fontStyle === 'italic'
+                                                                    ? 'bg-[#2C4E86] text-white'
+                                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                                    }`}
+                                                            >
+                                                                <Italic className="w-4 h-4 mx-auto" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => updateOverlay(overlay.id, { underline: !overlay.underline })}
+                                                                className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.underline
+                                                                    ? 'bg-[#2C4E86] text-white'
+                                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                                    }`}
+                                                            >
+                                                                <Underline className="w-4 h-4 mx-auto" />
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-xs text-gray-500 mt-2 italic">💡 Drag text on video to reposition</p>
-                                                </div>
 
-                                                {/* Manual Position */}
-                                                <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-lg">
+                                                    {/* Colors */}
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">X (%)</label>
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            max="100"
-                                                            step="1"
-                                                            value={Math.round(overlay.position.x) || 0}
-                                                            onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, x: parseFloat(e.target.value) || 0 } })}
-                                                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Y (%)</label>
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            max="100"
-                                                            step="1"
-                                                            value={Math.round(overlay.position.y) || 0}
-                                                            onChange={(e) => updateOverlay(overlay.id, { position: { ...overlay.position, y: parseFloat(e.target.value) || 0 } })}
-                                                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                {/* Font Size */}
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Font Size: {overlay.fontSize}px
-                                                    </label>
-                                                    <input
-                                                        type="range"
-                                                        min="12"
-                                                        max="72"
-                                                        value={overlay.fontSize}
-                                                        onChange={(e) => updateOverlay(overlay.id, { fontSize: parseInt(e.target.value) })}
-                                                        className="w-full"
-                                                    />
-                                                </div>
-
-                                                {/* Font Family */}
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Font Family</label>
-                                                    <select
-                                                        value={overlay.fontFamily}
-                                                        onChange={(e) => updateOverlay(overlay.id, { fontFamily: e.target.value })}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                                    >
-                                                        {fontFamilies.map(font => (
-                                                            <option key={font} value={font}>{font}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-
-                                                {/* Font Style */}
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Style</label>
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            onClick={() => updateOverlay(overlay.id, { fontWeight: overlay.fontWeight === 'bold' ? 'normal' : 'bold' })}
-                                                            className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.fontWeight === 'bold'
-                                                                ? 'bg-[#2C4E86] text-white'
-                                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                                }`}
-                                                        >
-                                                            <Bold className="w-4 h-4 mx-auto" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => updateOverlay(overlay.id, { fontStyle: overlay.fontStyle === 'italic' ? 'normal' : 'italic' })}
-                                                            className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.fontStyle === 'italic'
-                                                                ? 'bg-[#2C4E86] text-white'
-                                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                                }`}
-                                                        >
-                                                            <Italic className="w-4 h-4 mx-auto" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => updateOverlay(overlay.id, { underline: !overlay.underline })}
-                                                            className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.underline
-                                                                ? 'bg-[#2C4E86] text-white'
-                                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                                }`}
-                                                        >
-                                                            <Underline className="w-4 h-4 mx-auto" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                {/* Colors */}
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-3">Colors</label>
-                                                    <div className="space-y-3">
-                                                        <div className="flex items-center gap-3">
-                                                            <label className="text-xs text-gray-600 w-20">Text Color</label>
-                                                            <div className="flex gap-2 flex-1">
-                                                                <div className="relative w-12 h-10 rounded border overflow-hidden">
+                                                        <label className="block text-sm font-medium text-gray-700 mb-3">Colors</label>
+                                                        <div className="space-y-3">
+                                                            <div className="flex items-center gap-3">
+                                                                <label className="text-xs text-gray-600 w-20">Text Color</label>
+                                                                <div className="flex gap-2 flex-1">
+                                                                    <div className="relative w-12 h-10 rounded border overflow-hidden">
+                                                                        <input
+                                                                            type="color"
+                                                                            value={overlay.color}
+                                                                            onClick={(e) => e.stopPropagation()} // 🧠 fix
+                                                                            onChange={(e) => updateOverlay(overlay.id, { color: e.target.value })}
+                                                                            className="absolute inset-0 w-full h-full cursor-pointer"
+                                                                        />
+                                                                    </div>
                                                                     <input
-                                                                        type="color"
+                                                                        type="text"
                                                                         value={overlay.color}
                                                                         onClick={(e) => e.stopPropagation()} // 🧠 fix
                                                                         onChange={(e) => updateOverlay(overlay.id, { color: e.target.value })}
-                                                                        className="absolute inset-0 w-full h-full cursor-pointer"
+                                                                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs font-mono"
                                                                     />
                                                                 </div>
-                                                                <input
-                                                                    type="text"
-                                                                    value={overlay.color}
-                                                                    onClick={(e) => e.stopPropagation()} // 🧠 fix
-                                                                    onChange={(e) => updateOverlay(overlay.id, { color: e.target.value })}
-                                                                    className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs font-mono"
-                                                                />
                                                             </div>
-                                                        </div>
 
 
-                                                        <div className="flex items-center gap-3">
-                                                            <label className="text-xs text-gray-600 w-20">BG Color</label>
-                                                            <div className="flex gap-2 flex-1">
-                                                                <div className="relative w-12 h-10 rounded border overflow-hidden">
+                                                            <div className="flex items-center gap-3">
+                                                                <label className="text-xs text-gray-600 w-20">BG Color</label>
+                                                                <div className="flex gap-2 flex-1">
+                                                                    <div className="relative w-12 h-10 rounded border overflow-hidden">
+                                                                        <input
+                                                                            type="color"
+                                                                            value={overlay.backgroundColor === 'transparent' ? '#ffffff' : overlay.backgroundColor}
+                                                                            onChange={(e) => updateOverlay(overlay.id, { backgroundColor: e.target.value })}
+                                                                            className="absolute inset-0 w-full h-full cursor-pointer"
+                                                                            disabled={overlay.backgroundColor === 'transparent'}
+                                                                        />
+                                                                    </div>
                                                                     <input
-                                                                        type="color"
-                                                                        value={overlay.backgroundColor === 'transparent' ? '#ffffff' : overlay.backgroundColor}
+                                                                        type="text"
+                                                                        value={overlay.backgroundColor}
                                                                         onChange={(e) => updateOverlay(overlay.id, { backgroundColor: e.target.value })}
-                                                                        className="absolute inset-0 w-full h-full cursor-pointer"
-                                                                        disabled={overlay.backgroundColor === 'transparent'}
+                                                                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs font-mono"
                                                                     />
                                                                 </div>
+                                                            </div>
+
+                                                            <button
+                                                                onClick={() => updateOverlay(overlay.id, { backgroundColor: overlay.backgroundColor === 'transparent' ? 'rgba(0, 0, 0, 0.5)' : 'transparent' })}
+                                                                className={`w-full py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.backgroundColor === 'transparent'
+                                                                    ? 'bg-[#2C4E86] text-white'
+                                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                                    }`}
+                                                            >
+                                                                {overlay.backgroundColor === 'transparent' ? '✓ Transparent BG' : 'Make BG Transparent'}
+                                                            </button>
+
+                                                            <div className="flex flex-wrap gap-2 pt-2 border-t">
+                                                                {presetColors.map((color) => (
+                                                                    <button
+                                                                        key={color}
+                                                                        className="w-8 h-8 rounded border-2 border-gray-300 hover:border-[#2C4E86]"
+                                                                        style={{ backgroundColor: color }}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation(); // ✅ prevent overlay deselection
+                                                                            updateOverlay(overlay.id, { color });
+                                                                        }}
+                                                                        title="Text color"
+                                                                    />
+                                                                ))}
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Letter Spacing */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                            Letter Spacing: {overlay.letterSpacing}px
+                                                        </label>
+                                                        <input
+                                                            type="range"
+                                                            min="-5"
+                                                            max="20"
+                                                            value={overlay.letterSpacing}
+                                                            onChange={(e) => updateOverlay(overlay.id, { letterSpacing: parseInt(e.target.value) })}
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    {/* Opacity */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                            Opacity: {overlay.opacity}%
+                                                        </label>
+                                                        <input
+                                                            type="range"
+                                                            min="0"
+                                                            max="100"
+                                                            value={overlay.opacity}
+                                                            onChange={(e) => updateOverlay(overlay.id, { opacity: parseInt(e.target.value) })}
+                                                            className="w-full"
+                                                        />
+                                                    </div>
+
+                                                    {/* Animation */}
+                                                    <div className="border-t pt-4">
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                            Animation
+                                                        </label>
+
+                                                        <select
+                                                            value={overlay.animation}
+                                                            onChange={(e) => updateOverlay(overlay.id, { animation: e.target.value as any })}
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                                        >
+                                                            <option value="none">None</option>
+                                                            <option value="fade-in">Fade In</option>
+                                                            <option value="fade-out">Fade Out</option>
+                                                            <option value="fade-in-out">Fade In + Out</option>
+                                                            <option value="slide-left">Slide Left</option>
+                                                            <option value="slide-right">Slide Right</option>
+                                                            <option value="zoom-in">Zoom In</option>
+                                                            <option value="floating">Floating Text</option>
+                                                            <option value="ticker">Ticker (News Style)</option>
+
+                                                        </select>
+
+                                                        {overlay.animation !== 'none' && overlay.animation !== 'floating' && (
+                                                            <div className="mt-3">
+                                                                <label className="block text-sm text-gray-700 mb-1">
+                                                                    Duration (s)
+                                                                </label>
                                                                 <input
-                                                                    type="text"
-                                                                    value={overlay.backgroundColor}
-                                                                    onChange={(e) => updateOverlay(overlay.id, { backgroundColor: e.target.value })}
-                                                                    className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs font-mono"
+                                                                    type="number"
+                                                                    step="0.1"
+                                                                    min="0.1"
+                                                                    max="5"
+                                                                    value={Number.isFinite(overlay.animationDuration) ? overlay.animationDuration : 0.5}
+                                                                    onChange={(e) =>
+                                                                        updateOverlay(overlay.id, { animationDuration: parseFloat(e.target.value) || 0.5 })
+                                                                    }
+                                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                                                                 />
                                                             </div>
-                                                        </div>
-
-                                                        <button
-                                                            onClick={() => updateOverlay(overlay.id, { backgroundColor: overlay.backgroundColor === 'transparent' ? 'rgba(0, 0, 0, 0.5)' : 'transparent' })}
-                                                            className={`w-full py-2 px-3 rounded text-sm font-medium transition-colors ${overlay.backgroundColor === 'transparent'
-                                                                ? 'bg-[#2C4E86] text-white'
-                                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                                }`}
-                                                        >
-                                                            {overlay.backgroundColor === 'transparent' ? '✓ Transparent BG' : 'Make BG Transparent'}
-                                                        </button>
-
-                                                        <div className="flex flex-wrap gap-2 pt-2 border-t">
-                                                            {presetColors.map((color) => (
-                                                                <button
-                                                                    key={color}
-                                                                    className="w-8 h-8 rounded border-2 border-gray-300 hover:border-[#2C4E86]"
-                                                                    style={{ backgroundColor: color }}
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation(); // ✅ prevent overlay deselection
-                                                                        updateOverlay(overlay.id, { color });
-                                                                    }}
-                                                                    title="Text color"
-                                                                />
-                                                            ))}
-                                                        </div>
-
+                                                        )}
                                                     </div>
+
                                                 </div>
-
-                                                {/* Letter Spacing */}
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Letter Spacing: {overlay.letterSpacing}px
-                                                    </label>
-                                                    <input
-                                                        type="range"
-                                                        min="-5"
-                                                        max="20"
-                                                        value={overlay.letterSpacing}
-                                                        onChange={(e) => updateOverlay(overlay.id, { letterSpacing: parseInt(e.target.value) })}
-                                                        className="w-full"
-                                                    />
-                                                </div>
-
-                                                {/* Opacity */}
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Opacity: {overlay.opacity}%
-                                                    </label>
-                                                    <input
-                                                        type="range"
-                                                        min="0"
-                                                        max="100"
-                                                        value={overlay.opacity}
-                                                        onChange={(e) => updateOverlay(overlay.id, { opacity: parseInt(e.target.value) })}
-                                                        className="w-full"
-                                                    />
-                                                </div>
-
-                                                {/* Animation */}
-                                                <div className="border-t pt-4">
-                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        Animation
-                                                    </label>
-
-                                                    <select
-                                                        value={overlay.animation}
-                                                        onChange={(e) => updateOverlay(overlay.id, { animation: e.target.value as any })}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                                    >
-                                                        <option value="none">None</option>
-                                                        <option value="fade-in">Fade In</option>
-                                                        <option value="fade-out">Fade Out</option>
-                                                        <option value="fade-in-out">Fade In + Out</option>
-                                                        <option value="slide-left">Slide Left</option>
-                                                        <option value="slide-right">Slide Right</option>
-                                                        <option value="zoom-in">Zoom In</option>
-                                                        <option value="floating">Floating Text</option>
-                                                        <option value="ticker">Ticker (News Style)</option>
-
-                                                    </select>
-
-                                                    {overlay.animation !== 'none' && overlay.animation !== 'floating' && (
-                                                        <div className="mt-3">
-                                                            <label className="block text-sm text-gray-700 mb-1">
-                                                                Duration (s)
-                                                            </label>
-                                                            <input
-                                                                type="number"
-                                                                step="0.1"
-                                                                min="0.1"
-                                                                max="5"
-                                                                value={Number.isFinite(overlay.animationDuration) ? overlay.animationDuration : 0.5}
-                                                                onChange={(e) =>
-                                                                    updateOverlay(overlay.id, { animationDuration: parseFloat(e.target.value) || 0.5 })
-                                                                }
-                                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                            </div>
-                                        );
-                                    })()}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                            );
+                                        })()}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
-            </div>
 
-            {/* Add Text Modal */}
-            {showTextPanel && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="
-              bg-white rounded-xl 
-              w-full max-w-sm sm:max-w-md 
-              shadow-lg overflow-hidden
-              flex flex-col
-            "
-                    >
-                        {/* Header (Fixed) */}
-                        <div className="flex items-center justify-between p-4 border-b">
-                            <h3 className="text-lg sm:text-xl font-bold">Add Text Overlay</h3>
-                            <button
-                                onClick={() => setShowTextPanel(false)}
-                                className="p-2 hover:bg-gray-100 rounded-lg"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        {/* Scrollable content */}
-                        <div className="p-4 space-y-4 overflow-y-auto ">
-                            {/* Text input */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Text
-                                </label>
-                                <textarea
-                                    value={newText.text}
-                                    onChange={(e) => setNewText({ ...newText, text: e.target.value })}
-                                    className="w-full h-24 sm:h-20 px-3 py-2 border border-gray-300 rounded-lg resize-none text-sm"
-                                    placeholder="Enter your text here..."
-                                />
-                            </div>
-
-                            {/* Font size */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Font Size
-                                </label>
-                                <input
-                                    type="number"
-                                    min="10"
-                                    max="100"
-                                    value={newText.fontSize}
-                                    onChange={(e) =>
-                                        setNewText({
-                                            ...newText,
-                                            fontSize: parseInt(e.target.value) || 16,
-                                        })
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                />
-                            </div>
-
-                            {/* Font family */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Font Family
-                                </label>
-                                <select
-                                    value={newText.fontFamily}
-                                    onChange={(e) =>
-                                        setNewText({ ...newText, fontFamily: e.target.value })
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                {/* Add Text Modal */}
+                {showTextPanel && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="
+                bg-white rounded-xl 
+                w-full max-w-sm sm:max-w-md 
+                shadow-lg overflow-hidden
+                flex flex-col
+                "
+                        >
+                            {/* Header (Fixed) */}
+                            <div className="flex items-center justify-between p-4 border-b">
+                                <h3 className="text-lg sm:text-xl font-bold">Add Text Overlay</h3>
+                                <button
+                                    onClick={() => setShowTextPanel(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-lg"
                                 >
-                                    {fontFamilies.map((font) => (
-                                        <option key={font} value={font}>
-                                            {font}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <X className="w-5 h-5" />
+                                </button>
                             </div>
 
-                            {/* Info */}
-                            <p className="text-xs sm:text-sm text-gray-600 text-center">
-                                Text will appear from {formatTime(currentTime)} to{" "}
-                                {formatTime(Math.min(currentTime + 3, duration))}
-                            </p>
-                        </div>
+                            {/* Scrollable content */}
+                            <div className="p-4 space-y-4 overflow-y-auto ">
+                                {/* Text input */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Text
+                                    </label>
+                                    <textarea
+                                        value={newText.text}
+                                        onChange={(e) => setNewText({ ...newText, text: e.target.value })}
+                                        className="w-full h-24 sm:h-20 px-3 py-2 border border-gray-300 rounded-lg resize-none text-sm"
+                                        placeholder="Enter your text here..."
+                                    />
+                                </div>
 
-                        {/* Footer (Fixed) */}
-                        <div className="p-4 border-t bg-gray-50">
-                            <button
-                                onClick={addTextOverlay}
-                                className="w-full py-3 bg-[#2C4E86] hover:bg-blue-900 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
-                            >
-                                Add Text to Timeline
-                            </button>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
+                                {/* Font size */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Font Size
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="10"
+                                        max="100"
+                                        value={newText.fontSize}
+                                        onChange={(e) =>
+                                            setNewText({
+                                                ...newText,
+                                                fontSize: parseInt(e.target.value) || 16,
+                                            })
+                                        }
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                    />
+                                </div>
+
+                                {/* Font family */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Font Family
+                                    </label>
+                                    <select
+                                        value={newText.fontFamily}
+                                        onChange={(e) =>
+                                            setNewText({ ...newText, fontFamily: e.target.value })
+                                        }
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                    >
+                                        {fontFamilies.map((font) => (
+                                            <option key={font} value={font}>
+                                                {font}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Info */}
+                                <p className="text-xs sm:text-sm text-gray-600 text-center">
+                                    Text will appear from {formatTime(currentTime)} to{" "}
+                                    {formatTime(Math.min(currentTime + 3, duration))}
+                                </p>
+                            </div>
+
+                            {/* Footer (Fixed) */}
+                            <div className="p-4 border-t bg-gray-50">
+                                <button
+                                    onClick={addTextOverlay}
+                                    className="w-full py-3 bg-[#2C4E86] hover:bg-blue-900 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+                                >
+                                    Add Text to Timeline
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </div>
         </div>
 
+         {/* 🔄 Loader Overlay */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <QuarterBurstLoaderStatic />
+          </motion.div>
+        )}
+      </AnimatePresence>
+       </>
     );
 };
 

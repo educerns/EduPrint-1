@@ -7,6 +7,9 @@ import { useEditorStore } from "@/store/store";
 import { staticTemplates } from "@/data/freeTemplate";
 import * as fabric from "fabric";
 import Properties from "./sidebar/properties";
+import QuarterBurstLoader from "@/components/ui/multiArcLoader";
+import { motion, AnimatePresence } from "framer-motion";
+
 
 const Editor: React.FC = () => {
   const { id: designId } = useParams<{ id: string }>();
@@ -14,6 +17,8 @@ const Editor: React.FC = () => {
 
   const [templateLoaded, setTemplateLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
 
   const {
     canvas,
@@ -23,6 +28,16 @@ const Editor: React.FC = () => {
     showProperties,
     isEditing,
   } = useEditorStore();
+
+  // ⏱️ Simulate loading for 1-2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // 1.5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
 
   // 🎨 Load template image when canvas is ready
   useEffect(() => {
@@ -107,7 +122,7 @@ const Editor: React.FC = () => {
         const objects = canvas.getObjects();
         if (objects.length > 1) {
           canvas.remove(fabricImage);
-         canvas.sendToBack(fabricImage);
+          canvas.sendToBack(fabricImage);
         }
 
         // 🪄 Auto-recenter on resize
@@ -225,12 +240,36 @@ const Editor: React.FC = () => {
         <div className="flex-1 flex flex-col overflow-hidden relative">
           <main className="flex-1 overflow-hidden bg-[#f0f0f0] flex items-center justify-center relative">
             <FabricCanvas />
-            {!templateLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75">
-                <div className="text-lg text-gray-700">Loading template...</div>
-              </div>
-            )}
+
+            {/* <AnimatePresence>
+              {!templateLoaded && (
+                <motion.div
+                  key="loader"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-[9999]"
+                >
+                  <QuarterBurstLoader />
+                </motion.div>
+              )}
+            </AnimatePresence> */}
+            <AnimatePresence>
+              {isLoading && (
+                <motion.div
+                  className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <QuarterBurstLoader />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </main>
+
         </div>
       </div>
       {showProperties && isEditing && <Properties />}
