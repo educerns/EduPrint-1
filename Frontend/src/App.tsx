@@ -23,6 +23,7 @@ import PaidPomotion from "./components/PaidPomotion";
 import Editor from "./editor/editor";
 import VideoGallery from "./components/VideoGallery";
 import VideoEditor from "./components/VideoEditor";
+import EduPrintPrivacyPolicies from "./pages/EduPrintPrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,8 @@ const App = () => (
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/returns" element={<ReturnRefund />} />
                 <Route path="/cookies" element={<CookiePolicy />} />
+                <Route path="/privacy/policy" element={<EduPrintPrivacyPolicies />} />
+
 
                 <Route path="/editor/:id" element={<Editor />} />
               </Route>
