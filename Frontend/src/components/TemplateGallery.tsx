@@ -47,7 +47,6 @@ const TemplateGallery: React.FC = () => {
     const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const navigate = useNavigate();
   // ⏱️ Simulate loading for 1-2 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
