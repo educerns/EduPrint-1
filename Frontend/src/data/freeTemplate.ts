@@ -129,7 +129,7 @@ export const staticTemplates: readonly Template[] = [
     customImage: PromotionCustom4,
     sampleImage: PromotionSample4,
     title: "Promotion_img 6",
-    description: "Modern layout perfect for new arrivals and launches.",
+    description: "Add practical GST training to your institute",
     price: 0,
     type: "Promotion5",
   },

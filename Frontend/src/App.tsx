@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { useEffect } from "react";
+
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import FeaturedProducts from "@/components/FeaturedProducts";
@@ -20,10 +21,12 @@ import PrivacyPolicy from "./components/ui/privacyPolicy";
 import ReturnRefund from "./components/ui/returnRefund";
 import CookiePolicy from "./components/ui/cookiePolicy";
 import PaidPomotion from "./components/PaidPomotion";
-import Editor from "./editor/editor";
-import VideoGallery from "./components/VideoGallery";
 import VideoEditor from "./components/VideoEditor";
 import EduPrintPrivacyPolicies from "./pages/EduPrintPrivacyPolicy";
+import VideoGallery from "./components/VideoGallery";
+import MyVideoGallery from "./components/MyVideoGallery";
+import Editor from "./editor/editor";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -56,28 +59,44 @@ const App = () => (
 
             <Routes>
               <Route path="/" element={<Layout />}>
+                {/* Main pages */}
                 <Route index element={<HomePage />} />
                 <Route path="products" element={<ProductsPage />} />
                 <Route path="products/:id" element={<ProductDetailPage />} />
-                <Route path="templates" element={<TemplatesPage />} />
+
+   {/* 🔒 Protected Templates Page */}
+                <Route
+                  path="templates"
+                  element={
+                    <ProtectedRoute>
+                      <TemplatesPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+                {/* <Route path="templates" element={<TemplatesPage />} /> */}
                 <Route path="contact" element={<Contact />} />
 
-                <Route path="/paid-promotion" element={<PaidPomotion />} />
-                <Route path="/free-videos" element={<VideoGallery />} />
-                <Route path="/video-editor" element={<VideoEditor />} />
+                {/* Special pages */}
+                <Route path="paid-promotion" element={<PaidPomotion />} />
+                <Route path="free-videos" element={<ProtectedRoute><VideoGallery /></ProtectedRoute>}/>
+                <Route path="my-videos" element={<ProtectedRoute><MyVideoGallery /></ProtectedRoute>} />
 
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/returns" element={<ReturnRefund />} />
-                <Route path="/cookies" element={<CookiePolicy />} />
-                <Route path="/privacy/policy" element={<EduPrintPrivacyPolicies />} />
+                {/* Legal pages */}
+                <Route path="terms" element={<TermsOfService />} />
+                <Route path="privacy" element={<PrivacyPolicy />} />
+                <Route path="returns" element={<ReturnRefund />} />
+                <Route path="cookies" element={<CookiePolicy />} />
 
+                {/* Editor page */}
+                <Route path="editor/:id" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
 
-                <Route path="/editor/:id" element={<Editor />} />
+                {/* 404 fallback */}
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
           </BrowserRouter>
-
         </CartProvider>
       </AuthProvider>
     </TooltipProvider>

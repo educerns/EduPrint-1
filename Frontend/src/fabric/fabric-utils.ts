@@ -1,6 +1,8 @@
 // src/fabric/fabric-utils.ts
 import { Canvas as FabricCanvas, PencilBrush, Rect } from "fabric";
 import { Canvas } from "node_modules/fabric/dist/fabric";
+import { createShape } from "./shapes/shape-factory";
+import { shapeDefinitions } from "./shapes/shape-defination";
 
 export const initializeFabric = async (
   canvasEl: HTMLCanvasElement,
@@ -53,6 +55,27 @@ export const initializeFabric = async (
     return null;
   }
 };
+
+export const addShapeToCanvas = async(canvas, shapeType, customProps={}) =>{
+  if (!canvas) return null;
+  try{
+    const fabricModule = await import('fabric');
+    const shape =createShape(fabricModule, shapeType, shapeDefinitions,{
+      left: 100,
+      top: 100,
+      ...customProps
+    })
+    if(shape){
+      shape.id = `${shapeType}-${Date.now()}`;
+      canvas.add(shape);
+      canvas.renderAll()
+      canvas.setActiveObject(shape)
+      return shape;
+    }
+  }catch(e){
+
+  }
+}
 
 export const addTextToCanvas = async(canvas, text, option={}, withBackground =false) =>{
   if (!canvas) return null;

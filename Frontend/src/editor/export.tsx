@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useEditorStore } from "@/store/store";
 import {
   Dialog,
@@ -16,7 +16,8 @@ import {
   exportAsPNG,
   exportAsSVG,
 } from "@/services/services"
-
+import axios from "../services/api";
+import { jwtDecode } from "jwt-decode";
 interface ExportModelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -26,6 +27,8 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
   const { canvas } = useEditorStore();
   const [selectedFormat, setSelectedFormat] = useState("png");
   const [isExporting, setIsExporting] = useState(false);
+  const [email, setemail] = useState("");
+  const [centerid, setcenterid] = useState("");
 
   const exportFormats = [
     { id: "jpeg", name: "JPEG Template", icon: FileIcon, description: "Template" },
@@ -33,6 +36,24 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
     // { id: "svg", name: "SVG Image", icon: FileIcon, description: "Scalable vector format" },
     // { id: "pdf", name: "PDF File", icon: FileText, description: "Best for printing" },
   ];
+
+  useEffect(() => {
+  if(localStorage.getItem("token")){
+    const token = localStorage.getItem("token");
+ try {
+    const decoded = jwtDecode(token);
+    // console.log("Decoded Token:", decoded);
+    // return;
+
+    // You can access user details here
+    setemail(decoded.datastore.email);
+    setcenterid(decoded.datastore.Centerid);    
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+  }
+  }, [])
+  
 
   const handleExport = async () => {
     if (!canvas) return;
@@ -60,10 +81,24 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
     }
 
     if (success) {
-      setTimeout(() => {
+
+      //run api 
+      try {
+        // let email="aman@g.com"
+        let type="images";
+        const res = await axios.post("/api/statsdownload",{email,centerid,type});
+        if(res.data.success){
+ setTimeout(() => {
         onClose();
         setIsExporting(false);
       }, 400);
+        }
+      } catch (error) {
+        console.log(error);
+        
+      }
+
+     
     } else {
       setIsExporting(false);
     }
@@ -104,7 +139,7 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
             <Button
               onClick={handleExport}
               disabled={isExporting}
-              className="min-w-[120px] bg-blue-700 text-white"
+              className="min-w-[120px] bg-blue-900 text-white"
             >
               {isExporting ? (
                 <>

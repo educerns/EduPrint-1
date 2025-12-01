@@ -106,12 +106,14 @@ const FabricCanvas: React.FC = () => {
       mx-auto
      
     "
-  >      <canvas
+  >
+    <canvas
       ref={canvasRef}
       className="max-w-full max-h-full object-contain"
     />
-    </div>
-  );
+  </div>
+);
+
 };
 
 export default FabricCanvas;

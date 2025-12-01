@@ -3,12 +3,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, Download, Eye, Pencil, Save, Share, Star } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut } from "lucide-react";
+import { ChevronDown, Download, Eye, Pencil, ArrowLeft, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useEditorStore } from "@/store/store";
 import ExportModel from "./export";
 
@@ -20,31 +18,28 @@ interface SessionUser {
 export default function Header() {
   const { isEditing, setIsEditing, name, setName, canvas } = useEditorStore();
   const [showExportModel, setShowExportModel] = useState(false);
+  const navigate = useNavigate();
 
-    // Mock session object (replace this later with your real auth data)
+  // Mock session object (replace this later with your real auth data)
   const session: { user?: SessionUser } = {
     user: {
       name: "Educerns",
       image: "",
     },
   };
-  // console.log("Setting name to:", name);
-  // console.log("isEditing",isEditing);
-  
-  useEffect(() =>{
-    if(!canvas) return;
-    canvas.selection = isEditing;
-    canvas.getObjects().forEach((obj)=>{
-      obj.selectable = isEditing;
-      obj.evented = isEditing
-    })
-  }, [isEditing])
 
+  useEffect(() => {
+    if (!canvas) return;
+    canvas.selection = isEditing;
+    canvas.getObjects().forEach((obj) => {
+      obj.selectable = isEditing;
+      obj.evented = isEditing;
+    });
+  }, [isEditing]);
 
   return (
     <header className="bg-gradient-to-r from-blue-800 via-blue-900 to-blue-950 text-white shadow-md flex items-center justify-between px-4 h-14 relative z-[10000]">
-      
-      {/* LEFT: Mode switch */}
+      {/* LEFT: Mode switch & download */}
       <div className="flex items-center space-x-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -79,30 +74,38 @@ export default function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-           {/* <button className="flex items-center justify-center  hover:bg-white/20 px-3 py-1.5  transition-colors duration-200">
-      <Save className="w-5 h-5 text-white" />
-    </button> */}
-    <button onClick={() => setShowExportModel(true)} className="flex items-center justify-center  hover:bg-white/20 px-3 py-1.5  transition-colors duration-200">
-      <Download className="w-5 h-5 text-white" />
-    </button>
-  
+
+        {/* Download Button */}
+        <button
+          onClick={() => setShowExportModel(true)}
+          className="flex items-center justify-center hover:bg-white/20 px-3 py-1.5 transition-colors duration-200 rounded-md"
+        >
+          <Download className="w-5 h-5 text-white" />
+        </button>
       </div>
 
-
-  
-    <div className="flex-1 flex justify-center">
+      {/* CENTER: Editable name input */}
+      <div className="flex-1 flex justify-center">
         <input
           className="text-center bg-transparent border-none text-white placeholder-white/60 w-64 focus:outline-none focus:border-b focus:border-white/40 px-3 py-1"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder={`Template Name - "${name || 'Untitled design'}"`}
+          placeholder={`Template Name - "${name || "Untitled design"}"`}
         />
       </div>
 
-  
- 
-
-      {/* <div>
+      {/* RIGHT: Back button */}
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => navigate("/templates")}
+          className="flex items-center bg-transparent border-none text-white font-medium px-3 py-1.5 rounded-lg shadow-sm transition-all duration-200"
+        >
+           <span>Back</span>
+          <ArrowRight className="h-4 w-4 mr-1" />
+         
+        </button>
+      </div>
+         {/* <div>
        <button
 className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium px-3 py-1.5 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md"
     >
@@ -164,11 +167,8 @@ className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border
       </DropdownMenuContent>
     </DropdownMenu> */}
 
-   <ExportModel 
-  isOpen={showExportModel}
-  onClose={() => setShowExportModel(false)}
-/>
-
+      {/* Export Modal */}
+      <ExportModel isOpen={showExportModel} onClose={() => setShowExportModel(false)} />
     </header>
   );
 }

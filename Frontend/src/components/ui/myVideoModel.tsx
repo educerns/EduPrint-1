@@ -4,7 +4,8 @@ import { X } from "lucide-react";
 import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
 
-interface Video {
+// ✅ Define prop & data types
+interface MyVideo {
   id: number;
   _id?: string;
   title: string;
@@ -18,10 +19,10 @@ interface Video {
 interface VideoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  video?: Video | null;
+  video?: MyVideo | null;
 }
 
-const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
+const MyVideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -50,18 +51,20 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
         icon: "success",
         title: "Download Started!",
         text: "Your video is being downloaded successfully.",
-        timer: 2500,
+        timer: 2500, // auto close after 3 seconds
         showConfirmButton: false,
         timerProgressBar: true,
+
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Download Failed!",
         text: "Unable to download the video. Please try again.",
-        timer: 2500,
+        timer: 2500, // auto close after 3 seconds
         showConfirmButton: false,
         timerProgressBar: true,
+
       });
     }
   };
@@ -77,6 +80,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
           transition={{ duration: 0.3, ease: "easeInOut" }}
           onClick={onClose}
         >
+          {/* Video Container */}
           <motion.div
             className="relative bg-black rounded-xl shadow-2xl overflow-hidden flex items-center justify-center"
             style={{
@@ -110,6 +114,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button */}
             <button
               onClick={onClose}
               className="absolute top-3 right-3 z-10 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full p-2 shadow-lg transition-all hover:scale-110"
@@ -118,14 +123,15 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
             </button>
 
             {/* Download Button */}
-            {/* <button
+            <button
               onClick={handleDownload}
               className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-[#2C4E86] hover:bg-[#1f3a5f] text-white px-4 py-2 rounded-lg shadow-lg transition-all hover:scale-105"
             >
               <FiDownload className="w-4 h-4" />
               <span className="text-sm font-medium">Download</span>
-            </button> */}
+            </button>
 
+            {/* Video Player - Adaptive sizing */}
             <motion.video
               ref={videoRef}
               src={video.videoUrl}
@@ -141,6 +147,8 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             />
+
+           
           </motion.div>
         </motion.div>
       )}
@@ -148,4 +156,4 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
   );
 };
 
-export default VideoModal;
+export default MyVideoModal;

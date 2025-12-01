@@ -1,14 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import VideoModal from "../components/ui/videoModal";
-import { groupedVideos } from "../data/promotion_videos";
+import VideoModal from "../components/ui/myVideoModel";
+import { groupedVideos } from "../data/myVideo";
 import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
-import { Pencil } from "lucide-react";
 import axios from "../services/api";
 import { jwtDecode } from "jwt-decode";
-
 export interface Video {
   id: number;
   _id?: string;
@@ -20,23 +17,9 @@ export interface Video {
   type: string;
 }
 
-const VideoGallery: React.FC = () => {
+const MyVideoGallery: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-    const userData = JSON.parse(localStorage.getItem("parsedate") || "{}");
-    const isSuperAdmin = userData?.role === "superadmin";
-   const navigate = useNavigate();
-
-    // 🧮 Load counts
-    const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>(() => {
-      return JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
-    });
-    useEffect(() => {
-      const storedCounts = JSON.parse(localStorage.getItem("templateDownloadCounts") || "{}");
-      setDownloadCounts(storedCounts);
-    }, []);
-
   const [email, setemail] = useState("");
   const [centerid, setcenterid] = useState("");
   // 🧩 Combine all videos from all categories
@@ -70,14 +53,15 @@ const VideoGallery: React.FC = () => {
     setTimeout(() => setSelectedVideo(null), 300);
   };
 
-  // 📥 Shared Download Handler
-  const handleDownload = async (url: string, title: string, id: number) => {
+  // 📥 Handle video download
+  const handleDownload = async (url: string, title: string) => {
     if (!url) return;
 
     try {
+
        let type="videos";
-        const res = await axios.post("/api/statsdownload",{email,centerid,type});   
-       if(res.data.success){
+              const res = await axios.post("/api/statsdownload",{email,centerid,type});   
+             if(res.data.success){
  const response = await fetch(url);
       const blob = await response.blob();
       const objectUrl = window.URL.createObjectURL(blob);
@@ -90,34 +74,30 @@ const VideoGallery: React.FC = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(objectUrl);
 
-      // ✅ Increment count after successful download
-      setDownloadCounts((prev) => ({
-        ...prev,
-        [id]: (prev[id] || 0) + 1,
-      }));
-
       Swal.fire({
         icon: "success",
         title: "Download Started!",
         text: "Your video is being downloaded successfully.",
-        timer: 2500,
+        timer: 2500, // auto close after 3 seconds
         showConfirmButton: false,
         timerProgressBar: true,
       });
-       }  
-
+             }
      
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Download Failed!",
         text: "Unable to download the video. Please try again.",
-        timer: 2500,
+        timer: 2500, // auto close after 3 seconds
         showConfirmButton: false,
         timerProgressBar: true,
+
       });
     }
   };
+
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -231,7 +211,6 @@ const VideoGallery: React.FC = () => {
                   </div>
 
                   {/* 📘 Info below thumbnail */}
-                   {/* Info + Icons */}
                   <div className="mt-3 flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className="text-base font-semibold text-gray-800 truncate">
@@ -242,35 +221,19 @@ const VideoGallery: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2 ml-3">
-                      {/* Edit */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate("/video-editor", {
-                            state: {
-                              videoUrl: video.videoUrl,
-                              videoTitle: video.title,
-                            },
-                          });
-                        }}
-                        className="p-1.5 rounded hover:bg-gray-100"
-                      >
-                        <Pencil className="w-4 h-4 text-blue-600" />
-                      </button>
-
-                      {/* Download */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownload(video.videoUrl, video.title, video.id);
-                        }}
-                        className="p-1.5 rounded hover:bg-gray-100"
-                      >
-                        <FiDownload className="w-4 h-4" />
-                      </button>
-                    </div>
+                    {/* ⬇️ Download Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent modal from opening
+                        handleDownload(video.videoUrl, video.title);
+                      }}
+                      className="flex-shrink-0 ml-3 flex items-center gap-1  px-3 py-1.5 "
+                    >
+                      <FiDownload className="w-3.5 h-3.5" />
+                      <span className="text-xs font-medium"></span>
+                    </button>
                   </div>
+
                 </motion.div>
               ))}
             </motion.div>
@@ -288,4 +251,4 @@ const VideoGallery: React.FC = () => {
   );
 };
 
-export default VideoGallery;
+export default MyVideoGallery;

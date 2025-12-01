@@ -30,16 +30,16 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  useEffect(() => {
-    const savedCart = localStorage.getItem('eduprint_cart');
-    if (savedCart) {
-      setItems(JSON.parse(savedCart));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedCart = localStorage.getItem('eduprint_cart');
+  //   if (savedCart) {
+  //     setItems(JSON.parse(savedCart));
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    localStorage.setItem('eduprint_cart', JSON.stringify(items));
-  }, [items]);
+  // useEffect(() => {
+  //   localStorage.setItem('eduprint_cart', JSON.stringify(items));
+  // }, [items]);
 
   const addToCart = (newItem: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {

@@ -52,8 +52,8 @@ export function centerCanvas(canvas: Canvas) {
     wrapper.style.display = "flex";
     wrapper.style.alignItems = "center";
     wrapper.style.justifyContent = "center";
-    wrapper.style.width = `${width}px`;
-    wrapper.style.height = `${height}px`;
+ wrapper.style.width = `${width * 0.7}px`;
+     wrapper.style.height = `${height}px`;
   }
 }
 

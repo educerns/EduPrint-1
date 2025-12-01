@@ -18,6 +18,31 @@ export interface Template {
 const TemplateGallery: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<string>("All");
+  const [sortOrder, setSortOrder] = useState<string>("A-Z");
+
+  // 🧩 Flatten all templates for "All" view
+  const allTemplates = useMemo(
+    () => groupedTemplates.flatMap(group => group.templates),
+    []
+  );
+
+  // 🔍 Filter templates based on category
+  const filteredTemplates = useMemo(() => {
+    let templates =
+      filter === "All"
+        ? allTemplates
+        : groupedTemplates.find(g => g.category === filter)?.templates || [];
+
+    // 🔤 Sort templates
+    if (sortOrder === "A-Z") {
+      templates = [...templates].sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortOrder === "Z-A") {
+      templates = [...templates].sort((a, b) => b.title.localeCompare(a.title));
+    }
+
+    return templates;
+  }, [filter, sortOrder, allTemplates]);
     const navigate = useNavigate();
 
 
