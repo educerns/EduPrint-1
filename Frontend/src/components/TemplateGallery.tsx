@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TemplateModal from "../components/ui/templateModal";
 import { groupedTemplates } from "../data/freeTemplate";
