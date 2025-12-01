@@ -82,6 +82,7 @@ const App = () => (
                 <Route path="paid-promotion" element={<PaidPomotion />} />
                 <Route path="free-videos" element={<ProtectedRoute><VideoGallery /></ProtectedRoute>}/>
                 <Route path="my-videos" element={<ProtectedRoute><MyVideoGallery /></ProtectedRoute>} />
+                <Route path="video-editor" element={<ProtectedRoute><VideoEditor /></ProtectedRoute>} />
 
                 {/* Legal pages */}
                 <Route path="terms" element={<TermsOfService />} />
