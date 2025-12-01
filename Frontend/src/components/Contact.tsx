@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState,useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Facebook, Linkedin, Instagram, Send } from 'lucide-react';
 import { Variants } from "framer-motion";
+import QuarterBurstLoaderStatic from './ui/multiArcLoader';
 
 interface FormData {
   name: string;
@@ -17,6 +18,16 @@ const Contact: React.FC = () => {
     phone: '',
     comment: ''
   });
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+    // ⏱️ Simulate loading for 1-2 seconds
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1500); // 1.5 seconds
+  
+      return () => clearTimeout(timer);
+    }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -56,6 +67,7 @@ const Contact: React.FC = () => {
 
   return (
     <div className=" bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+       <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
       <motion.div 
         className="max-w-7xl mx-auto"
         initial="hidden"
@@ -257,6 +269,21 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </motion.div>
+      </div>
+
+        <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <QuarterBurstLoaderStatic />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

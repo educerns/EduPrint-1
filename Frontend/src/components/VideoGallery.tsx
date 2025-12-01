@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
 import axios from "../services/api";
 import { jwtDecode } from "jwt-decode";
+import QuarterBurstLoaderStatic from "./ui/multiArcLoader";
 
 export interface Video {
   id: number;
@@ -23,6 +24,8 @@ export interface Video {
 const VideoGallery: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
 
     const userData = JSON.parse(localStorage.getItem("parsedate") || "{}");
     const isSuperAdmin = userData?.role === "superadmin";
@@ -39,6 +42,16 @@ const VideoGallery: React.FC = () => {
 
   const [email, setemail] = useState("");
   const [centerid, setcenterid] = useState("");
+      // ⏱️ Simulate loading for 1-2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // 1.5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
   // 🧩 Combine all videos from all categories
   const allVideos = useMemo(
     () => groupedVideos.flatMap((group) => group.videos),
@@ -146,6 +159,7 @@ const VideoGallery: React.FC = () => {
 
   return (
     <div className="min-h-screen px-4 py-10 bg-white">
+            <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
       <div className="max-w-7xl mx-auto">
         {/* 🏷️ Header */}
         <motion.div
@@ -277,6 +291,7 @@ const VideoGallery: React.FC = () => {
           </AnimatePresence>
         )}
       </div>
+      </div>
 
       {/* 🪟 Modal */}
       <VideoModal
@@ -284,6 +299,21 @@ const VideoGallery: React.FC = () => {
         onClose={closeModal}
         video={selectedVideo}
       />
+
+       {/* 🔄 Loader Overlay */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <QuarterBurstLoaderStatic/>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
