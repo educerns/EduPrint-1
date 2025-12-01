@@ -9,6 +9,7 @@ import * as fabric from "fabric";
 import Properties from "./sidebar/properties";
 import QuarterBurstLoader from "@/components/ui/multiArcLoader";
 import { motion, AnimatePresence } from "framer-motion";
+import QuarterBurstLoaderStatic from "@/components/ui/multiArcLoader";
 
 
 const Editor: React.FC = () => {
@@ -235,6 +236,9 @@ const Editor: React.FC = () => {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Header />
+       {isLoading && (
+    <div className="absolute inset-0 bg-white z-30"></div>
+  )}
       <div className="flex flex-1 overflow-hidden">
         {isEditing && <Sidebar />}
         <div className="flex-1 flex flex-col overflow-hidden relative">
@@ -255,19 +259,20 @@ const Editor: React.FC = () => {
                 </motion.div>
               )}
             </AnimatePresence> */}
-            <AnimatePresence>
-              {isLoading && (
-                <motion.div
-                  className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <QuarterBurstLoader />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* 🔄 Loader Overlay */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <QuarterBurstLoaderStatic />
+          </motion.div>
+        )}
+      </AnimatePresence>
           </main>
 
         </div>

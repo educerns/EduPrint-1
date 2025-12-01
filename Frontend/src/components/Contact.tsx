@@ -67,6 +67,10 @@ const Contact: React.FC = () => {
 
   return (
     <div className=" bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+        {/* White Background When Loading */}
+  {isLoading && (
+    <div className="absolute inset-0 bg-white z-30"></div>
+  )}
        <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
       <motion.div 
         className="max-w-7xl mx-auto"
@@ -272,18 +276,18 @@ const Contact: React.FC = () => {
       </div>
 
         <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <QuarterBurstLoaderStatic />
-          </motion.div>
-        )}
-      </AnimatePresence>
+  {isLoading && (
+    <motion.div
+      className="fixed left-0 right-0 bottom-0 top-16 bg-gray-50 flex items-center justify-center z-40"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <QuarterBurstLoaderStatic />
+    </motion.div>
+  )}
+</AnimatePresence>
     </div>
   );
 };

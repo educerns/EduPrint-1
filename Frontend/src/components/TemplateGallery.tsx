@@ -107,103 +107,114 @@ const TemplateGallery: React.FC = () => {
 
 
 
-  return (
-    <div className="px-4 py-10 bg-white overflow-x-auto">
-      <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
+   return (
+    <div className="px-4 py-10 bg-white overflow-x-auto ">
+    {isLoading && (
+    <div className="absolute inset-0 bg-white z-30"></div>
+  )}
+     <div
+      className={`max-w-7xl mx-auto transition-all duration-300 ${
+        isLoading ? "blur-sm" : ""
+      }`}
+    > 
+      <div className="max-w-7xl mx-auto">
+        {/* 🏷️ Header */}
+        <motion.div
+          className="mb-10 text-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#2C4E86]">
+            Marketing Templates Gallery
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Explore categorized marketing and promotional templates
+          </p>
+        </motion.div>
 
-        <div className="max-w-7xl mx-auto">
-          {/* 🏷️ Header */}
-          <motion.div
-            className="mb-10 text-center"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+        {/* 🔽 Filter + Sort Header */}
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+          {/* Filter */}
+          <div className="flex flex-wrap gap-2">
+            {["All", ...groupedTemplates.map(g => g.category)].map(cat => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${filter === cat
+                    ? "bg-[#2C4E86] text-white border-[#2C4E86]"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                  }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort */}
+          {/* <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-1.5 text-sm text-gray-700 focus:ring-2 focus:ring-[#2C4E86]"
           >
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#2C4E86]">
-              Marketing Templates Gallery
-            </h1>
-            <p className="text-gray-500 mt-2">
-              Explore categorized marketing and promotional templates
-            </p>
-          </motion.div>
-
-          {/* 🧩 Grouped Templates by Category */}
-          {groupedTemplates.map((group, idx) => (
-            <motion.div
-              key={group.category}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: idx * 0.2 }}
-              className="mb-16"
-            >
-              {/* 🏁 Category Heading */}
-              <h2 className="text-xl font-bold text-[#2C4E86] mb-6 border-l-4 border-[#2C4E86] pl-3">
-                {group.category} Templates
-              </h2>
-
-              {/* 📦 Templates Grid */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  layout
-                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-10"
-                >
-                  {group.templates.map((template, index) => (
-                    <motion.div
-                      key={template._id || `${group.category}-${index}`}
-                      layout
-                      variants={cardVariants}
-                      whileHover={{ scale: 1.02 }}
-                      transition={{
-                        layout: { duration: 0.5, ease: [0.33, 1, 0.68, 1] },
-                      }}
-                      className="flex flex-col cursor-pointer"
-                      onClick={() => openModal(template)}
-                    // onClick={() => handleTemplateClick(template)}
-                    >
-                      {/* 🖼️ Template Image */}
-                      <div className="w-full aspect-square overflow-hidden">
-                        {template.sampleImage ?
-                          (
-                            <motion.img
-                              layout src={template.sampleImage}
-                              alt={template.title}
-                              className="w-full h-full object-fill transition-transform duration-500 hover:scale-105"
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center bg-gray-100 h-full text-gray-400 text-sm">
-                              No Image
-                            </div>
-                          )}
-                      </div>
-
-                      {/* 📘 Info below image */}
-                      <div className="mt-3">
-                        <h3 className="text-base font-semibold text-gray-800 truncate">
-                          {template.title}
-                        </h3>
-                        <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
-                          {template.description}
-                        </p>
-                        {/* <div className="mt-2 flex items-center justify-between">
-                        <span className="font-semibold text-xs">
-                          ₹{template.price}
-                        </span>
-                        <span className="shrink-0 text-[10.5px] font-medium text-white px-2 py-0.5 rounded-full bg-gray-700 m-0.5">
-                          {group.category}
-                        </span>
-                      </div> */}
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
-          ))}
+            <option value="A-Z">Sort: A → Z</option>
+            <option value="Z-A">Sort: Z → A</option>
+          </select> */}
         </div>
+
+        {/* 📦 Templates Grid */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            layout
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10"
+          >
+            {filteredTemplates.map((template, index) => (
+              <motion.div
+                key={template._id || `${filter}-${index}`}
+                layout
+                variants={cardVariants}
+                whileHover={{ scale: 1.02 }}
+                transition={{
+                  layout: { duration: 0.5, ease: [0.33, 1, 0.68, 1] },
+                }}
+                className="flex flex-col cursor-pointer"
+                onClick={() => openModal(template)}
+              >
+                {/* 🖼️ Template Image */}
+                <div className="w-full aspect-square overflow-hidden">
+                  {template.sampleImage ? (
+                    <motion.img
+                      layout
+                      src={template.sampleImage}
+                      alt={template.title}
+                      className="w-full h-full object-fill transition-transform duration-500 hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center bg-gray-100 h-full text-gray-400 text-sm">
+                      No Image
+                    </div>
+                  )}
+                </div>
+
+                {/* 📘 Info below image */}
+                <div className="mt-3">
+                  <h3 className="text-base font-semibold text-gray-800 truncate">
+                    {template.title}
+                  </h3>
+                  <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
+                    {template.description}
+                  </p>
+                  
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
+    </div>
 
       {/* 🪟 Modal */}
       <TemplateModal
@@ -212,20 +223,21 @@ const TemplateGallery: React.FC = () => {
         template={selectedTemplate}
       />
 
-      {/* 🔄 Loader Overlay */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <QuarterBurstLoaderStatic />
-          </motion.div>
-        )}
-      </AnimatePresence>
+         {/* 🔄 Loader Overlay */}
+<AnimatePresence>
+  {isLoading && (
+    <motion.div
+      className="fixed left-0 right-0 bottom-0 top-16 bg-gray-50 flex items-center justify-center z-40"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <QuarterBurstLoaderStatic />
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </div>
   );
 };

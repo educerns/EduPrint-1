@@ -159,7 +159,15 @@ const VideoGallery: React.FC = () => {
 
   return (
     <div className="min-h-screen px-4 py-10 bg-white">
-            <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
+    {/* White Background When Loading */}
+  {isLoading && (
+    <div className="absolute inset-0 bg-white z-30"></div>
+  )}
+    <div
+      className={`max-w-7xl mx-auto transition-all duration-300 ${
+        isLoading ? "blur-sm" : ""
+      }`}
+    > 
       <div className="max-w-7xl mx-auto">
         {/* 🏷️ Header */}
         <motion.div
@@ -291,7 +299,7 @@ const VideoGallery: React.FC = () => {
           </AnimatePresence>
         )}
       </div>
-      </div>
+    </div>
 
       {/* 🪟 Modal */}
       <VideoModal
@@ -301,19 +309,20 @@ const VideoGallery: React.FC = () => {
       />
 
        {/* 🔄 Loader Overlay */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <QuarterBurstLoaderStatic/>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <AnimatePresence>
+  {isLoading && (
+    <motion.div
+      className="fixed left-0 right-0 bottom-0 top-16 bg-gray-50 flex items-center justify-center z-40"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <QuarterBurstLoaderStatic />
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </div>
   );
 };

@@ -101,8 +101,9 @@ const FabricCanvas: React.FC = () => {
     className="
       relative 
       flex justify-center items-center
+      top-5
       h-screen overflow-auto
-      w-full md:w-10/12 lg:w-7/12 xl:w-8/12
+      w-full md:w-10/12 lg:w-7/12 sm:w-11/12
       mx-auto
      
     "

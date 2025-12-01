@@ -6,6 +6,7 @@ import comingSoonAnimation from "../assets/coming soon (pink).json"; // adjust p
 import QuarterBurstLoader from "./ui/multiArcLoader";
 import MultiArcLoader from "./ui/multiArcLoader";
 import RightSemiLoader from "./ui/multiArcLoader";
+import QuarterBurstLoaderStatic from "./ui/multiArcLoader";
 
 const PaidPromotion = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -21,6 +22,10 @@ const PaidPromotion = () => {
 
   return (
     <div className="flex items-center justify-center h-screen bg-white">
+      {/* White Background When Loading */}
+  {isLoading && (
+    <div className="absolute inset-0 bg-white z-30"></div>
+  )}
       <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
 
         <div className="text-center">
@@ -36,20 +41,19 @@ const PaidPromotion = () => {
       </div>
 
       {/* 🔄 Loader Overlay */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >            <QuarterBurstLoader />
-
-            {/* <InfinityLoader /> */}
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <AnimatePresence>
+  {isLoading && (
+    <motion.div
+      className="fixed left-0 right-0 bottom-0 top-16 bg-gray-50 flex items-center justify-center z-40"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <QuarterBurstLoaderStatic />
+    </motion.div>
+  )}
+</AnimatePresence>
     </div>
   );
 };
