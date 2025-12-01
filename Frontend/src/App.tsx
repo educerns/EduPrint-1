@@ -24,6 +24,7 @@ import PaidPomotion from "./components/PaidPomotion";
 import VideoGallery from "./components/VideoGallery";
 import MyVideoGallery from "./components/MyVideoGallery";
 import Editor from "./editor/editor";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -53,13 +54,25 @@ const App = () => (
                 <Route index element={<HomePage />} />
                 <Route path="products" element={<ProductsPage />} />
                 <Route path="products/:id" element={<ProductDetailPage />} />
-                <Route path="templates" element={<TemplatesPage />} />
+
+   {/* 🔒 Protected Templates Page */}
+                <Route
+                  path="templates"
+                  element={
+                    <ProtectedRoute>
+                      <TemplatesPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+                {/* <Route path="templates" element={<TemplatesPage />} /> */}
                 <Route path="contact" element={<Contact />} />
 
                 {/* Special pages */}
                 <Route path="paid-promotion" element={<PaidPomotion />} />
-                <Route path="free-videos" element={<VideoGallery />} />
-                <Route path="my-videos" element={<MyVideoGallery />} />
+                <Route path="free-videos" element={<ProtectedRoute><VideoGallery /></ProtectedRoute>}/>
+                <Route path="my-videos" element={<ProtectedRoute><MyVideoGallery /></ProtectedRoute>} />
 
                 {/* Legal pages */}
                 <Route path="terms" element={<TermsOfService />} />
@@ -68,7 +81,7 @@ const App = () => (
                 <Route path="cookies" element={<CookiePolicy />} />
 
                 {/* Editor page */}
-                <Route path="editor/:id" element={<Editor />} />
+                <Route path="editor/:id" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
 
                 {/* 404 fallback */}
                 <Route path="*" element={<NotFound />} />

@@ -8,7 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-
+import axios from "../services/api";
+import { error } from "console";
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -37,19 +38,24 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     try {
       if (isLogin) {
         const success = await login(formData.email, formData.password);
-        if (success) {
-          toast({
+        const res = await axios.post("/api/eduprintverifyOtp", formData)
+        console.log('eror aya hia kya',res.data);
+        if(res.data.message=="Login details verify wait for otp verify"){
+          localStorage.setItem("token", res.data.token);
+           toast({
             title: "Welcome back!",
             description: "You have been successfully logged in.",
           });
           onClose();
-        } else {
+        }
+        else {
           toast({
             title: "Login failed",
             description: "Invalid email or password. Please try again.",
             variant: "destructive",
           });
         }
+        
       } else {
         if (formData.password !== formData.confirmPassword) {
           toast({
@@ -82,7 +88,25 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           });
         }
       }
-    } finally {
+    }
+    catch(error){
+      console.log('eerror ha',error.response.data);
+      if(error.response.data.message=="Incorrect password"){
+         toast({
+            title: "Password Error",
+            description: "Passwords is wrong.",
+            variant: "destructive",
+          });
+      }
+         if(error.response.data.message=="User not found"){
+         toast({
+            title: "Center Error",
+            description: "Center not found.",
+            variant: "destructive",
+          });
+      }
+    }
+    finally {
       setIsLoading(false);
     }
   };
@@ -171,7 +195,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 required
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="••••••••"
+                placeholder="Enter Pasword"
               />
               <button
                 type="button"
@@ -204,7 +228,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
           <Separator />
 
-          <div className="text-center text-sm">
+          {/* <div className="text-center text-sm">
             <span className="text-gray-600">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
             </span>
@@ -215,7 +239,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             >
               {isLogin ? "Sign up" : "Sign in"}
             </Button>
-          </div>
+          </div> */}
         </form>
       </DialogContent>
     </Dialog>

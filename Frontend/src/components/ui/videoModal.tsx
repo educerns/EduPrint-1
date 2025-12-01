@@ -123,13 +123,13 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }) => {
             </button>
 
             {/* Download Button */}
-            <button
+            {/* <button
               onClick={handleDownload}
               className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-[#2C4E86] hover:bg-[#1f3a5f] text-white px-4 py-2 rounded-lg shadow-lg transition-all hover:scale-105"
             >
               <FiDownload className="w-4 h-4" />
               <span className="text-sm font-medium">Download</span>
-            </button>
+            </button> */}
 
             {/* Video Player - Adaptive sizing */}
             <motion.video

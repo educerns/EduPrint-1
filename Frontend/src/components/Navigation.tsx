@@ -23,17 +23,23 @@ const Navigation = ({ onSearch }: NavigationProps) => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated,loggedin } = useAuth();
   const { totalItems } = useCart();
-
+  const navigate = useNavigate();
+  // console.log('logged in state',loggedin);
+    const handleLogout = () => {
+    logout();          
+    navigate("/");    
+  };
 const navItems = [
-    { name: "Home", path: "/", isFunky: true },
-    { name: "Paid Article", path: "/paid-promotion" },
-    { name: "Free Templates", path: "/templates", isFunky: true },
-    { name: "Free Video's", path: "/free-videos", isFunky: true },
-    { name: "My Video's", path: "/my-videos", isFunky: true },
-    { name: "Contact", path: "/contact" },
-  ];
+  { name: "Home", path: "/", isFunky: true },
+  // { name: "Paid Article", path: "/paid-promotion" },
+  isAuthenticated && {name: "Paid Article", path: "/paid-promotion", isFunky: true },
+  isAuthenticated && { name: "Free Templates", path: "/templates", isFunky: true },
+  isAuthenticated && { name: "Free Video's", path: "/free-videos", isFunky: true },
+  isAuthenticated && { name: "My Video's", path: "/my-videos", isFunky: true },
+  { name: "Contact", path: "/contact" },
+].filter(Boolean);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,24 +146,25 @@ const navItems = [
                       <Package className="h-4 w-4 mr-2" />
                       Order History
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={logout}>
+                    <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                // <Button
-                //   variant="ghost"
-                //   size="sm"
-                //   onClick={() => setIsAuthOpen(true)}
-                //   className="hidden md:flex items-center space-x-2"
-                // >
-                //   <User className="h-5 w-5" />
-                //   <span>Login</span>
-                // </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsAuthOpen(true)}
+                  className="hidden md:flex items-center space-x-2"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Login</span>
+                </Button>
 
-                ""
+      
               )}
 
               {/* Mobile menu button */}
@@ -202,3 +209,6 @@ const navItems = [
 };
 
 export default Navigation;
+
+
+

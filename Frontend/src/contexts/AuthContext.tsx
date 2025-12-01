@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
+import axios from "../services/api"; // your axios instance
+import { jwtDecode } from "jwt-decode";
 interface User {
   id: string;
   email: string;
@@ -16,39 +17,65 @@ interface User {
   };
 }
 
+// interface AuthContextType {
+//   user: User | null;
+//   login: (email: string, password: string) => Promise<boolean>;
+//   signup: (userData: Omit<User, 'id'> & { password: string }) => Promise<boolean>;
+//   logout: () => void;
+//   updateProfile: (userData: Partial<User>) => void;
+//   isAuthenticated: boolean;
+// }
+
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (userData: Omit<User, 'id'> & { password: string }) => Promise<boolean>;
-  logout: () => void;
-  updateProfile: (userData: Partial<User>) => void;
+  token: string | null;
   isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+const [token, setToken] = useState<string | null>(null);
+const [loggedin, setloggedin] = useState<Boolean | null>(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('eduprint_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      try {
+        const decoded: any = jwtDecode(storedToken);
+        if (decoded.exp * 1000 > Date.now()) {
+          setToken(storedToken);
+          setUser(decoded);
+          setloggedin(true);
+        } else {
+          localStorage.removeItem("token");
+        }
+      } catch {
+        localStorage.removeItem("token");
+      }
     }
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    const users = JSON.parse(localStorage.getItem('eduprint_users') || '[]');
-    const foundUser = users.find((u: any) => u.email === email && u.password === password);
-    
-    if (foundUser) {
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem('eduprint_user', JSON.stringify(userWithoutPassword));
+    try {
+      const res = await axios.post("/api/eduprintverifyOtp", { email, password });
+      const { token, user } = res.data;
+      localStorage.setItem("token", token);
+      setToken(token);
+      setUser(user);
+          setloggedin(true);
+
       return true;
+    } catch (err) {
+      
+      console.log("Login failed:", err);
+      return false;
     }
-    return false;
   };
+
 
   const signup = async (userData: Omit<User, 'id'> & { password: string }): Promise<boolean> => {
     const users = JSON.parse(localStorage.getItem('eduprint_users') || '[]');
@@ -72,10 +99,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return true;
   };
 
-  const logout = () => {
+ const logout = () => {
+    localStorage.removeItem("token");
+    
     setUser(null);
-    localStorage.removeItem('eduprint_user');
-    localStorage.removeItem('eduprint_orders');
+    setToken(null);
   };
 
   const updateProfile = (userData: Partial<User>) => {
@@ -93,7 +121,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signup,
       logout,
       updateProfile,
-      isAuthenticated: !!user
+      token,
+      isAuthenticated: !!token,
+      loggedin,
+
     }}>
       {children}
     </AuthContext.Provider>

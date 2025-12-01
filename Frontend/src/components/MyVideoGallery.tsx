@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import VideoModal from "../components/ui/myVideoModel";
 import { groupedVideos } from "../data/myVideo";
 import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
-
+import axios from "../services/api";
+import { jwtDecode } from "jwt-decode";
 export interface Video {
   id: number;
   _id?: string;
@@ -19,13 +20,29 @@ export interface Video {
 const MyVideoGallery: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
+  const [email, setemail] = useState("");
+  const [centerid, setcenterid] = useState("");
   // 🧩 Combine all videos from all categories
   const allVideos = useMemo(
     () => groupedVideos.flatMap((group) => group.videos),
     []
   );
+  useEffect(() => {
+  if(localStorage.getItem("token")){
+    const token = localStorage.getItem("token");
+ try {
+    const decoded = jwtDecode(token);
+    // console.log("Decoded Token:", decoded);
+    // return;
 
+    // You can access user details here
+    setemail(decoded.datastore.email);
+    setcenterid(decoded.datastore.Centerid);    
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+  }
+  }, [])
   const openModal = (video: Video) => {
     setSelectedVideo(video);
     setIsModalOpen(true);
@@ -41,7 +58,11 @@ const MyVideoGallery: React.FC = () => {
     if (!url) return;
 
     try {
-      const response = await fetch(url);
+
+       let type="videos";
+              const res = await axios.post("/api/statsdownload",{email,centerid,type});   
+             if(res.data.success){
+ const response = await fetch(url);
       const blob = await response.blob();
       const objectUrl = window.URL.createObjectURL(blob);
 
@@ -61,6 +82,8 @@ const MyVideoGallery: React.FC = () => {
         showConfirmButton: false,
         timerProgressBar: true,
       });
+             }
+     
     } catch (error) {
       Swal.fire({
         icon: "error",
