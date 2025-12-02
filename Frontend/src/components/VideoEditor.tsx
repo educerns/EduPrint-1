@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import ExportButton from './ui/ExportButton';
 import QuarterBurstLoaderStatic from './ui/multiArcLoader';
+import ExportProgressLoader from './ui/ExportProgressLoader';
 
 
 interface Video {
@@ -123,7 +124,6 @@ const VideoEditor: React.FC = () => {
     const [isRecording, setIsRecording] = useState(false);
     const audioSourceRef = useRef<MediaElementAudioSourceNode | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
-
 
 
     const [newText, setNewText] = useState({
@@ -537,6 +537,7 @@ const VideoEditor: React.FC = () => {
             if (!canvas || !video) return;
 
             setIsExporting(true);
+            setIsLoading(true);
 
             // 1️⃣ Canvas → video track
             const canvasStream = canvas.captureStream(30);
@@ -548,6 +549,7 @@ const VideoEditor: React.FC = () => {
             if (!audioContext || !sourceNode) {
                 alert("Please click PLAY once before exporting!");
                 setIsExporting(false);
+                setIsLoading(false);
                 return;
             }
 
@@ -586,25 +588,35 @@ const VideoEditor: React.FC = () => {
 
                 URL.revokeObjectURL(url);
                 setIsExporting(false);
+                setIsLoading(false);
+                setExportProgress(0); // Add this line
+
             };
 
-            // 5️⃣ Start export
+        // 5️⃣ Start export with progress tracking
             video.currentTime = 0;
             await video.play();
 
             recorder.start();
+            setExportProgress(0);
+
+            // Track progress during export
+            const progressInterval = setInterval(() => {
+                const progress = (video.currentTime / video.duration) * 100;
+                setExportProgress(progress);
+            }, 100);
 
             video.onended = () => {
+                clearInterval(progressInterval);
+                setExportProgress(100);
                 recorder.stop();
                 setIsPlaying(false);
             };
-
-            setIsPlaying(true);
-
         } catch (error) {
             console.error("Export failed:", error);
             alert("Export failed. Please try again.");
             setIsExporting(false);
+            setIsLoading(false);
         }
     };
 
@@ -618,7 +630,7 @@ const VideoEditor: React.FC = () => {
     return (
         <>
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 overflow-x-hidden">
-               <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
+               <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm pointer-events-none' : ''}`}>
 
 
                 <div className="flex justify-between items-center mb-4">
@@ -901,8 +913,8 @@ const VideoEditor: React.FC = () => {
                                                                 min="0"
                                                                 max={duration || 0}
                                                                 step="0.1"
-                                                                value={Number.isFinite(overlay.endTime) ? overlay.endTime : 0}
-                                                                onChange={(e) => updateOverlay(overlay.id, { endTime: parseFloat(e.target.value) || 0 })}
+                                                                value={Number.isFinite(overlay.endTime) ? overlay.endTime : 1}
+                                                                onChange={(e) => updateOverlay(overlay.id, { endTime: parseFloat(e.target.value) || 1 })}
                                                                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                                                             />
                                                         </div>
@@ -1280,19 +1292,25 @@ const VideoEditor: React.FC = () => {
         </div>
 
          {/* 🔄 Loader Overlay */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <QuarterBurstLoaderStatic />
-          </motion.div>
-        )}
-      </AnimatePresence>
+     <AnimatePresence>
+  {isLoading && (
+    <motion.div
+      className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {isExporting ? (
+        <div className="bg-white rounded-2xl shadow-2xl">
+          <ExportProgressLoader progress={exportProgress} />
+        </div>
+      ) : (
+        <QuarterBurstLoaderStatic />
+      )}
+    </motion.div>
+  )}
+</AnimatePresence>
        </>
     );
 };
