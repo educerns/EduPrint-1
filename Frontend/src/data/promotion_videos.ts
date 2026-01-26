@@ -170,8 +170,8 @@ export const staticVideos: readonly Video[] = [
   },
   {
     id: 18,
-    videoUrl: "https://player.cloudinary.com/embed/?cloud_name=ddb0hp5ka&public_id=WhatsApp_Video_2026-01-26_at_12.12.40_w4pale",
-    thumbnail: "https://player.cloudinary.com/embed/?cloud_name=ddb0hp5ka&public_id=WhatsApp_Video_2026-01-26_at_12.12.40_w4pale",
+    videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-01-26_at_12.12.40_w4pale.mp4",
+    thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-01-26_at_12.12.40_w4pale.mp4",
     title: "Video 18",
     description: "Happy Republic Day",
     price: 0,
