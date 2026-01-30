@@ -184,7 +184,7 @@ export const groupedVideos = [
   {
     category: "Demo",
     videos: staticVideos.filter(
-      (item) => item.type === "Demo1" || item.type === "Demo2" || item.type === "Demo3"
+      (item) => item.type === "Demo" 
     ),
   },
   {

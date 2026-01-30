@@ -15,7 +15,8 @@ import {
     Underline,
     Edit2,
     Move,
-    ArrowRight
+    ArrowRight,
+    ArrowLeft
 } from 'lucide-react';
 import ExportButton from './ui/ExportButton';
 import QuarterBurstLoaderStatic from './ui/multiArcLoader';
@@ -619,20 +620,21 @@ const VideoEditor: React.FC = () => {
         <>
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 overflow-x-hidden">
                <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-1 text-gray-600 rounded-lg hover:text-gray-700 whitespace-nowrap"
+                    >
 
+                        <ArrowLeft className='w-4 h-4'/>
+                        <span>Back</span>
 
-                <div className="flex justify-between items-center mb-4">
+                    </button>
+
+                <div className="flex justify-center items-center mb-4">
                     <h1 className="text-xl font-bold text-gray-800">
                         🎬 Editing: {currentVideo.title}
                     </h1>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#2C4E86] text-white rounded-lg hover:bg-blue-900 whitespace-nowrap"
-                    >
-
-                        <span>Back</span>
-                        <ArrowRight />
-                    </button>
+                   
 
                 </div>
 
