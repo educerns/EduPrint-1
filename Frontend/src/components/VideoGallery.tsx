@@ -296,7 +296,7 @@ const VideoGallery: React.FC = () => {
                     {/* 📘 Info below thumbnail */}
                     <div className="mt-3 flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-semibold text-gray-800 truncate">
+                        <h3 className="text-sm font-semibold text-gray-800 truncate">
                           {video.title}
                         </h3>
                         <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
