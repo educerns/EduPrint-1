@@ -177,6 +177,15 @@ export const staticVideos: readonly Video[] = [
     price: 0,
     type: "Promotion",
   },
+   {
+    id: 18,
+    videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-14_at_16.24.42_svzuhc.mp4",
+    thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-14_at_16.24.42_svzuhc.mp4",
+    title: "Video 18",
+    description: "Happy Mahashivratri",
+    price: 0,
+    type: "Promotion",
+  },
 ];
 
 // 🧱 Grouped Videos (Array Format)
