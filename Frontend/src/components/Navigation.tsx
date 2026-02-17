@@ -36,8 +36,8 @@ const navItems = [
   // { name: "Paid Article", path: "/paid-promotion" },
   isAuthenticated && {name: "Paid Article", path: "/paid-promotion", isFunky: true },
   isAuthenticated && { name: "Free Templates", path: "/templates", isFunky: true },
-  isAuthenticated && { name: "Free Video's", path: "/free-videos", isFunky: true },
-  isAuthenticated && { name: "My Video's", path: "/my-videos", isFunky: true },
+  isAuthenticated && { name: "Marketing Video's", path: "/free-videos", isFunky: true },
+  // isAuthenticated && { name: "My Video's", path: "/my-videos", isFunky: true },
   { name: "Contact", path: "/contact" },
 ].filter(Boolean);
 
