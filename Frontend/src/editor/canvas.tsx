@@ -45,13 +45,12 @@ const FabricCanvas: React.FC = () => {
         typeof window === "undefined" ||
         !canvasRef.current ||
         initAttemptedRef.current
-     )
-       {
-      //   console.log("🔧 Skipping init:", {
-      //     window: typeof window !== "undefined",
-      //     canvasRef: !!canvasRef.current,
-      //     initAttempted: initAttemptedRef.current
-      //   });
+      ) {
+        //   console.log("🔧 Skipping init:", {
+        //     window: typeof window !== "undefined",
+        //     canvasRef: !!canvasRef.current,
+        //     initAttempted: initAttemptedRef.current
+        //   });
         return;
       }
 
@@ -96,9 +95,9 @@ const FabricCanvas: React.FC = () => {
   }, [setCanvas]);
 
   return (
-  <div
-    ref={containerRef}
-    className="
+    <div
+      ref={containerRef}
+      className="
       relative 
       flex justify-center items-center
       h-screen overflow-auto
@@ -106,13 +105,13 @@ const FabricCanvas: React.FC = () => {
       mx-auto
      
     "
-  >
-    <canvas
-      ref={canvasRef}
-      className="max-w-full max-h-full object-contain"
-    />
-  </div>
-);
+    >
+      <canvas
+        ref={canvasRef}
+        className="max-w-full max-h-full object-contain"
+      />
+    </div>
+  );
 
 };
 

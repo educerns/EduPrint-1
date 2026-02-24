@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { Label } from "@/components/ui/label";
 import { Bold, Copy, FlipHorizontal, FlipVertical, Italic, MoveDown, MoveUp, Trash, Underline, Pipette, ChevronRight, ChevronLeft, Undo2, Redo2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { cloneSelectedObject, deleteSelectedObject } from '@/fabric/fabric-utils';
+import { cloneSelectedObject, deleteSelectedObject, bringToFront, sendToBack } from '@/fabric/fabric-utils';
 import * as fabric from "fabric";
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -404,98 +404,98 @@ const Properties: React.FC = () => {
         };
     }, [canvas]);
     // ✅ Track canvas history for Undo/Redo
-useEffect(() => {
-  if (!canvas) return;
+    useEffect(() => {
+        if (!canvas) return;
 
-  const recordChange = () => saveCanvasState();
+        const recordChange = () => saveCanvasState();
 
-  // Record changes for undo/redo
-  canvas.on("object:added", recordChange);
-  canvas.on("object:modified", recordChange);
-  canvas.on("object:removed", recordChange);
+        // Record changes for undo/redo
+        canvas.on("object:added", recordChange);
+        canvas.on("object:modified", recordChange);
+        canvas.on("object:removed", recordChange);
 
-  // Capture initial state when canvas loads
-  saveCanvasState();
+        // Capture initial state when canvas loads
+        saveCanvasState();
 
-  return () => {
-    canvas.off("object:added", recordChange);
-    canvas.off("object:modified", recordChange);
-    canvas.off("object:removed", recordChange);
-  };
-}, [canvas]);
+        return () => {
+            canvas.off("object:added", recordChange);
+            canvas.off("object:modified", recordChange);
+            canvas.off("object:removed", recordChange);
+        };
+    }, [canvas]);
 
 
 
     const saveCanvasState = () => {
-    if (!canvas) return;
-    const json = canvas.toJSON();
-    const prev = undoStack.current[undoStack.current.length - 1];
-    if (JSON.stringify(prev) !== JSON.stringify(json)) {
-        undoStack.current.push(json);
-        if (undoStack.current.length > 50) undoStack.current.shift(); // limit history
-        redoStack.current = [];
-    }
-};
-
-    const handleUndo = () => {
-    if (!canvas || undoStack.current.length <= 1) return;
-
-    const current = undoStack.current.pop();
-    redoStack.current.push(current);
-
-    const prevState = undoStack.current[undoStack.current.length - 1];
-    canvas.loadFromJSON(prevState, () => {
-        canvas.renderAll();
-    });
-};
-
-const handleRedo = () => {
-    if (!canvas || redoStack.current.length === 0) return;
-
-    const nextState = redoStack.current.pop();
-    if (nextState) {
-        undoStack.current.push(nextState);
-        canvas.loadFromJSON(nextState, () => {
-            canvas.renderAll();
-        });
-    }
-};
-
-
-useEffect(() => {
-    if (!canvas) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-        const target = event.target as HTMLElement;
-        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
-
-        // Delete key → remove selected object
-        if (event.key === "Delete" || event.key === "Backspace") {
-            const activeObjects = canvas.getActiveObjects();
-            if (activeObjects.length > 0) {
-                activeObjects.forEach((obj) => canvas.remove(obj));
-                canvas.discardActiveObject();
-                canvas.requestRenderAll();
-                saveCanvasState();
-            }
-        }
-
-        // Ctrl+Z → Undo
-        if (event.ctrlKey && event.key.toLowerCase() === "z") {
-            event.preventDefault();
-            handleUndo();
-        }
-
-        // Ctrl+Y → Redo
-        if (event.ctrlKey && event.key.toLowerCase() === "y") {
-            event.preventDefault();
-            handleRedo();
+        if (!canvas) return;
+        const json = canvas.toJSON();
+        const prev = undoStack.current[undoStack.current.length - 1];
+        if (JSON.stringify(prev) !== JSON.stringify(json)) {
+            undoStack.current.push(json);
+            if (undoStack.current.length > 50) undoStack.current.shift(); // limit history
+            redoStack.current = [];
         }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-}, [canvas]);
+    const handleUndo = () => {
+        if (!canvas || undoStack.current.length <= 1) return;
+
+        const current = undoStack.current.pop();
+        redoStack.current.push(current);
+
+        const prevState = undoStack.current[undoStack.current.length - 1];
+        canvas.loadFromJSON(prevState, () => {
+            canvas.renderAll();
+        });
+    };
+
+    const handleRedo = () => {
+        if (!canvas || redoStack.current.length === 0) return;
+
+        const nextState = redoStack.current.pop();
+        if (nextState) {
+            undoStack.current.push(nextState);
+            canvas.loadFromJSON(nextState, () => {
+                canvas.renderAll();
+            });
+        }
+    };
+
+
+    useEffect(() => {
+        if (!canvas) return;
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            const target = event.target as HTMLElement;
+            if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
+
+            // Delete key → remove selected object
+            if (event.key === "Delete" || event.key === "Backspace") {
+                const activeObjects = canvas.getActiveObjects();
+                if (activeObjects.length > 0) {
+                    activeObjects.forEach((obj) => canvas.remove(obj));
+                    canvas.discardActiveObject();
+                    canvas.requestRenderAll();
+                    saveCanvasState();
+                }
+            }
+
+            // Ctrl+Z → Undo
+            if (event.ctrlKey && event.key.toLowerCase() === "z") {
+                event.preventDefault();
+                handleUndo();
+            }
+
+            // Ctrl+Y → Redo
+            if (event.ctrlKey && event.key.toLowerCase() === "y") {
+                event.preventDefault();
+                handleRedo();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [canvas]);
 
 
     const updateObjectProperty = (property: string, value: any) => {
@@ -520,17 +520,15 @@ useEffect(() => {
         deleteSelectedObject(canvas);
     };
 
-    const handleBringToFront = () => {
-        if (!canvas || !selectedObject) return;
-        canvas.bringToFront(selectedObject);
-        canvas.renderAll();
-    };
+const handleBringToFront = () => {
+    if (!canvas) return;
+    bringToFront(canvas);
+};
 
-    const handleSendToBack = () => {
-        if (!canvas || !selectedObject) return;
-        canvas.sendToBack(selectedObject);
-        canvas.renderAll();
-    };
+const handleSendToBack = () => {
+    if (!canvas) return;
+    sendToBack(canvas);
+};
 
     const handleFlipHorizontal = () => {
         if (!canvas || !selectedObject) return;
@@ -832,9 +830,6 @@ useEffect(() => {
         canvas.requestRenderAll();
     };
 
-
-
-
     return (
         <>
             {/* Magnifier for eyedropper */}
@@ -847,19 +842,18 @@ useEffect(() => {
                 />
             )}
             {/* 🧭 Toggle Button */}
-      <button
+            <button
                 onClick={togglePanel}
                 className="fixed top-1/2 transform -translate-y-1/2 bg-white border border-gray-300 rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-all z-[9999]"
-                style={{ 
+                style={{
                     overflow: "visible",
                     right: isCollapsed ? '0px' : '280px',
                     transition: 'right 0.3s ease-in-out'
                 }}
             >
                 <ChevronLeft
-                    className={`w-5 h-5 text-gray-700 transition-transform duration-300 ${
-                        isCollapsed ? "rotate-180" : ""
-                    }`}
+                    className={`w-5 h-5 text-gray-700 transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""
+                        }`}
                 />
             </button>
 
@@ -878,24 +872,24 @@ useEffect(() => {
                     >
 
 
-                      {/* Header */}
-<motion.div
-  initial={{ opacity: 0, y: -10 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: 0.1 }}
-  className="flex justify-between items-center p-3 border-b flex-shrink-0"
->
-  <div className="flex items-center gap-2">
-    <span className="font-medium">Properties</span>
-    {isPickingColor && (
-      <span className="text-xs text-blue-600 animate-pulse">
-        Click canvas to pick
-      </span>
-    )}
-  </div>
+                        {/* Header */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="flex justify-between items-center p-3 border-b flex-shrink-0"
+                        >
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium">Properties</span>
+                                {isPickingColor && (
+                                    <span className="text-xs text-blue-600 animate-pulse">
+                                        Click canvas to pick
+                                    </span>
+                                )}
+                            </div>
 
-  {/* 🕹️ Undo / Redo Buttons */}
-  {/* <div className="flex items-center gap-2">
+                            {/* 🕹️ Undo / Redo Buttons */}
+                            {/* <div className="flex items-center gap-2">
     <Button
       onClick={handleUndo}
       variant="outline"
@@ -915,7 +909,7 @@ useEffect(() => {
       <Redo2 className="w-4 h-4" />
     </Button>
   </div> */}
-</motion.div>
+                        </motion.div>
 
 
                         {/* Scrollable content */}

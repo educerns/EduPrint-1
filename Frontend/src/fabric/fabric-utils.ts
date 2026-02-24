@@ -151,6 +151,41 @@ export const deleteSelectedObject = async (canvas) => {
   }
 };
 
+export const bringToFront = (canvas) => {
+  if (!canvas) return;
+
+  const activeObjects = canvas.getActiveObjects();
+  if (!activeObjects.length) return;
+
+  activeObjects.forEach((obj: any) => {
+    canvas.bringObjectToFront(obj);
+  });
+
+  canvas.requestRenderAll();
+};
+
+export const sendToBack = (canvas) => {
+  if (!canvas) return;
+
+  const activeObjects = canvas.getActiveObjects();
+  if (!activeObjects.length) return;
+
+  const objects = canvas.getObjects();
+
+  activeObjects.forEach((obj) => {
+    // find first non-background object
+    const firstMovableIndex = objects.findIndex(
+      (o) => !o.isBackground
+    );
+
+    if (firstMovableIndex !== -1) {
+      canvas.moveObjectTo(obj, firstMovableIndex);
+    }
+  });
+
+  canvas.requestRenderAll();
+};
+
 
 
 

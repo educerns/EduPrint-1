@@ -168,15 +168,15 @@ export const staticVideos: readonly Video[] = [
     price: 0,
     type: "Promotion",
   },
-   {
-    id: 18,
-    videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1762510658/WhatsApp_Video_2025-11-07_at_15.41.22_o4n1x8.mp4",
-    thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1762510658/WhatsApp_Video_2025-11-07_at_15.41.22_o4n1x8.mp4",
-    title: "Edutax in your city",
-    description: "Practice unlimited times, reset your progress anytime, and learn by doing. Perfect for students, professionals, and businesses aiming for complete confidence in GST compliance.",
-    price: 0,
-    type: "Promotion", // 🟢 Capitalized
-  },
+  //  {
+  //   id: 18,
+  //   videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1762510658/WhatsApp_Video_2025-11-07_at_15.41.22_o4n1x8.mp4",
+  //   thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1762510658/WhatsApp_Video_2025-11-07_at_15.41.22_o4n1x8.mp4",
+  //   title: "Edutax in your city",
+  //   description: "Practice unlimited times, reset your progress anytime, and learn by doing. Perfect for students, professionals, and businesses aiming for complete confidence in GST compliance.",
+  //   price: 0,
+  //   type: "Promotion", // 🟢 Capitalized
+  // },
   {
     id: 19,
     videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-01-26_at_12.12.40_w4pale.mp4",

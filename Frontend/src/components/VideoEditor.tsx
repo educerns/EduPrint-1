@@ -47,6 +47,8 @@ interface TextOverlay {
     lineHeight?: number;
     animation: string;
     animationDuration: number;
+      animationSpeed?: number;   // 👈 add this
+
 }
 
 
@@ -140,7 +142,9 @@ const VideoEditor: React.FC = () => {
         opacity: 100,
         letterSpacing: 0,
         animation: 'none' as 'none' | 'fade-in' | 'fade-out' | 'fade-in-out' | 'slide-left' | 'slide-right' | 'zoom-in' | 'floating',
-        animationDuration: 0.5
+        animationDuration: 0.5,
+          animationSpeed: 100,
+
     });
 
     useEffect(() => {
@@ -317,26 +321,28 @@ const VideoEditor: React.FC = () => {
                     case "floating":
                         dy = Math.sin(now * 2 * Math.PI) * 10;
                         break;
-                    case "ticker": {
-                        const speed = 100;
-                        const textWidth = ctx.measureText(overlay.text).width;
-                        const timeOffset = (now * speed) % (textWidth * 2);
+              case "ticker": {
+    const textWidth = ctx.measureText(overlay.text).width;
 
-                        // Ticker moves horizontally within video bounds
-                        for (let offset = -textWidth * 2; offset < drawW + textWidth * 2; offset += textWidth * 2) {
-                            const xPos = videoAreaStartX + drawW - (timeOffset + offset);
+    const speed = overlay.animationSpeed || 100; // px per second
 
-                            // Only draw if within horizontal bounds
-                            if (xPos + textWidth / 2 > videoAreaStartX && xPos - textWidth / 2 < videoAreaEndX) {
-                                ctx.fillStyle = overlay.color;
-                                ctx.globalAlpha = opacity;
-                                ctx.fillText(overlay.text, xPos, videoAreaStartY + drawH * 0.9);
-                            }
-                        }
+    const cycleWidth = textWidth + drawW;
 
-                        ctx.restore();
-                        return;
-                    }
+    const timeOffset = (now * speed) % cycleWidth;
+
+    const xPos = videoAreaStartX + drawW - timeOffset;
+
+    ctx.fillStyle = overlay.color;
+    ctx.globalAlpha = opacity;
+    ctx.fillText(
+        overlay.text,
+        xPos,
+        videoAreaStartY + drawH * 0.9
+    );
+
+    ctx.restore();
+    return;
+}
                     default:
                         break;
                 }
@@ -507,7 +513,8 @@ const VideoEditor: React.FC = () => {
             opacity: newText.opacity,
             letterSpacing: newText.letterSpacing,
             animation: newText.animation,
-            animationDuration: newText.animationDuration
+            animationDuration: newText.animationDuration,
+            animationSpeed: 100, 
         };
 
         setTextOverlays([...textOverlays, overlay]);
@@ -1153,19 +1160,24 @@ const VideoEditor: React.FC = () => {
                                                         {overlay.animation !== 'none' && overlay.animation !== 'floating' && (
                                                             <div className="mt-3">
                                                                 <label className="block text-sm text-gray-700 mb-1">
-                                                                    Duration (s)
+                                                                    Speed
                                                                 </label>
-                                                                <input
-                                                                    type="number"
-                                                                    step="0.1"
-                                                                    min="0.1"
-                                                                    max="5"
-                                                                    value={Number.isFinite(overlay.animationDuration) ? overlay.animationDuration : 0.5}
-                                                                    onChange={(e) =>
-                                                                        updateOverlay(overlay.id, { animationDuration: parseFloat(e.target.value) || 0.5 })
-                                                                    }
-                                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                                                />
+<input
+  type="number"
+  step="10"
+  min="20"
+  max="500"
+  value={overlay.animationSpeed}
+  onChange={(e) => {
+    const val = e.target.value;
+    if (val === "") return;
+
+    updateOverlay(overlay.id, {
+      animationSpeed: parseFloat(val)
+    });
+  }}
+  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+/>
                                                             </div>
                                                         )}
                                                     </div>
