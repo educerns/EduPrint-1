@@ -99,7 +99,7 @@ const FabricCanvas: React.FC = () => {
       ref={containerRef}
       className="
       relative 
-      flex justify-center items-center
+      flex justify-start items-center
       h-screen overflow-auto
       w-full md:w-10/12 lg:w-7/12 xl:w-8/12
       mx-auto

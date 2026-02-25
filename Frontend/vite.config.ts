@@ -18,8 +18,10 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+  alias: {
+    "@": path.resolve(__dirname, "./src"),
+    "react": path.resolve(__dirname, "./node_modules/react"),
+    "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
   },
+},
 }));
