@@ -11,6 +11,13 @@ import axios from "../services/api";
 import { jwtDecode } from "jwt-decode";
 import QuarterBurstLoaderStatic from "./ui/multiArcLoader";
 import TrueFocus from "./ui/TrueFocus";
+import PremiumMembershipModal from "../components/PremiumMembershipModal"; // adjust path
+import {
+  shouldBlockUpload,
+  saveMembership,
+  hasActiveMembership,
+  MembershipType,
+} from "../utils/Membershiputils";
 
 export interface Video {
   id: number;
@@ -28,6 +35,7 @@ const VideoGallery: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+const [isMembershipModalOpen, setIsMembershipModalOpen] = useState(false);
 
   const userData = JSON.parse(localStorage.getItem("parsedate") || "{}");
   const isSuperAdmin = userData?.role === "superadmin";
@@ -85,7 +93,7 @@ const VideoGallery: React.FC = () => {
   };
 
   // 📤 Handle Upload Success from Modal
-  const handleUploadSuccess = (videoUrl: string, videoTitle: string) => {
+const handleUploadSuccess = (videoUrl: string, videoTitle: string, showWatermark?: boolean) => {
     // Show success message
     Swal.fire({
       icon: "success",
@@ -97,14 +105,15 @@ const VideoGallery: React.FC = () => {
     });
 
     // Navigate to video editor with the uploaded video
-    setTimeout(() => {
-      navigate("/video-editor", {
-        state: {
-          videoUrl: videoUrl,
-          videoTitle: videoTitle,
-        },
-      });
-    }, 1500);
+ setTimeout(() => {
+    navigate("/video-editor", {
+      state: {
+        videoUrl,
+        videoTitle,
+        showWatermark: showWatermark ?? false, // ✅ pass to editor
+      },
+    });
+  }, 1500);
   };
 
   // 📥 Shared Download Handler
@@ -153,6 +162,22 @@ const VideoGallery: React.FC = () => {
       });
     }
   };
+const handleUploadButtonClick = () => {
+  if (shouldBlockUpload()) {
+    // Free limit hit, no active membership → show membership modal directly
+    setIsMembershipModalOpen(true);
+  } else {
+    setIsUploadModalOpen(true);
+  }
+};
+
+const handleMembershipSelect = (planId: string) => {
+  if (planId === "free") return;
+  saveMembership(planId as MembershipType);
+  setIsMembershipModalOpen(false);
+  // Now open the upload modal since user just bought a plan
+  setIsUploadModalOpen(true);
+};
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -207,7 +232,7 @@ const VideoGallery: React.FC = () => {
               {/* Right Upload Button */}
               <div className="w-1/4 flex justify-end">
                 <button
-                  onClick={() => setIsUploadModalOpen(true)}
+                  onClick={handleUploadButtonClick}
                   className="cursor-pointer select-none"
                 >
                   <div className="scale-90">
@@ -355,7 +380,16 @@ const VideoGallery: React.FC = () => {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onUploadSuccess={handleUploadSuccess}
+         showWatermark={true}
       />
+
+ {isMembershipModalOpen && (
+   <PremiumMembershipModal
+     onClose={() => setIsMembershipModalOpen(false)}
+     onSelectPlan={handleMembershipSelect}
+   />
+ )}
+
 
       {/* 🔄 Loader Overlay */}
       <AnimatePresence>

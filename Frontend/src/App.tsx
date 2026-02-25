@@ -27,6 +27,7 @@ import VideoGallery from "./components/VideoGallery";
 import MyVideoGallery from "./components/MyVideoGallery";
 import Editor from "./editor/editor";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PremiumMembershipModal from "./components/PremiumMembershipModal";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,7 @@ const App = () => (
                 <Route path="free-videos" element={<ProtectedRoute><VideoGallery /></ProtectedRoute>}/>
                 <Route path="my-videos" element={<ProtectedRoute><MyVideoGallery /></ProtectedRoute>} />
                 <Route path="video-editor" element={<ProtectedRoute><VideoEditor /></ProtectedRoute>} />
+                <Route path="premium-membership" element={<ProtectedRoute><PremiumMembershipModal /></ProtectedRoute>} />
 
                 {/* Legal pages */}
                 <Route path="terms" element={<TermsOfService />} />
