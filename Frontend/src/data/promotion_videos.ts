@@ -195,6 +195,17 @@ export const staticVideos: readonly Video[] = [
     price: 0,
     type: "Promotion",
   },
+    {
+    id: 21,
+    videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-28_at_17.18.26_ovtijd.mp4",
+    thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-28_at_17.18.26_ovtijd.mp4",
+    title: "Happy Holi from Team EduTax!",
+    description: `This Holi, color your career with real-world GST expertise.
+Practice. Learn. Master — only with EduTax.
+`,
+    price: 0,
+    type: "Promotion",
+  },
   //  {
   //   id: 18,
   //   videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-14_at_16.24.42_svzuhc.mp4",
