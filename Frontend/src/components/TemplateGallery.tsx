@@ -45,7 +45,7 @@ const TemplateGallery: React.FC = () => {
 
     return templates;
   }, [filter, sortOrder, allTemplates]);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // ⏱️ Simulate loading for 1-2 seconds
@@ -91,37 +91,37 @@ const TemplateGallery: React.FC = () => {
   //     },
   //   },
   // };
-const cardVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 40,
-    rotateX: -12,
-    scale: 0.92,
-    filter: "blur(4px)",
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    rotateX: 0,
-    scale: 1,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1] as const,
+  const cardVariants: Variants = {
+    hidden: {
+      opacity: 0,
+      y: 40,
+      rotateX: -12,
+      scale: 0.92,
+      filter: "blur(4px)",
     },
-  },
-  exit: {
-    opacity: 0,
-    y: -30,
-    rotateX: 12,
-    scale: 0.9,
-    filter: "blur(6px)",
-    transition: {
-      duration: 0.4,
-      ease: "easeInOut",
+    visible: {
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      scale: 1,
+      filter: "blur(0px)",
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1] as const,
+      },
     },
-  },
-};
+    exit: {
+      opacity: 0,
+      y: -30,
+      rotateX: 12,
+      scale: 0.9,
+      filter: "blur(6px)",
+      transition: {
+        duration: 0.4,
+        ease: "easeInOut",
+      },
+    },
+  };
 
   const handleTemplateClick = (template: Template) => {
     // console.log("🖱 Template clicked:", template);
@@ -159,77 +159,76 @@ const cardVariants: Variants = {
             </p>
           </motion.div>
           {/* 🗂️ Category Tabs */}
-<div className="flex gap-3 mb-8">
-  {["All", "Demo", "Registration", "Promotion"].map((tab) => (
-    <button
-      key={tab}
-      onClick={() => setFilter(tab)}
-      className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all
-        ${
-          filter === tab
-            ? "bg-[#2C4E86] text-white border-[#2C4E86]"
-            : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
-        }`}
-    >
-      {tab}
-    </button>
-  ))}
-</div>
+          <div className="flex gap-3 mb-8">
+            {["All", "Demo", "Registration", "Promotion", "Festival"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setFilter(tab)}
+                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all
+        ${filter === tab
+                    ? "bg-[#2C4E86] text-white border-[#2C4E86]"
+                    : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
+                  }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
 
 
           {/* 🧩 Grouped Templates by Category */}
-         <motion.div className="mb-16">
-  <AnimatePresence mode="wait">
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      layout
-       style={{ perspective: 1200 }}
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10"
-    >
-      {filteredTemplates.map((template, index) => (
-        <motion.div
-          key={template._id || index}
-          layout
-          variants={cardVariants}
-          whileHover={{ scale: 1.02 }}
-          transition={{
-            layout: { duration: 0.5, ease: [0.33, 1, 0.68, 1] },
-          }}
-          className="flex flex-col cursor-pointer"
-          onClick={() => openModal(template)}
-        >
-          {/* 🖼️ Image */}
-          <div className="w-full aspect-square overflow-hidden">
-            {template.sampleImage ? (
-              <motion.img
+          <motion.div className="mb-16">
+            <AnimatePresence mode="wait">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
                 layout
-                src={template.sampleImage}
-                alt={template.title}
-                className="w-full h-full object-fill transition-transform duration-500 hover:scale-105"
-              />
-            ) : (
-              <div className="flex items-center justify-center bg-gray-100 h-full text-gray-400 text-sm">
-                No Image
-              </div>
-            )}
-          </div>
+                style={{ perspective: 1200 }}
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10"
+              >
+                {filteredTemplates.map((template, index) => (
+                  <motion.div
+                    key={template._id || index}
+                    layout
+                    variants={cardVariants}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{
+                      layout: { duration: 0.5, ease: [0.33, 1, 0.68, 1] },
+                    }}
+                    className="flex flex-col cursor-pointer"
+                    onClick={() => openModal(template)}
+                  >
+                    {/* 🖼️ Image */}
+                    <div className="w-full aspect-square overflow-hidden">
+                      {template.sampleImage ? (
+                        <motion.img
+                          layout
+                          src={template.sampleImage}
+                          alt={template.title}
+                          className="w-full h-full object-fill transition-transform duration-500 hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center bg-gray-100 h-full text-gray-400 text-sm">
+                          No Image
+                        </div>
+                      )}
+                    </div>
 
-          {/* 📘 Info */}
-          <div className="mt-3">
-            <h3 className="text-base font-semibold text-gray-800 truncate">
-              {template.title}
-            </h3>
-            <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
-              {template.description}
-            </p>
-          </div>
-        </motion.div>
-      ))}
-    </motion.div>
-  </AnimatePresence>
-</motion.div>
+                    {/* 📘 Info */}
+                    <div className="mt-3">
+                      <h3 className="text-base font-semibold text-gray-800 truncate">
+                        {template.title}
+                      </h3>
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
+                        {template.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
 
         </div>
       </div>

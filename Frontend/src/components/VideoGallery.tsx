@@ -28,6 +28,7 @@ const VideoGallery: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [filter, setFilter] = useState<string>("All");
 
   const userData = JSON.parse(localStorage.getItem("parsedate") || "{}");
   const isSuperAdmin = userData?.role === "superadmin";
@@ -45,6 +46,8 @@ const VideoGallery: React.FC = () => {
 
   const [email, setemail] = useState("");
   const [centerid, setcenterid] = useState("");
+
+  
   
   // ⏱️ Simulate loading for 1-2 seconds
   useEffect(() => {
@@ -74,6 +77,8 @@ const VideoGallery: React.FC = () => {
     }
   }, []);
 
+
+  
   const openModal = (video: Video) => {
     setSelectedVideo(video);
     setIsModalOpen(true);
@@ -154,6 +159,15 @@ const VideoGallery: React.FC = () => {
     }
   };
 
+  // 🎯 Filter videos based on selected tab
+const filteredVideos = useMemo(() => {
+  if (filter === "All") return allVideos;
+
+  return allVideos.filter(
+    (video) => video.type?.toLowerCase() === filter.toLowerCase()
+  );
+}, [filter, allVideos]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -204,6 +218,7 @@ const VideoGallery: React.FC = () => {
                 </p>
               </div>
 
+
               {/* Right Upload Button */}
               <div className="w-1/4 flex justify-end">
                 <button
@@ -223,10 +238,28 @@ const VideoGallery: React.FC = () => {
                 </button>
               </div>
             </div>
+
           </motion.div>
 
+          {/* 🗂️ Category Tabs */}
+          <div className="flex gap-3 mb-8">
+            {["All", "Demo", "Registration", "Promotion", "Festival"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setFilter(tab)}
+                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all
+        ${filter === tab
+                    ? "bg-[#2C4E86] text-white border-[#2C4E86]"
+                    : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
+                  }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
           {/* 🎞️ Videos Grid */}
-          {allVideos.length === 0 ? (
+          {filteredVideos.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-500 text-lg">No videos found.</p>
             </div>
@@ -239,7 +272,7 @@ const VideoGallery: React.FC = () => {
                 layout
                 className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10"
               >
-                {allVideos.map((video, index) => (
+                {filteredVideos.map((video, index) => (
                   <motion.div
                     key={video._id || `video-${index}`}
                     layout
