@@ -40,6 +40,8 @@ import DemoSample from "../assets/DemoSample1.jpeg";
 import DemoCustom1 from "../assets/DemoCustom2.jpeg";
 import DemoSample1 from "../assets/DemoSample2.jpeg";
 
+import Navratri from '../assets/festival.jpeg'
+
 // 🧩 Base Template List
 export const staticTemplates: readonly Template[] = [
   {
@@ -142,6 +144,15 @@ export const staticTemplates: readonly Template[] = [
     price: 0,
     type: "Registration2",
   },
+   {
+    id: 13,
+    customImage: Navratri,
+    sampleImage: Navratri,
+    title: "Navrati",
+    description: "Celebrate the nine nights of power, devotion, and learning!",
+    price: 0,
+    type: "Festival",
+  },
 ];
 
 // 🧱 Grouped Templates (Array Format)
@@ -168,6 +179,13 @@ export const groupedTemplates = [
         item.type === "Promotion3" ||
         item.type === "Promotion4" ||
         item.type === "Promotion5"
+    ),
+  },
+   {
+    category: "Festival",
+    templates: staticTemplates.filter(
+      (item) =>
+        item.type === "Festival" 
     ),
   },
 ] as const;

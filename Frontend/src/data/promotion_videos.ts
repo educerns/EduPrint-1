@@ -181,7 +181,7 @@ export const staticVideos: readonly Video[] = [
     id: 19,
     videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-01-26_at_12.12.40_w4pale.mp4",
     thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-01-26_at_12.12.40_w4pale.mp4",
-    title: "Happy Republic Day",
+    title: "Republic Day",
     description: "Celebrate Republic Day with Educerns",
     price: 0,
     type: "Festival",
@@ -190,7 +190,7 @@ export const staticVideos: readonly Video[] = [
     id: 20,
     videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-28_at_17.18.26_ovtijd.mp4",
     thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-28_at_17.18.26_ovtijd.mp4",
-    title: "Happy Holi from Team EduTax!",
+    title: "Holi",
     description: `This Holi, color your career with real-world GST expertise.
 Practice. Learn. Master — only with EduTax.
 `,
@@ -201,7 +201,7 @@ Practice. Learn. Master — only with EduTax.
     id: 21,
     videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1773490576/WhatsApp_Video_2026-03-14_at_17.44.11_rrucqz.mp4",
     thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1773490576/WhatsApp_Video_2026-03-14_at_17.44.11_rrucqz.mp4",
-    title: " Celebrate new beginnings this Gudi Padwa!",
+    title: " Gudi Padwa!",
     description: `May this new year bring new opportunities, knowledge, and success to your career.
 Start the year with the power of practical GST learning and build a brighter future with EduTax.`,
     price: 0,
@@ -212,7 +212,7 @@ Start the year with the power of practical GST learning and build a brighter fut
     id: 22,
     videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1773490569/WhatsApp_Video_2026-03-14_at_17.44.10_o2hju0.mp4",
     thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1773490569/WhatsApp_Video_2026-03-14_at_17.44.10_o2hju0.mp4",
-    title: "Celebrate the nine nights of power, devotion, and learning!",
+    title: "Navratri",
     description: `This Navratri, empower your career with practical GST skills and real-world training.
 Team EduTax wishes you a joyful and prosperous Navratri!
 `,
