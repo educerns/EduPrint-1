@@ -219,6 +219,17 @@ Team EduTax wishes you a joyful and prosperous Navratri!
     price: 0,
     type: "Festival",
   },
+   {
+    id: 23,
+    videoUrl: "https://res.cloudinary.com/dakihifzq/video/upload/v1773850638/Happy-eid-ul-fitr_mnqx2f.mp4",
+    thumbnail: "https://res.cloudinary.com/dakihifzq/video/upload/v1773850638/Happy-eid-ul-fitr_mnqx2f.mp4",
+    title: "Eid-ul-fitr",
+    description: `This Eid, empower your career with practical GST skills and real-world training.
+Team EduTax wishes you a joyful and Eid Mubarak!
+`,
+    price: 0,
+    type: "Festival",
+  },
   //  {
   //   id: 18,
   //   videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/WhatsApp_Video_2026-02-14_at_16.24.42_svzuhc.mp4",
