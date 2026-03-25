@@ -612,7 +612,7 @@ const blobUrl = window.URL.createObjectURL(videoRes.data);
 
 const a = document.createElement("a");
 a.href = blobUrl;
-a.download = "final_video.mp4";
+a.download = `${currentVideo.title}.mp4`;
 document.body.appendChild(a);
 a.click();
 a.remove();
