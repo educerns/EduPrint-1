@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import ExportButton from './ui/ExportButton';
 import QuarterBurstLoaderStatic from './ui/multiArcLoader';
+import axios from 'axios';
 
 
 interface Video {
@@ -574,7 +575,7 @@ const VideoEditor: React.FC = () => {
 
             // 4️⃣ Record stream
             const recorder = new MediaRecorder(finalStream, {
-                mimeType: "video/webm;codecs=vp9"
+                mimeType: "video/webm;codecs=vp8,opus"
             });
 
             const chunks: Blob[] = [];
@@ -583,17 +584,51 @@ const VideoEditor: React.FC = () => {
                 if (e.data.size > 0) chunks.push(e.data);
             };
 
-            recorder.onstop = () => {
+            recorder.onstop = async() => {
                 const blob = new Blob(chunks, { type: "video/webm" });
-                const url = URL.createObjectURL(blob);
 
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${currentVideo.title}_edited_with_audio.webm`;
-                a.click();
+                const formData = new FormData();
+formData.append("video", blob, "recorded.webm"); 
 
-                URL.revokeObjectURL(url);
+const res = await axios.post(
+  `${import.meta.env.VITE_API_URL}/api/convert-video`,
+  formData
+);
+
+const mp4Url = res.data.url;
+console.log(mp4Url)
+//                 setIsExporting(false);
+
+// return
+// const videoRes = await axios.get(`http://localhost:5005${mp4Url}`, {
+//   responseType: "blob"
+// });
+
+const videoRes = await axios.get(mp4Url, {
+  responseType: "blob"
+});
+
+const blobUrl = window.URL.createObjectURL(videoRes.data);
+
+const a = document.createElement("a");
+a.href = blobUrl;
+a.download = "final_video.mp4";
+document.body.appendChild(a);
+a.click();
+a.remove();
+
+window.URL.revokeObjectURL(blobUrl);
                 setIsExporting(false);
+
+                // const url = URL.createObjectURL(blob);
+
+                // const a = document.createElement("a");
+                // a.href = url;
+                // a.download = `${currentVideo.title}_edited_with_audio.webm`;
+                // a.click();
+
+                // URL.revokeObjectURL(url);
+                // setIsExporting(false);
             };
 
             // 5️⃣ Start export
