@@ -155,7 +155,7 @@ export const staticTemplates: readonly Template[] = [
     type: "Festival",
   },
   {
-    id: 13,
+    id: 14,
     customImage: Mahavir,
     sampleImage: Mahavir,
     title: "Mahavir Jayanti",
