@@ -250,6 +250,16 @@ Embrace the spirit of devotion and joy with your loved ones.
 Team EduTax wishes you a blessed and joyous Ram Navmi!`,
     price: 0,
     type: "Festival",
+},{
+  id: 26,
+  videoUrl: "https://res.cloudinary.com/dakihifzq/video/upload/v1774873162/hanuman_oie2tj.mp4",
+  thumbnail: "https://res.cloudinary.com/dakihifzq/video/upload/v1774873162/hanuman_oie2tj.mp4",
+  title: "Hanuman Jayanti Celebration: Strength, Devotion & Blessings",
+  description: `Celebrate the birth of Lord Hanuman, the symbol of strength, devotion, and courage.  
+Embrace his teachings of loyalty and selfless service.  
+Team EduTax wishes you a powerful and blessed Hanuman Jayanti!`,
+  price: 0,
+  type: "Festival",
 }
 
   //  {
