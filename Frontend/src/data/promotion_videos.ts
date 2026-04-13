@@ -234,7 +234,7 @@ Team EduTax wishes you a joyful and Eid Mubarak!
     id: 24,
     videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1774442923/WhatsApp_Video_2026-03-25_at_18.09.15_jw2u5w.mp4",
     thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1774442923/WhatsApp_Video_2026-03-25_at_18.09.15_jw2u5w.mp4",
-    title: "Celebrate Bodh Purnima with Enlightenment & Learning",
+    title: "Bodh Purnima",
     description: `This Bodh Purnima, awaken your potential!  
 Join EduTax to gain practical GST insights and hands-on real-world training.  
 Wishing you a day of knowledge, peace, and inspiration!`,
@@ -244,17 +244,29 @@ Wishing you a day of knowledge, peace, and inspiration!`,
     id: 25,
     videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1774442922/WhatsApp_Video_2026-03-25_at_18.10.22_lzbpar.mp4",
     thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1774442922/WhatsApp_Video_2026-03-25_at_18.10.22_lzbpar.mp4",
-     title: "Ram Navmi Celebration: Joy, Devotion & Blessings",
+     title: "Ram Navmi ",
     description: `Celebrate the divine birth of Lord Ram this Ram Navmi!  
 Embrace the spirit of devotion and joy with your loved ones.  
 Team EduTax wishes you a blessed and joyous Ram Navmi!`,
     price: 0,
     type: "Festival",
-},{
+},
+{
   id: 26,
   videoUrl: "https://res.cloudinary.com/dakihifzq/video/upload/v1774873162/hanuman_oie2tj.mp4",
   thumbnail: "https://res.cloudinary.com/dakihifzq/video/upload/v1774873162/hanuman_oie2tj.mp4",
-  title: "Hanuman Jayanti Celebration: Strength, Devotion & Blessings",
+  title: "Hanuman Jayanti ",
+  description: `Celebrate the birth of Lord Hanuman, the symbol of strength, devotion, and courage.  
+Embrace his teachings of loyalty and selfless service.  
+Team EduTax wishes you a powerful and blessed Hanuman Jayanti!`,
+  price: 0,
+  type: "Festival",
+},
+{
+  id: 27,
+  videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1776068337/WhatsApp_Video_2026-04-13_at_13.28.57_knwjry.mp4",
+  thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1776068337/WhatsApp_Video_2026-04-13_at_13.28.57_knwjry.mp4",
+  title: "Ambedkar jayanti",
   description: `Celebrate the birth of Lord Hanuman, the symbol of strength, devotion, and courage.  
 Embrace his teachings of loyalty and selfless service.  
 Team EduTax wishes you a powerful and blessed Hanuman Jayanti!`,
