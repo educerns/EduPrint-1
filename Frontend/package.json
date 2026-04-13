@@ -12,6 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ffmpeg/core": "^0.12.4",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -57,6 +60,7 @@
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.462.0",
     "motion": "^12.29.2",
+    "mp4-muxer": "^5.2.2",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-colorful": "^5.6.1",

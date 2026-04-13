@@ -4,13 +4,17 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  server: {
-    host: "localhost",   // ✅ Prevent IPv6 WS issues
+server: {
+    host: "localhost",
     port: 8080,
     hmr: {
       protocol: "ws",
       host: "localhost",
-      port: 8080,        // ✅ Same as server port
+      port: 8080,
+    },
+    headers: {                                    // ✅ must be HERE inside server{}
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
     },
   },
   plugins: [
@@ -20,6 +24,15 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  optimizeDeps: {
+    exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
+  },
+  preview: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
     },
   },
 }));

@@ -6,9 +6,17 @@ import { Download } from 'lucide-react';
 interface ExportButtonProps {
   isExporting: boolean;
   onClick: () => void;
+    progress?: number;       // 👈 add
+  disabled?: boolean;      // 👈 add
+  title?: string;  
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ isExporting, onClick }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ 
+  isExporting, 
+  onClick ,
+progress = 0,
+  disabled = false,
+  title = 'Export MP4',}) => {
   // Define motion variants for the spinner for clean rotation
   const spinnerVariants = {
     animate: {

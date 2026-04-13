@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import ExportButton from './ui/ExportButton';
 import QuarterBurstLoaderStatic from './ui/multiArcLoader';
-
+import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
 
 interface Video {
     id: number;
@@ -83,6 +83,7 @@ const VideoEditor: React.FC = () => {
     // ✅ Get video data from route state
     const { videoUrl, videoTitle } = location.state || {};
     const [isLoading, setIsLoading] = useState<boolean>(true);
+
 
 
     const [currentVideo, setCurrentVideo] = useState({
@@ -415,10 +416,6 @@ const VideoEditor: React.FC = () => {
         };
     }, []);
 
-
-
-
-
     const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!selectedOverlay || !canvasRef.current) return;
 
@@ -538,84 +535,183 @@ const VideoEditor: React.FC = () => {
     };
 
     // FULLY WORKING EXPORT FUNCTION
-    const exportVideo = async () => {
-        try {
-            const canvas = canvasRef.current;
-            const video = videoRef.current;
-            if (!canvas || !video) return;
+    // const exportVideo = async () => {
+    //     try {
+    //         const canvas = canvasRef.current;
+    //         const video = videoRef.current;
+    //         if (!canvas || !video) return;
 
-            setIsExporting(true);
+    //         setIsExporting(true);
 
-            // 1️⃣ Canvas → video track
-            const canvasStream = canvas.captureStream(30);
+    //         // 1️⃣ Canvas → video track
+    //         const canvasStream = canvas.captureStream(30);
 
-            // 2️⃣ Reuse existing audio context and source node (important!)
-            const audioContext = audioContextRef.current;
-            const sourceNode = audioSourceRef.current;
+    //         // 2️⃣ Reuse existing audio context and source node (important!)
+    //         const audioContext = audioContextRef.current;
+    //         const sourceNode = audioSourceRef.current;
 
-            if (!audioContext || !sourceNode) {
-                alert("Please click PLAY once before exporting!");
-                setIsExporting(false);
-                return;
-            }
+    //         if (!audioContext || !sourceNode) {
+    //             alert("Please click PLAY once before exporting!");
+    //             setIsExporting(false);
+    //             return;
+    //         }
 
-            const destination = audioContext.createMediaStreamDestination();
-            sourceNode.connect(destination);
+    //         const destination = audioContext.createMediaStreamDestination();
+    //         sourceNode.connect(destination);
 
-            await audioContext.resume();
+    //         await audioContext.resume();
 
-            const audioTrack = destination.stream.getAudioTracks()[0];
+    //         const audioTrack = destination.stream.getAudioTracks()[0];
 
-            // 3️⃣ Final combined stream
-            const finalStream = new MediaStream([
-                ...canvasStream.getVideoTracks(),
-                audioTrack
-            ]);
+    //         // 3️⃣ Final combined stream
+    //         const finalStream = new MediaStream([
+    //             ...canvasStream.getVideoTracks(),
+    //             audioTrack
+    //         ]);
 
-            // 4️⃣ Record stream
-            const recorder = new MediaRecorder(finalStream, {
-                mimeType: "video/webm;codecs=vp9"
-            });
+    //         // 4️⃣ Record stream
+    //         const recorder = new MediaRecorder(finalStream, {
+    //             mimeType: "video/webm;codecs=vp9"
+    //         });
 
-            const chunks: Blob[] = [];
+    //         const chunks: Blob[] = [];
 
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) chunks.push(e.data);
-            };
+    //         recorder.ondataavailable = (e) => {
+    //             if (e.data.size > 0) chunks.push(e.data);
+    //         };
 
-            recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: "video/webm" });
-                const url = URL.createObjectURL(blob);
+    //         recorder.onstop = () => {
+    //             const blob = new Blob(chunks, { type: "video/webm" });
+    //             const url = URL.createObjectURL(blob);
 
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${currentVideo.title}_edited_with_audio.webm`;
-                a.click();
+    //             const a = document.createElement("a");
+    //             a.href = url;
+    //             a.download = `${currentVideo.title}_edited_with_audio.webm`;
+    //             a.click();
 
-                URL.revokeObjectURL(url);
-                setIsExporting(false);
-            };
+    //             URL.revokeObjectURL(url);
+    //             setIsExporting(false);
+    //         };
 
-            // 5️⃣ Start export
-            video.currentTime = 0;
-            await video.play();
+    //         // 5️⃣ Start export
+    //         video.currentTime = 0;
+    //         await video.play();
 
-            recorder.start();
+    //         recorder.start();
 
-            video.onended = () => {
-                recorder.stop();
-                setIsPlaying(false);
-            };
+    //         video.onended = () => {
+    //             recorder.stop();
+    //             setIsPlaying(false);
+    //         };
 
-            setIsPlaying(true);
+    //         setIsPlaying(true);
 
-        } catch (error) {
-            console.error("Export failed:", error);
-            alert("Export failed. Please try again.");
-            setIsExporting(false);
-        }
+    //     } catch (error) {
+    //         console.error("Export failed:", error);
+    //         alert("Export failed. Please try again.");
+    //         setIsExporting(false);
+    //     }
+    // };
+const exportVideo = async () => {
+  try {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video) return;
+
+    setIsExporting(true);
+    setExportProgress(0);
+
+    // ── Init audio context ──
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContext();
+    }
+    const audioContext = audioContextRef.current;
+    if (audioContext.state === 'suspended') await audioContext.resume();
+
+    if (!audioSourceRef.current) {
+      audioSourceRef.current = audioContext.createMediaElementSource(video);
+      audioSourceRef.current.connect(audioContext.destination);
+    }
+    const sourceNode = audioSourceRef.current;
+
+    // ── Create audio output stream ──
+    const audioDestination = audioContext.createMediaStreamDestination();
+    sourceNode.connect(audioDestination);
+
+    // ── Combine canvas video + audio into one stream ──
+    const canvasStream = canvas.captureStream(30);
+    const combinedStream = new MediaStream([
+      ...canvasStream.getVideoTracks(),
+      ...audioDestination.stream.getAudioTracks(),
+    ]);
+
+    // ── Pick best supported mimeType ──
+    const mimeType = [
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4',
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm',
+    ].find(type => MediaRecorder.isTypeSupported(type)) || 'video/webm';
+
+    console.log('Using mimeType:', mimeType);
+
+    const recorder = new MediaRecorder(combinedStream, { mimeType });
+    const chunks: Blob[] = [];
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
     };
 
+    // ── Seek to start and record ──
+    video.currentTime = 0;
+    await new Promise(r => setTimeout(r, 200));
+    await video.play();
+    setIsPlaying(true);
+    recorder.start(100); // collect data every 100ms
+
+    // ── Track progress ──
+    const progressInterval = setInterval(() => {
+      if (video.duration > 0) {
+        setExportProgress(Math.round((video.currentTime / video.duration) * 90));
+      }
+    }, 300);
+
+    // ── Wait for video to finish ──
+    await new Promise<void>((resolve) => {
+      video.onended = () => resolve();
+    });
+
+    clearInterval(progressInterval);
+    recorder.stop();
+    setIsPlaying(false);
+
+    // ── Wait for recorder to finish ──
+    await new Promise<void>((resolve) => {
+      recorder.onstop = () => resolve();
+    });
+
+    setExportProgress(95);
+
+    // ── Download ──
+    const isMP4 = mimeType.includes('mp4');
+    const blob = new Blob(chunks, { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentVideo.title}_edited.${isMP4 ? 'mp4' : 'webm'}`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    setExportProgress(100);
+    setIsExporting(false);
+
+  } catch (error) {
+    console.error('Export failed:', error);
+    alert('Export failed: ' + error);
+    setIsExporting(false);
+  }
+};
 
     const formatTime = (time: number) => {
         const minutes = Math.floor(time / 60);
@@ -767,11 +863,12 @@ const VideoEditor: React.FC = () => {
 
                                             <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
                                                 {/* ... other buttons ... */}
-
-                                                <ExportButton
-                                                    isExporting={isExporting}
-                                                    onClick={exportVideo}
-                                                />
+<ExportButton
+  isExporting={isExporting}
+  onClick={exportVideo}
+  disabled={isExporting}
+  title="Export MP4"
+/>
                                             </div>
                                         </div>
                                     </div>
