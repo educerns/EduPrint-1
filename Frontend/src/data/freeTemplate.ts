@@ -42,6 +42,13 @@ import DemoSample1 from "../assets/DemoSample2.jpeg";
 
 import Navratri from '../assets/festival.jpeg'
 import Mahavir from '../assets/mahavir.jpeg'
+import indepence from '../assets/independence.jpeg';
+import independece_demo from '../assets/independence_demo.jpeg';
+import rakshabandhan from '../assets/rakshabandhan.jpeg'
+import reakshbandhan_demo from '../assets/rakshabandhan_demo.jpg.jpeg'
+import sportsday from '../assets/sportsday.jpeg'
+import sportsday_demo from '../assets/Sportsday_demo.jpeg'
+
 
 // 🧩 Base Template List
 export const staticTemplates: readonly Template[] = [
@@ -160,6 +167,34 @@ export const staticTemplates: readonly Template[] = [
     sampleImage: Mahavir,
     title: "Mahavir Jayanti",
   description: "Celebrate the birth of Lord Mahavir, symbolizing peace, non-violence, and spiritual awakening.",
+  price: 0,
+  type: "Festival",
+  },
+    {
+    id: 15,
+    customImage: indepence,
+    sampleImage: independece_demo,
+    title: "Independence Day",
+  description: "Celebrate the spirit of freedom, unity, and progress this Independence Day. Team EduTax wishes you a proud and joyful Independence Day!",
+  price: 0,
+  type: "Festival",
+  },
+    {
+    id: 16,
+    customImage: rakshabandhan,
+    sampleImage: reakshbandhan_demo,
+    title: "Raksha Bandhan",
+  description: `Celebrate the beautiful bond of love, care, and protection this Raksha Bandhan.
+Team EduTax wishes you a happy and blessed Raksha Bandhan!`,
+  price: 0,
+  type: "Festival",
+  },
+    {
+    id: 17,
+    customImage: sportsday,
+    sampleImage: sportsday_demo,
+    title: "Sports Day",
+  description: "National Sports Day",
   price: 0,
   type: "Festival",
   },

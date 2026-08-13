@@ -272,7 +272,7 @@ Embrace his teachings of loyalty and selfless service.
 Team EduTax wishes you a powerful and blessed Hanuman Jayanti!`,
   price: 0,
   type: "Festival",
-}
+},
 {
   id: 28,
   videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1786603744/independence_Video_b7zsnl.mp4",
@@ -282,7 +282,7 @@ Team EduTax wishes you a powerful and blessed Hanuman Jayanti!`,
 Team EduTax wishes you a proud and joyful Independence Day!`,
   price: 0,
   type: "Festival",
-}
+},
 {
   id: 29,
   videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1786603736/Rakshabandhan_Video_bxdk8o.mp4",
