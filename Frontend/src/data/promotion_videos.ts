@@ -273,6 +273,26 @@ Team EduTax wishes you a powerful and blessed Hanuman Jayanti!`,
   price: 0,
   type: "Festival",
 }
+{
+  id: 28,
+  videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1786603744/independence_Video_b7zsnl.mp4",
+  thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1786603744/independence_Video_b7zsnl.mp4",
+  title: "Independence Day",
+  description: `Celebrate the spirit of freedom, unity, and progress this Independence Day.
+Team EduTax wishes you a proud and joyful Independence Day!`,
+  price: 0,
+  type: "Festival",
+}
+{
+  id: 29,
+  videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1786603736/Rakshabandhan_Video_bxdk8o.mp4",
+  thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1786603736/Rakshabandhan_Video_bxdk8o.mp4",
+  title: "Raksha Bandhan",
+  description: `Celebrate the beautiful bond of love, care, and protection this Raksha Bandhan.
+Team EduTax wishes you a happy and blessed Raksha Bandhan!`,
+  price: 0,
+  type: "Festival",
+}
 
   //  {
   //   id: 18,
