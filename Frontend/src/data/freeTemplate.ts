@@ -48,6 +48,8 @@ import rakshabandhan from '../assets/rakshabandhan.jpeg'
 import reakshbandhan_demo from '../assets/rakshabandhan_demo.jpg.jpeg'
 import sportsday from '../assets/sportsday.jpeg'
 import sportsday_demo from '../assets/Sportsday_demo.jpeg'
+import janmashtmi_demo from '../assets/JANMASHTAMI_DEMO.jpg'
+import janmashtmi from '../assets/JANMASHTMI.jpg'
 
 
 // 🧩 Base Template List
@@ -195,6 +197,15 @@ Team EduTax wishes you a happy and blessed Raksha Bandhan!`,
     sampleImage: sportsday_demo,
     title: "Sports Day",
   description: "National Sports Day",
+  price: 0,
+  type: "Festival",
+  },
+    {
+    id: 18,
+    customImage: janmashtmi_demo,
+    sampleImage: janmashtmi,
+    title: "Krishna Janmashtmi",
+  description: "Happy Krishna Janmashthmi",
   price: 0,
   type: "Festival",
   },

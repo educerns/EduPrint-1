@@ -292,6 +292,15 @@ Team EduTax wishes you a proud and joyful Independence Day!`,
 Team EduTax wishes you a happy and blessed Raksha Bandhan!`,
   price: 0,
   type: "Festival",
+},
+{
+  id: 30,
+  videoUrl: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1788180508/JANMASHTMI_abtkwb.mp4",
+  thumbnail: "https://res.cloudinary.com/ddb0hp5ka/video/upload/v1788180508/JANMASHTMI_abtkwb.mp4",
+  title: "Krishna Janmashtmi",
+  description: `Happy Krishna Janmashthmi`,
+  price: 0,
+  type: "Festival",
 }
 
   //  {
