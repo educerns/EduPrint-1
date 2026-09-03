@@ -64,7 +64,7 @@ const App = () => (
                 <Route path="products" element={<ProductsPage />} />
                 <Route path="products/:id" element={<ProductDetailPage />} />
 
-   {/* 🔒 Protected Templates Page */}
+                {/* 🔒 Protected Templates Page */}
                 <Route
                   path="templates"
                   element={
@@ -80,13 +80,14 @@ const App = () => (
 
                 {/* Special pages */}
                 <Route path="paid-promotion" element={<PaidPomotion />} />
-                <Route path="free-videos" element={<ProtectedRoute><VideoGallery /></ProtectedRoute>}/>
+                <Route path="free-videos" element={<ProtectedRoute><VideoGallery /></ProtectedRoute>} />
                 <Route path="my-videos" element={<ProtectedRoute><MyVideoGallery /></ProtectedRoute>} />
                 <Route path="video-editor" element={<ProtectedRoute><VideoEditor /></ProtectedRoute>} />
 
                 {/* Legal pages */}
                 <Route path="terms" element={<TermsOfService />} />
                 <Route path="privacy" element={<PrivacyPolicy />} />
+                <Route path="privacy/policy" element={<PrivacyPolicy />} />
                 <Route path="returns" element={<ReturnRefund />} />
                 <Route path="cookies" element={<CookiePolicy />} />
 
