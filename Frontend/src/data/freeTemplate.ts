@@ -50,6 +50,7 @@ import sportsday from '../assets/sportsday.jpeg'
 import sportsday_demo from '../assets/Sportsday_demo.jpeg'
 import janmashtmi_demo from '../assets/JANMASHTAMI_DEMO.jpg'
 import janmashtmi from '../assets/JANMASHTMI.jpg'
+import ganesh_chathurthi from '../assets/Ganesh_chathurthi.jpg'
 
 
 // 🧩 Base Template List
@@ -72,7 +73,7 @@ export const staticTemplates: readonly Template[] = [
     price: 0,
     type: "Demo2",
   },
-  
+
   {
     id: 2,
     customImage: DemoCustom1,
@@ -154,7 +155,7 @@ export const staticTemplates: readonly Template[] = [
     price: 0,
     type: "Registration2",
   },
-   {
+  {
     id: 13,
     customImage: Navratri,
     sampleImage: Navratri,
@@ -168,46 +169,55 @@ export const staticTemplates: readonly Template[] = [
     customImage: Mahavir,
     sampleImage: Mahavir,
     title: "Mahavir Jayanti",
-  description: "Celebrate the birth of Lord Mahavir, symbolizing peace, non-violence, and spiritual awakening.",
-  price: 0,
-  type: "Festival",
+    description: "Celebrate the birth of Lord Mahavir, symbolizing peace, non-violence, and spiritual awakening.",
+    price: 0,
+    type: "Festival",
   },
-    {
+  {
     id: 15,
     customImage: indepence,
     sampleImage: independece_demo,
     title: "Independence Day",
-  description: "Celebrate the spirit of freedom, unity, and progress this Independence Day. Team EduTax wishes you a proud and joyful Independence Day!",
-  price: 0,
-  type: "Festival",
+    description: "Celebrate the spirit of freedom, unity, and progress this Independence Day. Team EduTax wishes you a proud and joyful Independence Day!",
+    price: 0,
+    type: "Festival",
   },
-    {
+  {
     id: 16,
     customImage: rakshabandhan,
     sampleImage: reakshbandhan_demo,
     title: "Raksha Bandhan",
-  description: `Celebrate the beautiful bond of love, care, and protection this Raksha Bandhan.
+    description: `Celebrate the beautiful bond of love, care, and protection this Raksha Bandhan.
 Team EduTax wishes you a happy and blessed Raksha Bandhan!`,
-  price: 0,
-  type: "Festival",
+    price: 0,
+    type: "Festival",
   },
-    {
+  {
     id: 17,
     customImage: sportsday,
     sampleImage: sportsday_demo,
     title: "Sports Day",
-  description: "National Sports Day",
-  price: 0,
-  type: "Festival",
+    description: "National Sports Day",
+    price: 0,
+    type: "Festival",
   },
-    {
+  {
     id: 18,
     customImage: janmashtmi_demo,
     sampleImage: janmashtmi,
     title: "Krishna Janmashtmi",
-  description: "Happy Krishna Janmashthmi",
-  price: 0,
-  type: "Festival",
+    description: "Happy Krishna Janmashthmi",
+    price: 0,
+    type: "Festival",
+  },
+  {
+    id: 19,
+    customImage: ganesh_chathurthi,
+    sampleImage: ganesh_chathurthi,
+    title: "Ganesh Chathurthi",
+    description: "Happy Ganesh Chathurthi",
+    price: 0,
+    type: "Festival",
   },
 ];
 
@@ -237,11 +247,11 @@ export const groupedTemplates = [
         item.type === "Promotion5"
     ),
   },
-   {
+  {
     category: "Festival",
     templates: staticTemplates.filter(
       (item) =>
-        item.type === "Festival" 
+        item.type === "Festival"
     ),
   },
 ] as const;
