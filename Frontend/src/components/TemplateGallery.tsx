@@ -21,8 +21,7 @@ const TemplateGallery: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<string>("All");
-  const [sortOrder, setSortOrder] = useState<string>("A-Z");
-
+  const [sortOrder, setSortOrder] = useState<string>("Newest");
   // 🧩 Flatten all templates for "All" view
   const allTemplates = useMemo(
     () => groupedTemplates.flatMap(group => group.templates),
@@ -37,10 +36,17 @@ const TemplateGallery: React.FC = () => {
         : groupedTemplates.find(g => g.category === filter)?.templates || [];
 
     // 🔤 Sort templates
+    // 🔤 Sort templates
     if (sortOrder === "A-Z") {
-      templates = [...templates].sort((a, b) => a.title.localeCompare(b.title));
+      templates = [...templates].sort((a, b) =>
+        a.title.localeCompare(b.title)
+      );
     } else if (sortOrder === "Z-A") {
-      templates = [...templates].sort((a, b) => b.title.localeCompare(a.title));
+      templates = [...templates].sort((a, b) =>
+        b.title.localeCompare(a.title)
+      );
+    } else if (sortOrder === "Newest") {
+      templates = [...templates].sort((a, b) => b.id - a.id);
     }
 
     return templates;

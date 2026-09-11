@@ -34,6 +34,10 @@ import PromotionCustom3 from "../assets/PromotionCustom3.jpeg";
 import PromotionSample3 from "../assets/PromotionSample3.jpeg";
 import PromotionCustom4 from "../assets/PromotionCustom4.jpeg";
 import PromotionSample4 from "../assets/PromotionSample4.jpeg";
+import PromotionSample5 from "../assets/promotion_guj.jpg";
+import PromotionSample6 from "../assets/prootion_english.jpg";
+
+
 
 import DemoCustom from "../assets/customDemo2.jpeg";
 import DemoSample from "../assets/DemoSample1.jpeg";
@@ -62,7 +66,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Demo_img 1",
     description: "Real Time GST Training Platform",
     price: 0,
-    type: "Demo1",
+    type: "Demo",
   },
   {
     id: 3,
@@ -71,7 +75,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Demo_img 2",
     description: "Real Time GST Training Platform",
     price: 0,
-    type: "Demo2",
+    type: "Demo",
   },
 
   {
@@ -81,7 +85,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Demo_img 3",
     description: "Real Time GST Training Platform",
     price: 0,
-    type: "Demo3",
+    type: "Demo",
   },
   {
     id: 4,
@@ -90,7 +94,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Registration_img 1",
     description: "GST Course for College student",
     price: 0,
-    type: "Registration1",
+    type: "Registration",
   },
   {
     id: 5,
@@ -99,7 +103,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Registration_img 2",
     description: "GST Course for College student",
     price: 0,
-    type: "Registration1",
+    type: "Registration",
   },
   {
     id: 6,
@@ -108,7 +112,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Promotion_img 1",
     description: "Become a GST Consultant",
     price: 0,
-    type: "Promotion1",
+    type: "Promotion",
   },
   {
     id: 7,
@@ -117,7 +121,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Promotion_img 2",
     description: "Real time GST - Return filling practice platform",
     price: 0,
-    type: "Promotion2",
+    type: "Promotion",
   },
   {
     id: 8,
@@ -126,7 +130,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Promotion_img 3",
     description: "Real time GST return filling",
     price: 0,
-    type: "Promotion3",
+    type: "Promotion",
   },
   {
     id: 9,
@@ -135,7 +139,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Promotion_img 5",
     description: "Real-time, hands-on GST training that turns theory into confidence",
     price: 0,
-    type: "Promotion4",
+    type: "Promotion",
   },
   {
     id: 10,
@@ -144,7 +148,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Promotion_img 6",
     description: "Add practical GST training to your institute",
     price: 0,
-    type: "Promotion5",
+    type: "Promotion",
   },
   {
     id: 12,
@@ -153,7 +157,7 @@ export const staticTemplates: readonly Template[] = [
     title: "Registration_img 3",
     description: "My GST - MY CONTROL",
     price: 0,
-    type: "Registration2",
+    type: "Registration",
   },
   {
     id: 13,
@@ -219,6 +223,24 @@ Team EduTax wishes you a happy and blessed Raksha Bandhan!`,
     price: 0,
     type: "Festival",
   },
+  {
+    id: 20,
+    customImage: PromotionSample5,
+    sampleImage: PromotionSample5,
+    title: "Financial Accounting Diploma - Gujarati",
+    description: "1 Year Diploma in Financial Accounting with Real Hand Practice Courses",
+    price: 0,
+    type: "Promotion",
+  },
+  {
+    id: 21,
+    customImage: PromotionSample6,
+    sampleImage: PromotionSample6,
+    title: "Financial Accounting Diploma - English",
+    description: "1 Year Diploma in Financial Accounting with Real Hand Practice Courses",
+    price: 0,
+    type: "Promotion",
+  },
 ];
 
 // 🧱 Grouped Templates (Array Format)
@@ -226,32 +248,25 @@ export const groupedTemplates = [
   {
     category: "Demo",
     templates: staticTemplates.filter(
-      (item) =>
-        item.type === "Demo1" || item.type === "Demo2" || item.type === "Demo3"
+      (item) => item.type === "Demo"
     ),
   },
   {
     category: "Registration",
     templates: staticTemplates.filter(
-      (item) => item.type === "Registration1" || item.type === "Registration2"
+      (item) => item.type === "Registration"
     ),
   },
   {
     category: "Promotion",
     templates: staticTemplates.filter(
-      (item) =>
-        item.type === "Promotion1" ||
-        item.type === "Promotion2" ||
-        item.type === "Promotion3" ||
-        item.type === "Promotion4" ||
-        item.type === "Promotion5"
+      (item) => item.type === "Promotion"
     ),
   },
   {
     category: "Festival",
     templates: staticTemplates.filter(
-      (item) =>
-        item.type === "Festival"
+      (item) => item.type === "Festival"
     ),
   },
 ] as const;
