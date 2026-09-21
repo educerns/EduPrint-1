@@ -403,5 +403,4 @@ const VideoGallery: React.FC = () => {
     </div>
   );
 };
-
 export default VideoGallery;
