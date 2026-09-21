@@ -6,7 +6,8 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { ChevronDown, Download, Eye, Pencil, ArrowLeft, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+// 🔥 1. Add useParams here
+import { useNavigate, useParams } from "react-router-dom"; 
 import { useEditorStore } from "@/store/store";
 import ExportModel from "./export";
 
@@ -19,6 +20,10 @@ export default function Header() {
   const { isEditing, setIsEditing, name, setName, canvas } = useEditorStore();
   const [showExportModel, setShowExportModel] = useState(false);
   const navigate = useNavigate();
+
+  // 🔥 2. Extract the ID from the URL
+  // Note: If your App.js route is path="/editor/:templateId", change { id } to { templateId }
+  const { id } = useParams(); 
 
   // Mock session object (replace this later with your real auth data)
   const session: { user?: SessionUser } = {
@@ -105,70 +110,13 @@ export default function Header() {
          
         </button>
       </div>
-         {/* <div>
-       <button
-className="upgrade-button flex items-center bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium px-3 py-1.5 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md"
-    >
-      <Star className="mr-1 h-4 w-4 text-yellow-400" />
-      <span>Upgrade your plan</span>
-    </button>
-      </div>
-       <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="flex items-center space-x-2 cursor-pointer">
-          <Avatar>
-            <AvatarImage
-              src={session?.user?.image || "/placeholder-user.jpg"}
-              alt={session?.user?.name || "User"}
-            />
-            <AvatarFallback>
-              {session?.user?.name?.[0]?.toUpperCase() || "U"}
-            </AvatarFallback>
-          </Avatar>
-
-          <span className="text-sm font-medium hidden lg:block">
-            {session?.user?.name || "User"}
-          </span>
-          
-        </div>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        align="end"
-        className="bg-white text-gray-800 rounded-md shadow-lg mt-2 p-1 min-w-[160px] border border-gray-200 z-[9999]"
-      >
-        
-        <DropdownMenuItem
-          disabled
-          className="flex items-center px-2 py-1.5 rounded cursor-default"
-        >
-          <Avatar className="h-6 w-6 mr-2">
-            <AvatarImage
-              src={session?.user?.image || "/placeholder-user.jpg"}
-              alt={session?.user?.name || "User"}
-            />
-            <AvatarFallback>
-              {session?.user?.name?.[0]?.toUpperCase() || "U"}
-            </AvatarFallback>
-          </Avatar>
-          <span>{session?.user?.name || "User"}</span>
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator className="my-1 border-t border-gray-200" />
-
-        
-        <DropdownMenuItem
-          onClick={() => console.log("Logout clicked")}
-          className="flex items-center px-2 py-1.5 rounded cursor-pointer hover:bg-red-100 text-red-600"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Logout</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu> */}
-
-      {/* Export Modal */}
-      <ExportModel isOpen={showExportModel} onClose={() => setShowExportModel(false)} />
+      
+      {/* 🔥 3. Pass the ID securely into the ExportModel */}
+      <ExportModel 
+        isOpen={showExportModel} 
+        onClose={() => setShowExportModel(false)}
+        templateId={id} 
+      />
     </header>
   );
 }

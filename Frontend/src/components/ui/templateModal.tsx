@@ -1,26 +1,17 @@
 import React, { useState, useRef, useEffect, ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { FiDownload, FiEdit3 } from "react-icons/fi";
+import { FiEdit3 } from "react-icons/fi";
 import Swal from "sweetalert2";
-import PosterCustomizer from "./posterCustomizerProps";
-import {
-  FaUserAlt,
-  FaEnvelope,
-  FaPhoneAlt,
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-
-// ✅ Define prop & data types
-interface Template {
+// ✅ Updated Template Interface to match backend (image instead of sampleImage)
+export interface Template {
   id: number;
   _id?: string;
   title: string;
   description: string;
-  sampleImage: string;
+  image: string; 
   customImage: string;
   price: number;
   type: string;
@@ -55,8 +46,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   });
   const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-      const navigate = useNavigate();
-  
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isOpen || !template) {
@@ -96,45 +86,14 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     clearCanvas();
   };
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleDownload = () => {
-    if (!generatedUrl) {
-      Swal.fire({
-        icon: "warning",
-        title: "No Poster Generated!",
-        text: "Please generate your poster first before downloading.",
-        confirmButtonColor: "#2C4E86",
-      });
-      return;
-    }
-
-    const link = document.createElement("a");
-    link.href = generatedUrl;
-    link.download = `${formData.centerName || "Customized"}_Poster.png`;
-    link.click();
-
-    Swal.fire({
-      icon: "success",
-      title: "Download Started!",
-      text: "Your poster is being downloaded successfully.",
-      confirmButtonColor: "#2C4E86",
-    });
-  };
   const handleCustomize = () => {
-    // console.log("🎨 Customizing template:", template);
-    
     // Use either _id (from database) or id (from local data)
     const templateId = template._id || template.id;
-    
+    // console.log(templateId)
+    // return
     if (templateId) {
-      // console.log("✅ Navigating to:", `/editor/${templateId}`);
       onClose(); // Close modal first
-      navigate(`/editor/${templateId}`); // Then navigate
+      navigate(`/editor/${templateId}`); // Then navigate to your editor
     } else {
       console.warn("⚠️ Template has no id or _id!");
     }
@@ -149,7 +108,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          onClick={onClose} // ✅ Added here
+          onClick={onClose}
         >
           <motion.div
             className="bg-white rounded-lg sm:rounded-2xl shadow-2xl w-[95vw] md:w-[90vw] lg:w-[80vw] max-w-5xl flex flex-col md:flex-row overflow-hidden my-4"
@@ -181,9 +140,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
               y: 60,
               transition: { duration: 0.5 },
             }}
-            onClick={(e) => e.stopPropagation()} // ✅ Prevent close when clicking inside
+            onClick={(e) => e.stopPropagation()} 
           >
-
 
             {/* Left: Image Preview */}
             <div className="relative md:w-1/2 w-full bg-gray-100 flex items-center justify-center overflow-hidden p-3">
@@ -196,15 +154,17 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                         ? "customize"
                         : "sample"
                   }
+                  // 🔥 Wrapped API URL properly for BOTH customImage and image
                   src={
                     generatedUrl
                       ? generatedUrl
                       : isCustomize
-                        ? template.customImage
-                        : template.sampleImage
+                        ? `${import.meta.env.VITE_API_URL}${template.customImage}`
+                        : `${import.meta.env.VITE_API_URL}${template.image}`
                   }
                   alt={template.title}
-                  className="object-contain w-full h-auto max-h-[70vh] rounded-lg"
+                  crossOrigin="anonymous" // Added CORS safeguard
+                  className="object-contain w-full h-auto max-h-[70vh] rounded-lg shadow-sm"
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.02 }}
@@ -226,11 +186,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   handleBack();
                   onClose();
                 }}
-                className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow hover:bg-white transition z-[999]" // ✅ ensure z-index is high
+                className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow hover:bg-white transition z-[999]"
               >
                 <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
-
 
               <div className="mt-8 sm:mt-10 mb-3 sm:mb-4">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2C4E86] mb-1 sm:mb-2">
@@ -244,7 +203,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                 </p>
               </div>
 
-              {/* Show form only when customizing */}
+              {/* Action Buttons & Features */}
               <AnimatePresence mode="wait">
                   <motion.div
                     key="preview"
@@ -258,9 +217,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                     }}
                   >
                     <motion.button
-                      // onClick={() => setIsCustomize(true)}
                        onClick={handleCustomize}
-                      className="flex items-center gap-2 bg-[#2C4E86] text-white px-6 py-2 rounded-md hover:bg-[#1f3a5f] transition text-sm md:text-base"
+                      className="flex items-center gap-2 bg-[#2C4E86] text-white px-6 py-3 rounded-md hover:bg-[#1f3a5f] transition text-sm md:text-base w-full sm:w-auto justify-center"
                       whileHover={{ scale: 1.05, rotateY: 5 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 150, damping: 12 }}
@@ -270,7 +228,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                     </motion.button>
 
                     <motion.div
-                      className="grid grid-cols-1 sm:grid-cols-2  gap-2 sm:gap-3 w-full"
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
@@ -283,16 +241,16 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       ].map((item, i) => (
                         <motion.div
                           key={i}
-                          className="border border-[#2C4E86] border-dashed rounded-lg py-2 sm:py-3 text-center text-xs sm:text-sm text-gray-600 hover:shadow-md transition"
+                          className="border border-[#2C4E86] border-dashed rounded-lg py-2 sm:py-3 text-center text-xs sm:text-sm text-gray-600 hover:shadow-md transition bg-gray-50"
                           whileHover={{
-                            scale: 1.08,
-                            rotateY: 8,
+                            scale: 1.05,
+                            rotateY: 5,
                             rotateX: 3,
-                            boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
+                            boxShadow: "0 8px 15px rgba(0,0,0,0.1)",
                           }}
                           transition={{ type: "spring", stiffness: 120 }}
                         >
-                          <div className="text-base sm:text-lg">{item.icon}</div>
+                          <div className="text-base sm:text-lg mb-1">{item.icon}</div>
                           <div className="px-1">{item.label}</div>
                         </motion.div>
                       ))}

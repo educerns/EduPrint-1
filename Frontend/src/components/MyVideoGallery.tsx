@@ -6,6 +6,7 @@ import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
 import axios from "../services/api";
 import { jwtDecode } from "jwt-decode";
+
 export interface Video {
   id: number;
   _id?: string;
@@ -22,27 +23,25 @@ const MyVideoGallery: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [email, setemail] = useState("");
   const [centerid, setcenterid] = useState("");
-  // 🧩 Combine all videos from all categories
+
   const allVideos = useMemo(
     () => groupedVideos.flatMap((group) => group.videos),
     []
   );
-  useEffect(() => {
-  if(localStorage.getItem("token")){
-    const token = localStorage.getItem("token");
- try {
-    const decoded = jwtDecode(token);
-    // console.log("Decoded Token:", decoded);
-    // return;
 
-    // You can access user details here
-    setemail(decoded.datastore.email);
-    setcenterid(decoded.datastore.Centerid);    
-  } catch (error) {
-    console.error("Invalid token:", error);
-  }
-  }
-  }, [])
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      try {
+        const decoded: any = jwtDecode(token);
+        setemail(decoded.datastore.email);
+        setcenterid(decoded.datastore.Centerid);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    }
+  }, []);
+
   const openModal = (video: Video) => {
     setSelectedVideo(video);
     setIsModalOpen(true);
@@ -53,51 +52,53 @@ const MyVideoGallery: React.FC = () => {
     setTimeout(() => setSelectedVideo(null), 300);
   };
 
-  // 📥 Handle video download
-  const handleDownload = async (url: string, title: string) => {
+  // 🔥 Update signature to accept mediaId
+  const handleDownload = async (url: string, title: string, mediaId: string | number,video:object) => {
     if (!url) return;
-
+    console.log(video,'videodata');
+    return
     try {
-
-       let type="videos";
-              const res = await axios.post("/api/statsdownload",{email,centerid,type});   
-             if(res.data.success){
- const response = await fetch(url);
-      const blob = await response.blob();
-      const objectUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = `${title.replace(/\s+/g, "_")}.mp4`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(objectUrl);
-
-      Swal.fire({
-        icon: "success",
-        title: "Download Started!",
-        text: "Your video is being downloaded successfully.",
-        timer: 2500, // auto close after 3 seconds
-        showConfirmButton: false,
-        timerProgressBar: true,
+      // 🔥 One clean API call
+      const res = await axios.post("/api/statsdownload", {
+        email: email,
+        centerid: centerid,
+        type: "videos",
+        mediaId: mediaId 
       });
-             }
-     
+
+      if (res.data.success) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const objectUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = objectUrl;
+        link.download = `${title.replace(/\s+/g, "_")}.mp4`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(objectUrl);
+
+        Swal.fire({
+          icon: "success",
+          title: "Download Started!",
+          text: "Your video is being downloaded successfully.",
+          timer: 2500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+        });
+      }
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Download Failed!",
         text: "Unable to download the video. Please try again.",
-        timer: 2500, // auto close after 3 seconds
+        timer: 2500,
         showConfirmButton: false,
         timerProgressBar: true,
-
       });
     }
   };
-
-
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -113,21 +114,12 @@ const MyVideoGallery: React.FC = () => {
 
   const cardVariants = {
     hidden: { opacity: 0, y: 40, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.33, 1, 0.68, 1] as [number, number, number, number],
-      },
-    },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6 } },
   };
 
   return (
     <div className="min-h-screen px-4 py-10 bg-white">
       <div className="max-w-7xl mx-auto">
-        {/* 🏷️ Header */}
         <motion.div
           className="mb-10 text-center"
           initial={{ opacity: 0, y: -20 }}
@@ -142,7 +134,6 @@ const MyVideoGallery: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* 🎞️ Videos Grid */}
         {allVideos.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-gray-500 text-lg">No videos found.</p>
@@ -162,13 +153,9 @@ const MyVideoGallery: React.FC = () => {
                   layout
                   variants={cardVariants}
                   whileHover={{ scale: 1.02 }}
-                  transition={{
-                    layout: { duration: 0.5, ease: [0.33, 1, 0.68, 1] },
-                  }}
                   className="flex flex-col cursor-pointer"
                   onClick={() => openModal(video)}
                 >
-                  {/* 🖼️ Video Thumbnail */}
                   <div className="w-full aspect-square overflow-hidden relative bg-gray-900">
                     {video.videoUrl ? (
                       <>
@@ -182,14 +169,9 @@ const MyVideoGallery: React.FC = () => {
                             e.currentTarget.currentTime = 0.1;
                           }}
                         />
-                        {/* ▶️ Play Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors">
-                          <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg hover:bg-white transition-colors">
-                            <svg
-                              className="w-8 h-8 text-[#2C4E86] ml-1"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
+                          <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                            <svg className="w-8 h-8 text-[#2C4E86] ml-1" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
                             </svg>
                           </div>
@@ -197,20 +179,11 @@ const MyVideoGallery: React.FC = () => {
                       </>
                     ) : (
                       <div className="flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 h-full text-gray-500">
-                        <svg
-                          className="w-16 h-16 mb-2"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-                        </svg>
                         <p className="text-xs">Video Preview</p>
-                        <p className="text-xs text-gray-400 mt-1">Click to play</p>
                       </div>
                     )}
                   </div>
 
-                  {/* 📘 Info below thumbnail */}
                   <div className="mt-3 flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className="text-base font-semibold text-gray-800 truncate">
@@ -221,19 +194,17 @@ const MyVideoGallery: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* ⬇️ Download Button */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // prevent modal from opening
-                        handleDownload(video.videoUrl, video.title);
+                        e.stopPropagation();
+                        // 🔥 Pass the video ID here correctly
+                        handleDownload(video.videoUrl, video.title, video._id || video.id,video);
                       }}
-                      className="flex-shrink-0 ml-3 flex items-center gap-1  px-3 py-1.5 "
+                      className="flex-shrink-0 ml-3 flex items-center gap-1 px-3 py-1.5"
                     >
-                      <FiDownload className="w-3.5 h-3.5" />
-                      <span className="text-xs font-medium"></span>
+                      <FiDownload className="w-4 h-4 text-[#2C4E86]" />
                     </button>
                   </div>
-
                 </motion.div>
               ))}
             </motion.div>
@@ -241,12 +212,7 @@ const MyVideoGallery: React.FC = () => {
         )}
       </div>
 
-      {/* 🪟 Modal */}
-      <VideoModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        video={selectedVideo}
-      />
+      <VideoModal isOpen={isModalOpen} onClose={closeModal} video={selectedVideo} />
     </div>
   );
 };

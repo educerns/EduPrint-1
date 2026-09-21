@@ -18,12 +18,14 @@ import {
 } from "@/services/services"
 import axios from "../services/api";
 import { jwtDecode } from "jwt-decode";
+
 interface ExportModelProps {
   isOpen: boolean;
   onClose: () => void;
+  templateId?: string; // 🔥 Added this so the parent can pass the ID
 }
 
-const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
+const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose, templateId }) => {
   const { canvas } = useEditorStore();
   const [selectedFormat, setSelectedFormat] = useState("png");
   const [isExporting, setIsExporting] = useState(false);
@@ -33,27 +35,20 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
   const exportFormats = [
     { id: "jpeg", name: "JPEG Template", icon: FileIcon, description: "Template" },
     { id: "png", name: "PNG Image", icon: FileImage, description: "Best for web" },
-    // { id: "svg", name: "SVG Image", icon: FileIcon, description: "Scalable vector format" },
-    // { id: "pdf", name: "PDF File", icon: FileText, description: "Best for printing" },
   ];
 
   useEffect(() => {
-  if(localStorage.getItem("token")){
-    const token = localStorage.getItem("token");
- try {
-    const decoded = jwtDecode(token);
-    // console.log("Decoded Token:", decoded);
-    // return;
-
-    // You can access user details here
-    setemail(decoded.datastore.email);
-    setcenterid(decoded.datastore.Centerid);    
-  } catch (error) {
-    console.error("Invalid token:", error);
-  }
-  }
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      try {
+        const decoded: any = jwtDecode(token);
+        setemail(decoded.datastore.email);
+        setcenterid(decoded.datastore.Centerid);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    }
   }, [])
-  
 
   const handleExport = async () => {
     if (!canvas) return;
@@ -61,10 +56,7 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
 
     let success = false;
     switch (selectedFormat) {
-    //   case "json":
-    //     success = exportAsJSON(canvas, "design");
-    //     break;
-    case "jpeg":
+      case "jpeg":
         success = exportAsJPEG(canvas, "design");
         break;
       case "png":
@@ -81,24 +73,26 @@ const ExportModel: React.FC<ExportModelProps> = ({ isOpen, onClose }) => {
     }
 
     if (success) {
-
-      //run api 
       try {
-        // let email="aman@g.com"
-        let type="images";
-        const res = await axios.post("/api/statsdownload",{email,centerid,type});
-        if(res.data.success){
- setTimeout(() => {
-        onClose();
-        setIsExporting(false);
-      }, 400);
+        // 🔥 Single clean API call tracking the specific template ID
+        if (email && centerid) {
+            await axios.post("/api/statsdownload", {
+                email: email,
+                centerid: centerid,
+                type: "images",
+                mediaId: templateId 
+            });
         }
+        
+        setTimeout(() => {
+          onClose();
+          setIsExporting(false);
+        }, 400);
+
       } catch (error) {
         console.log(error);
-        
+        setIsExporting(false);
       }
-
-     
     } else {
       setIsExporting(false);
     }

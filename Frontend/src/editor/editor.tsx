@@ -4,21 +4,20 @@ import Sidebar from "@/editor/sidebar/sidebar";
 import Header from "./header";
 import FabricCanvas from "./canvas";
 import { useEditorStore } from "@/store/store";
-import { staticTemplates } from "@/data/freeTemplate";
 import * as fabric from "fabric";
 import Properties from "./sidebar/properties";
 import QuarterBurstLoader from "@/components/ui/multiArcLoader";
 import { motion, AnimatePresence } from "framer-motion";
-
+import axios from "../services/api";
 
 const Editor: React.FC = () => {
   const { id: designId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  const [templateData, setTemplateData] = useState<any>(null);
   const [templateLoaded, setTemplateLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
 
   const {
     canvas,
@@ -29,52 +28,56 @@ const Editor: React.FC = () => {
     isEditing,
   } = useEditorStore();
 
-  // ⏱️ Simulate loading for 1-2 seconds
+  // 📡 1. Fetch Template from Backend Database
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // 1.5 seconds
+    const fetchTemplate = async () => {
+      if (!designId) return;
+      try {
+        const res = await axios.get("/eduprint/gettemplates");
+        if (res.data.success) {
+          // Find the specific template by DB _id or local id
+          const foundTemplate = res.data.data.find(
+            (t: any) => t._id === designId || String(t.id) === String(designId)
+          );
 
-    return () => clearTimeout(timer);
-  }, []);
+          if (foundTemplate) {
+            setTemplateData(foundTemplate);
+          } else {
+            setError("Template not found in database.");
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching template:", err);
+        setError("Failed to load template data from server.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    fetchTemplate();
+  }, [designId]);
 
-  // 🎨 Load template image when canvas is ready
+  // 🎨 2. Load template image when canvas and data are ready
   useEffect(() => {
-    if (!canvas || !designId || templateLoaded) {
+    if (!canvas || !designId || !templateData || templateLoaded) {
       return;
     }
 
-    // console.log("✅ Canvas is ready, loading template...");
-
-    const template = staticTemplates.find(
-      (item) => item.id === Number(designId) || item._id === designId
-    );
-
-    // console.log("🔍 Template found:", template);
-
-    if (!template) {
-      setError("Template not found");
-      return;
-    }
-
-    setName(template.title || "Untitled design");
+    setName(templateData.title || "Untitled design");
     setDesignId(designId);
-    // console.log("📝 Loading template:", template.title);
-    // console.log("🖼️ Custom image path:", template.customImage);
 
-    if (template.customImage) {
+    if (templateData.customImage) {
       canvas.clear();
 
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.src = template.customImage;
-
-      // console.log("⏳ Starting to load image:", img.src);
+      
+      // 🔥 FIX: Properly append backend URL for dynamic images
+      img.src = templateData.customImage.startsWith("http") 
+        ? templateData.customImage 
+        : `${import.meta.env.VITE_API_URL}${templateData.customImage}`;
 
       img.onload = () => {
-        // console.log("✅ Image loaded:", img.width, "x", img.height);
-
         const container = canvas.getElement().parentElement;
         if (!container) {
           console.error("❌ Canvas container not found.");
@@ -133,7 +136,6 @@ const Editor: React.FC = () => {
 
         // 🧹 Cleanup on unmount / reload
         const cleanup = () => {
-          // console.log("🧹 Cleaning up image and listeners...");
           window.removeEventListener("resize", handleResize);
           if (canvas.getObjects().includes(fabricImage)) {
             canvas.remove(fabricImage);
@@ -148,7 +150,6 @@ const Editor: React.FC = () => {
 
         // ✅ Mark template as loaded
         setTemplateLoaded(true);
-        // console.log("✅ Template loaded successfully with scaling and centering");
 
         // 🧩 Center new or existing text boxes when editing starts
         canvas.on("text:editing:entered", (e: any) => {
@@ -177,24 +178,21 @@ const Editor: React.FC = () => {
             });
             active.setCoords();
             canvas.renderAll();
-            // console.log("📝 Text box auto-centered:", active.left, active.top);
           }
         });
       };
 
       img.onerror = (e) => {
-        console.error("❌ Failed to load image:", template.customImage);
-        console.error("❌ Error details:", e);
-        setError("Failed to load template image");
+        console.error("❌ Failed to load image:", templateData.customImage);
+        setError("Failed to load template image. Check CORS or image path.");
       };
     } else {
-      // console.log("⚠️ No custom image found");
       canvas.clear();
       canvas.backgroundColor = "#ffffff";
       canvas.renderAll();
       setTemplateLoaded(true);
     }
-  }, [canvas, designId, templateLoaded, setName, setDesignId]);
+  }, [canvas, designId, templateLoaded, templateData, setName, setDesignId]);
 
   // 🎯 Selection handlers
   useEffect(() => {
@@ -225,8 +223,8 @@ const Editor: React.FC = () => {
   // ⚠️ Error UI
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen bg-red-100 text-red-600 text-lg">
-        ⚠️ Error: {error}
+      <div className="flex items-center justify-center h-screen bg-red-100 text-red-600 text-lg font-medium">
+        ⚠️ {error}
       </div>
     );
   }
@@ -241,24 +239,10 @@ const Editor: React.FC = () => {
           <main className="flex-1 overflow-hidden bg-[#f0f0f0] flex items-center justify-center relative">
             <FabricCanvas />
 
-            {/* <AnimatePresence>
-              {!templateLoaded && (
-                <motion.div
-                  key="loader"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-[9999]"
-                >
-                  <QuarterBurstLoader />
-                </motion.div>
-              )}
-            </AnimatePresence> */}
             <AnimatePresence>
-              {isLoading && (
+              {(isLoading || (templateData && !templateLoaded)) && (
                 <motion.div
-                  className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+                  className="fixed inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-50"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -269,7 +253,6 @@ const Editor: React.FC = () => {
               )}
             </AnimatePresence>
           </main>
-
         </div>
       </div>
       {showProperties && isEditing && <Properties />}

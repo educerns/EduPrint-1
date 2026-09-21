@@ -1,67 +1,83 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import TemplateModal from "../components/ui/templateModal";
-import { groupedTemplates } from "../data/freeTemplate";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import axios from "../services/api";
+
+import TemplateModal from "../components/ui/templateModal";
 import QuarterBurstLoaderStatic from "./ui/multiArcLoader";
-import { Variants } from "framer-motion";
+
+// 🔥 Import your existing Shadcn Pagination components
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../components/ui/pagination"; // Adjust the path if needed
 
 export interface Template {
-  id: number;
-  _id?: string;
+  _id: string;
   title: string;
   description: string;
-  sampleImage: string;
+  image: string;
   customImage: string;
   price: number;
   type: string;
+  createdAt?: string;
 }
 
 const TemplateGallery: React.FC = () => {
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
+
+  // Pagination & Filter States
   const [filter, setFilter] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("Newest");
-  // 🧩 Flatten all templates for "All" view
-  const allTemplates = useMemo(
-    () => groupedTemplates.flatMap(group => group.templates),
-    []
-  );
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
-  // 🔍 Filter templates based on category
-  const filteredTemplates = useMemo(() => {
-    let templates =
-      filter === "All"
-        ? allTemplates
-        : groupedTemplates.find(g => g.category === filter)?.templates || [];
+  // Modal States
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-    // 🔤 Sort templates
-    // 🔤 Sort templates
-    if (sortOrder === "A-Z") {
-      templates = [...templates].sort((a, b) =>
-        a.title.localeCompare(b.title)
-      );
-    } else if (sortOrder === "Z-A") {
-      templates = [...templates].sort((a, b) =>
-        b.title.localeCompare(a.title)
-      );
-    } else if (sortOrder === "Newest") {
-      templates = [...templates].sort((a, b) => b.id - a.id);
-    }
-
-    return templates;
-  }, [filter, sortOrder, allTemplates]);
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  // ⏱️ Simulate loading for 1-2 seconds
+  // Reset page to 1 when changing category or sort order
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // 1.5 seconds
+    setCurrentPage(1);
+  }, [filter, sortOrder]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  // 📡 Fetch Data from Backend
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      setIsLoading(true);
+      setError(false);
+      try {
+        const apiParams = {
+          type: filter,
+          sortOrder: sortOrder,
+          page: currentPage,
+          limit: 12, // Fetching 12 to fill exactly 3 rows of 4
+        };
+
+        const res = await axios.get("/eduprint/gettemplates", { params: apiParams });
+        
+        if (res.data.success) {
+          setTemplates(res.data.data);
+          setTotalPages(res.data.totalPages || 1);
+        }
+      } catch (err) {
+        console.error("Failed to load templates:", err);
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, [filter, sortOrder, currentPage]);
 
   const openModal = (template: Template) => {
     setSelectedTemplate(template);
@@ -73,6 +89,75 @@ const TemplateGallery: React.FC = () => {
     setTimeout(() => setSelectedTemplate(null), 300);
   };
 
+  // 🧠 Helper function to render Shadcn Pagination Items
+  const renderPaginationItems = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+      pages.push(
+        <PaginationItem key={1}>
+          <PaginationLink 
+            href="#" 
+            onClick={(e) => { e.preventDefault(); setCurrentPage(1); }}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+      if (startPage > 2) {
+        pages.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            isActive={currentPage === i}
+            onClick={(e) => { e.preventDefault(); setCurrentPage(i); }}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+      pages.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink 
+            href="#" 
+            onClick={(e) => { e.preventDefault(); setCurrentPage(totalPages); }}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return pages;
+  };
+
   // ✨ Motion Variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,153 +165,119 @@ const TemplateGallery: React.FC = () => {
       opacity: 1,
       transition: {
         when: "beforeChildren" as const,
-        staggerChildren: 0.08,
-        delayChildren: 0.2,
+        staggerChildren: 0.05,
       },
     },
   };
 
-  // const cardVariants = {
-  //   hidden: { opacity: 0, y: 40, scale: 0.95 },
-  //   visible: {
-  //     opacity: 1,
-  //     y: 0,
-  //     scale: 1,
-  //     transition: {
-  //       duration: 0.6,
-  //     },
-  //   },
-  // };
   const cardVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 40,
-      rotateX: -12,
-      scale: 0.92,
-      filter: "blur(4px)",
-    },
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
     visible: {
-      opacity: 1,
-      y: 0,
-      rotateX: 0,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1] as const,
-      },
-    },
-    exit: {
-      opacity: 0,
-      y: -30,
-      rotateX: 12,
-      scale: 0.9,
-      filter: "blur(6px)",
-      transition: {
-        duration: 0.4,
-        ease: "easeInOut",
-      },
+      opacity: 1, y: 0, scale: 1,
+      transition: { duration: 0.5, ease: "easeOut" },
     },
   };
-
-  const handleTemplateClick = (template: Template) => {
-    // console.log("🖱 Template clicked:", template);
-
-    // Use either _id (from database) or id (from local data)
-    const templateId = template._id || template.id;
-
-    if (templateId) {
-      // console.log("✅ Navigating to:", `/editor/${templateId}`);
-      navigate(`/editor/${templateId}`);
-    } else {
-      console.warn("⚠️ Template has no id or _id!");
-    }
-  };
-
-
 
   return (
-    <div className="px-4 py-10 bg-white overflow-x-auto">
-      <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
+    <div className="px-4 py-10 bg-white overflow-x-auto min-h-screen">
+      <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm pointer-events-none' : ''}`}>
+        
+        {/* 🏷️ Header */}
+        <motion.div
+          className="mb-10 text-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#2C4E86]">
+            Marketing Templates Gallery
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Explore categorized marketing and promotional templates
+          </p>
+        </motion.div>
 
-        <div className="max-w-7xl mx-auto">
-          {/* 🏷️ Header */}
-          <motion.div
-            className="mb-10 text-center"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#2C4E86]">
-              Marketing Templates Gallery
-            </h1>
-            <p className="text-gray-500 mt-2">
-              Explore categorized marketing and promotional templates
-            </p>
-          </motion.div>
-          {/* 🗂️ Category Tabs */}
-          <div className="flex gap-3 mb-8">
+        {/* 🗂️ Category & Sort Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="flex flex-wrap gap-2">
             {["All", "Demo", "Registration", "Promotion", "Festival"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setFilter(tab)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all
-        ${filter === tab
+                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${
+                  filter === tab
                     ? "bg-[#2C4E86] text-white border-[#2C4E86]"
                     : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
-                  }`}
+                }`}
               >
                 {tab}
               </button>
             ))}
           </div>
 
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-[#2C4E86]"
+          >
+            <option value="Newest">Newest First</option>
+            <option value="A-Z">A to Z</option>
+            <option value="Z-A">Z to A</option>
+          </select>
+        </div>
 
-          {/* 🧩 Grouped Templates by Category */}
-          <motion.div className="mb-16">
+        {/* 🚨 Error State */}
+        {error && !isLoading && (
+          <div className="text-center py-10 text-red-500 bg-red-50 rounded-lg">
+            <p>Failed to load templates. Please check your connection and try again.</p>
+          </div>
+        )}
+
+        {/* 📭 Empty State */}
+        {!isLoading && !error && templates.length === 0 && (
+          <div className="text-center py-20 text-gray-500">
+            <p className="text-lg">No templates found for this category.</p>
+          </div>
+        )}
+
+        {/* 🧩 Render Templates Grid */}
+        {!error && templates.length > 0 && (
+          <motion.div className="mb-6">
             <AnimatePresence mode="wait">
               <motion.div
+                key={currentPage + filter + sortOrder}
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                layout
-                style={{ perspective: 1200 }}
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10"
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8"
               >
-                {filteredTemplates.map((template, index) => (
+                {templates.map((template) => (
                   <motion.div
-                    key={template._id || index}
-                    layout
+                    key={template._id}
                     variants={cardVariants}
                     whileHover={{ scale: 1.02 }}
-                    transition={{
-                      layout: { duration: 0.5, ease: [0.33, 1, 0.68, 1] },
-                    }}
-                    className="flex flex-col cursor-pointer"
+                    className="flex flex-col cursor-pointer group"
                     onClick={() => openModal(template)}
                   >
-                    {/* 🖼️ Image */}
-                    <div className="w-full aspect-square overflow-hidden">
-                      {template.sampleImage ? (
-                        <motion.img
-                          layout
-                          src={template.sampleImage}
+                    <div className="w-full aspect-square overflow-hidden rounded-lg shadow-sm border border-gray-200 bg-gray-50 relative">
+                      {template.image ? (
+                        <img
+                         src={`${import.meta.env.VITE_API_URL}${template.image}`}
                           alt={template.title}
-                          className="w-full h-full object-fill transition-transform duration-500 hover:scale-105"
+                          crossOrigin="anonymous"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="flex items-center justify-center bg-gray-100 h-full text-gray-400 text-sm">
+                        <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                           No Image
                         </div>
                       )}
                     </div>
-
-                    {/* 📘 Info */}
-                    <div className="mt-3">
+                    <div className="mt-3 px-1">
                       <h3 className="text-base font-semibold text-gray-800 truncate">
                         {template.title}
                       </h3>
-                      <p className="text-xs text-gray-600 mt-1 line-clamp-2 leading-snug">
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-snug">
                         {template.description}
                       </p>
                     </div>
@@ -235,26 +286,57 @@ const TemplateGallery: React.FC = () => {
               </motion.div>
             </AnimatePresence>
           </motion.div>
+        )}
 
-        </div>
+        {/* 📄 Shadcn Pagination Implementation */}
+        {!isLoading && !error && totalPages > 1 && (
+          <div className="mt-12 mb-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => { 
+                      e.preventDefault(); 
+                      if (currentPage > 1) setCurrentPage(currentPage - 1); 
+                    }} 
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+
+                {renderPaginationItems()}
+
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    onClick={(e) => { 
+                      e.preventDefault(); 
+                      if (currentPage < totalPages) setCurrentPage(currentPage + 1); 
+                    }} 
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+
       </div>
 
-      {/* 🪟 Modal */}
       <TemplateModal
         isOpen={isModalOpen}
         onClose={closeModal}
         template={selectedTemplate}
       />
 
-      {/* 🔄 Loader Overlay */}
       <AnimatePresence>
         {isLoading && (
           <motion.div
-            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             <QuarterBurstLoaderStatic />
           </motion.div>
