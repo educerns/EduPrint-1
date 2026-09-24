@@ -7,11 +7,11 @@ import { useNavigate } from "react-router-dom";
 
 // ✅ Updated Template Interface to match backend (image instead of sampleImage)
 export interface Template {
-  id: number;
+  id?: number | string;
   _id?: string;
   title: string;
   description: string;
-  image: string; 
+  image: string;
   customImage: string;
   price: number;
   type: string;
@@ -140,7 +140,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
               y: 60,
               transition: { duration: 0.5 },
             }}
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
 
             {/* Left: Image Preview */}
@@ -205,57 +205,57 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
               {/* Action Buttons & Features */}
               <AnimatePresence mode="wait">
-                  <motion.div
-                    key="preview"
-                    className="flex flex-col items-center mt-4 sm:mt-6 gap-4 sm:gap-7"
-                    initial={{ opacity: 0, y: 30, rotateX: -10 }}
-                    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                    exit={{ opacity: 0, y: -20, rotateX: 10 }}
-                    transition={{
-                      duration: 0.6,
-                      ease: [0.33, 1, 0.68, 1],
-                    }}
+                <motion.div
+                  key="preview"
+                  className="flex flex-col items-center mt-4 sm:mt-6 gap-4 sm:gap-7"
+                  initial={{ opacity: 0, y: 30, rotateX: -10 }}
+                  animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                  exit={{ opacity: 0, y: -20, rotateX: 10 }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.33, 1, 0.68, 1],
+                  }}
+                >
+                  <motion.button
+                    onClick={handleCustomize}
+                    className="flex items-center gap-2 bg-[#2C4E86] text-white px-6 py-3 rounded-md hover:bg-[#1f3a5f] transition text-sm md:text-base w-full sm:w-auto justify-center"
+                    whileHover={{ scale: 1.05, rotateY: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 150, damping: 12 }}
                   >
-                    <motion.button
-                       onClick={handleCustomize}
-                      className="flex items-center gap-2 bg-[#2C4E86] text-white px-6 py-3 rounded-md hover:bg-[#1f3a5f] transition text-sm md:text-base w-full sm:w-auto justify-center"
-                      whileHover={{ scale: 1.05, rotateY: 5 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 150, damping: 12 }}
-                    >
-                      <FiEdit3 className="w-4 h-4 sm:w-5 sm:h-5" />
-                      Customize Template
-                    </motion.button>
+                    <FiEdit3 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Customize Template
+                  </motion.button>
 
-                    <motion.div
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      {[
-                        { icon: "📊", label: "Promote GST & Taxation Courses" },
-                        { icon: "📢", label: "Engage Students Effectively" },
-                        { icon: "💼", label: "Professional Marketing Design" },
-                        { icon: "⚡", label: "Easy to Customize Templates" },
-                      ].map((item, i) => (
-                        <motion.div
-                          key={i}
-                          className="border border-[#2C4E86] border-dashed rounded-lg py-2 sm:py-3 text-center text-xs sm:text-sm text-gray-600 hover:shadow-md transition bg-gray-50"
-                          whileHover={{
-                            scale: 1.05,
-                            rotateY: 5,
-                            rotateX: 3,
-                            boxShadow: "0 8px 15px rgba(0,0,0,0.1)",
-                          }}
-                          transition={{ type: "spring", stiffness: 120 }}
-                        >
-                          <div className="text-base sm:text-lg mb-1">{item.icon}</div>
-                          <div className="px-1">{item.label}</div>
-                        </motion.div>
-                      ))}
-                    </motion.div>
+                  <motion.div
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    {[
+                      { icon: "📊", label: "Promote GST & Taxation Courses" },
+                      { icon: "📢", label: "Engage Students Effectively" },
+                      { icon: "💼", label: "Professional Marketing Design" },
+                      { icon: "⚡", label: "Easy to Customize Templates" },
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        className="border border-[#2C4E86] border-dashed rounded-lg py-2 sm:py-3 text-center text-xs sm:text-sm text-gray-600 hover:shadow-md transition bg-gray-50"
+                        whileHover={{
+                          scale: 1.05,
+                          rotateY: 5,
+                          rotateX: 3,
+                          boxShadow: "0 8px 15px rgba(0,0,0,0.1)",
+                        }}
+                        transition={{ type: "spring", stiffness: 120 }}
+                      >
+                        <div className="text-base sm:text-lg mb-1">{item.icon}</div>
+                        <div className="px-1">{item.label}</div>
+                      </motion.div>
+                    ))}
                   </motion.div>
+                </motion.div>
               </AnimatePresence>
             </motion.div>
           </motion.div>

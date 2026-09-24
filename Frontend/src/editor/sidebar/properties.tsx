@@ -197,7 +197,7 @@ const Properties: React.FC = () => {
     const [strokeColor, setStrokeColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(0);
     const [strokeDasharray, setStrokeDasharray] = useState('solid');
-
+    const [iconStrokeColor, setIconStrokeColor] = useState('#1e1e1e');
     const [scaleX, setScaleX] = useState(1);
     const [scaleY, setScaleY] = useState(1);
     const [rotation, setRotation] = useState(0);
@@ -377,12 +377,21 @@ const Properties: React.FC = () => {
                 setContrast(contrastFilter ? (contrastFilter as any).contrast : 0);
                 setSaturation(saturationFilter ? (saturationFilter as any).saturation : 0);
             }
+            else if (active.type === "group" && (active as any).data?.type === "icon") {
+                setObjectType("icon");
+                const group = active as fabric.Group;
+                const firstObj = group.getObjects()[0] as any;
+                // ✅ Read both fill and stroke from first child
+                setFillColor(firstObj?.fill && firstObj.fill !== "none" ? firstObj.fill : "#ffffff");
+                setIconStrokeColor(firstObj?.stroke && firstObj.stroke !== "none" ? firstObj.stroke : "#1e1e1e");
+            }
 
             // ❌ NONE
             else {
                 setObjectType("");
             }
         };
+
 
         const handleSelectionCleared = () => { };
 
@@ -520,15 +529,41 @@ const Properties: React.FC = () => {
         deleteSelectedObject(canvas);
     };
 
-const handleBringToFront = () => {
-    if (!canvas) return;
-    bringToFront(canvas);
-};
+    const handleIconColorChange = (color: string, type: "fill" | "stroke" = "fill") => {
+        if (!canvas || !selectedObject) return;
+        if (!color.startsWith("#")) color = "#" + color;
 
-const handleSendToBack = () => {
-    if (!canvas) return;
-    sendToBack(canvas);
-};
+        if (type === "fill") setFillColor(color);
+        else setIconStrokeColor(color);
+
+        const group = selectedObject as fabric.Group;
+        if (!group?.getObjects) return;
+
+        group.getObjects().forEach((obj: any) => {
+            if (type === "fill") {
+                // Only set fill if it's not "none" (stroke-only icons shouldn't get fill)
+                obj.set("fill", color);
+            } else {
+                if (obj.stroke && obj.stroke !== "" && obj.stroke !== "none") {
+                    obj.set("stroke", color);
+                }
+            }
+        });
+
+        group.dirty = true;
+        canvas.requestRenderAll();
+    };
+
+
+    const handleBringToFront = () => {
+        if (!canvas) return;
+        bringToFront(canvas);
+    };
+
+    const handleSendToBack = () => {
+        if (!canvas) return;
+        sendToBack(canvas);
+    };
 
     const handleFlipHorizontal = () => {
         if (!canvas || !selectedObject) return;
@@ -1343,6 +1378,116 @@ const handleSendToBack = () => {
                                     </div>
 
 
+                                </div>
+                            )}
+
+                            {/* 🎨 Icon Properties */}
+                            {/* 🎨 Icon Properties */}
+                            {ObjectType === "icon" && (
+                                <div className="space-y-4 border-t pt-4">
+                                    <h3 className="text-sm font-semibold">Icon Properties</h3>
+
+                                    {/* ── Color Swatches Row ── */}
+                                    <div className="space-y-2">
+                                        <Label className="text-sm">Colors</Label>
+                                        <div className="flex items-center gap-6">
+
+                                            {/* Fill Color */}
+                                            <div className="flex flex-col items-center space-y-1">
+                                                <span className="text-xs text-gray-500">Fill</span>
+                                                <div className="relative w-10 h-8 overflow-hidden rounded-md border cursor-pointer">
+                                                    <div className="absolute inset-0" style={{ backgroundColor: fillColor }} />
+                                                    <input
+                                                        type="color"
+                                                        value={fillColor}
+                                                        onChange={(e) => handleIconColorChange(e.target.value, "fill")}
+                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                    />
+                                                </div>
+                                                <span className="text-[9px] font-mono text-gray-400">{fillColor}</span>
+                                            </div>
+
+                                            {/* Stroke/Border Color */}
+                                            <div className="flex flex-col items-center space-y-1">
+                                                <span className="text-xs text-gray-500">Border</span>
+                                                <div className="relative w-10 h-8 overflow-hidden rounded-md border cursor-pointer">
+                                                    <div className="absolute inset-0" style={{ backgroundColor: iconStrokeColor }} />
+                                                    <input
+                                                        type="color"
+                                                        value={iconStrokeColor}
+                                                        onChange={(e) => handleIconColorChange(e.target.value, "stroke")}
+                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                    />
+                                                </div>
+                                                <span className="text-[9px] font-mono text-gray-400">{iconStrokeColor}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* ── Preset Colors — applies to whichever is active ── */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Label className="text-xs">Quick Fill</Label>
+                                        </div>
+                                        <div className="grid grid-cols-5 gap-1.5">
+                                            {presetColors.map((color) => (
+                                                <button
+                                                    key={`fill-${color}`}
+                                                    className="w-8 h-8 rounded border-2 border-gray-200 hover:border-gray-500 transition-colors"
+                                                    style={{ backgroundColor: color }}
+                                                    onClick={() => handleIconColorChange(color, "fill")}
+                                                    title={`Fill: ${color}`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Label className="text-xs">Quick Border</Label>
+                                        </div>
+                                        <div className="grid grid-cols-5 gap-1.5">
+                                            {presetColors.map((color) => (
+                                                <button
+                                                    key={`stroke-${color}`}
+                                                    className="w-8 h-8 rounded border-2 border-gray-200 hover:border-gray-500 transition-colors"
+                                                    style={{ backgroundColor: color }}
+                                                    onClick={() => handleIconColorChange(color, "stroke")}
+                                                    title={`Border: ${color}`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* ── Hex Inputs ── */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <Label className="text-xs mb-1 block">Fill Hex</Label>
+                                            <Input
+                                                type="text"
+                                                value={fillColor}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.startsWith("#") ? e.target.value : "#" + e.target.value;
+                                                    handleIconColorChange(val, "fill");
+                                                }}
+                                                placeholder="#ffffff"
+                                                className="h-8 text-xs font-mono"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-xs mb-1 block">Border Hex</Label>
+                                            <Input
+                                                type="text"
+                                                value={iconStrokeColor}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.startsWith("#") ? e.target.value : "#" + e.target.value;
+                                                    handleIconColorChange(val, "stroke");
+                                                }}
+                                                placeholder="#1e1e1e"
+                                                className="h-8 text-xs font-mono"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 

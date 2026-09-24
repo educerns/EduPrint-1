@@ -6,7 +6,6 @@ import axios from "../services/api";
 import TemplateModal from "../components/ui/templateModal";
 import QuarterBurstLoaderStatic from "./ui/multiArcLoader";
 
-// 🔥 Import your existing Shadcn Pagination components
 import {
   Pagination,
   PaginationContent,
@@ -15,7 +14,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../components/ui/pagination"; // Adjust the path if needed
+} from "../components/ui/pagination";
 
 export interface Template {
   _id: string;
@@ -44,39 +43,54 @@ const TemplateGallery: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // Reset page to 1 when changing category or sort order
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filter, sortOrder]);
-
   // 📡 Fetch Data from Backend
   useEffect(() => {
+    let isMounted = true;
+
     const fetchTemplates = async () => {
       setIsLoading(true);
+      setTemplates([]); // ✨ FIX 2: Instantly clear old data so it doesn't linger during the loader
       setError(false);
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
       try {
         const apiParams = {
           type: filter,
           sortOrder: sortOrder,
           page: currentPage,
-          limit: 12, // Fetching 12 to fill exactly 3 rows of 4
+          limit: 12,
         };
 
         const res = await axios.get("/eduprint/gettemplates", { params: apiParams });
-        
-        if (res.data.success) {
-          setTemplates(res.data.data);
-          setTotalPages(res.data.totalPages || 1);
+
+        if (isMounted) {
+          if (res.data?.success) {
+            setTemplates(res.data.data || []);
+            setTotalPages(res.data.totalPages || 1);
+          } else {
+            setTemplates([]);
+            setError(true);
+          }
         }
       } catch (err) {
-        console.error("Failed to load templates:", err);
-        setError(true);
+        if (isMounted) {
+          console.error("Failed to load templates:", err);
+          setError(true);
+          setTemplates([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchTemplates();
+
+    return () => {
+      isMounted = false;
+    };
   }, [filter, sortOrder, currentPage]);
 
   const openModal = (template: Template) => {
@@ -89,7 +103,6 @@ const TemplateGallery: React.FC = () => {
     setTimeout(() => setSelectedTemplate(null), 300);
   };
 
-  // 🧠 Helper function to render Shadcn Pagination Items
   const renderPaginationItems = () => {
     const pages = [];
     const maxVisiblePages = 5;
@@ -104,8 +117,8 @@ const TemplateGallery: React.FC = () => {
     if (startPage > 1) {
       pages.push(
         <PaginationItem key={1}>
-          <PaginationLink 
-            href="#" 
+          <PaginationLink
+            href="#"
             onClick={(e) => { e.preventDefault(); setCurrentPage(1); }}
           >
             1
@@ -145,8 +158,8 @@ const TemplateGallery: React.FC = () => {
       }
       pages.push(
         <PaginationItem key={totalPages}>
-          <PaginationLink 
-            href="#" 
+          <PaginationLink
+            href="#"
             onClick={(e) => { e.preventDefault(); setCurrentPage(totalPages); }}
           >
             {totalPages}
@@ -158,7 +171,6 @@ const TemplateGallery: React.FC = () => {
     return pages;
   };
 
-  // ✨ Motion Variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -179,10 +191,9 @@ const TemplateGallery: React.FC = () => {
   };
 
   return (
-    <div className="px-4 py-10 bg-white overflow-x-auto min-h-screen">
+    <div className="px-4 py-10 bg-white overflow-x-auto min-h-screen relative">
       <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm pointer-events-none' : ''}`}>
-        
-        {/* 🏷️ Header */}
+
         <motion.div
           className="mb-10 text-center"
           initial={{ opacity: 0, y: -20 }}
@@ -197,18 +208,19 @@ const TemplateGallery: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* 🗂️ Category & Sort Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex flex-wrap gap-2">
             {["All", "Demo", "Registration", "Promotion", "Festival"].map((tab) => (
               <button
                 key={tab}
-                onClick={() => setFilter(tab)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${
-                  filter === tab
-                    ? "bg-[#2C4E86] text-white border-[#2C4E86]"
-                    : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
-                }`}
+                onClick={() => {
+                  setFilter(tab);
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${filter === tab
+                  ? "bg-[#2C4E86] text-white border-[#2C4E86]"
+                  : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
+                  }`}
               >
                 {tab}
               </button>
@@ -217,7 +229,10 @@ const TemplateGallery: React.FC = () => {
 
           <select
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
+            onChange={(e) => {
+              setSortOrder(e.target.value);
+              setCurrentPage(1);
+            }}
             className="px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-[#2C4E86]"
           >
             <option value="Newest">Newest First</option>
@@ -226,21 +241,18 @@ const TemplateGallery: React.FC = () => {
           </select>
         </div>
 
-        {/* 🚨 Error State */}
         {error && !isLoading && (
           <div className="text-center py-10 text-red-500 bg-red-50 rounded-lg">
             <p>Failed to load templates. Please check your connection and try again.</p>
           </div>
         )}
 
-        {/* 📭 Empty State */}
         {!isLoading && !error && templates.length === 0 && (
           <div className="text-center py-20 text-gray-500">
             <p className="text-lg">No templates found for this category.</p>
           </div>
         )}
 
-        {/* 🧩 Render Templates Grid */}
         {!error && templates.length > 0 && (
           <motion.div className="mb-6">
             <AnimatePresence mode="wait">
@@ -259,13 +271,14 @@ const TemplateGallery: React.FC = () => {
                     className="flex flex-col cursor-pointer group"
                     onClick={() => openModal(template)}
                   >
-                    <div className="w-full aspect-square overflow-hidden rounded-lg shadow-sm border border-gray-200 bg-gray-50 relative">
+                    {/* ✨ FIX 1: Changed aspect-square to aspect-[4/5] and object-cover to object-contain */}
+                    <div className="w-full aspect-[4/5] overflow-hidden  relative flex items-center justify-center p-2">
                       {template.image ? (
                         <img
-                         src={`${import.meta.env.VITE_API_URL}${template.image}`}
+                          src={`${import.meta.env.VITE_API_URL}${template.image}`}
                           alt={template.title}
                           crossOrigin="anonymous"
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="w-full h-full object-fill transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-400 text-sm">
@@ -288,18 +301,17 @@ const TemplateGallery: React.FC = () => {
           </motion.div>
         )}
 
-        {/* 📄 Shadcn Pagination Implementation */}
         {!isLoading && !error && totalPages > 1 && (
           <div className="mt-12 mb-6">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
-                    href="#" 
-                    onClick={(e) => { 
-                      e.preventDefault(); 
-                      if (currentPage > 1) setCurrentPage(currentPage - 1); 
-                    }} 
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) setCurrentPage(currentPage - 1);
+                    }}
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
@@ -307,12 +319,12 @@ const TemplateGallery: React.FC = () => {
                 {renderPaginationItems()}
 
                 <PaginationItem>
-                  <PaginationNext 
-                    href="#" 
-                    onClick={(e) => { 
-                      e.preventDefault(); 
-                      if (currentPage < totalPages) setCurrentPage(currentPage + 1); 
-                    }} 
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                    }}
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
@@ -332,13 +344,15 @@ const TemplateGallery: React.FC = () => {
       <AnimatePresence>
         {isLoading && (
           <motion.div
-            className="fixed inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-50"
+            className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-50 min-h-[50vh]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <QuarterBurstLoaderStatic />
+            <div className="fixed top-[30%]">
+              <QuarterBurstLoaderStatic />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

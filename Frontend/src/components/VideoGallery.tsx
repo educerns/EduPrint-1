@@ -39,11 +39,6 @@ const VideoGallery: React.FC = () => {
   const [centerid, setcenterid] = useState("");
   const navigate = useNavigate();
 
-  // Reset to page 1 when changing category filter
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filter]);
-
   // Decode Token for User Details
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -60,9 +55,16 @@ const VideoGallery: React.FC = () => {
 
   // 📡 Fetch Dynamic Videos from Backend
   useEffect(() => {
+    let isMounted = true;
+
     const fetchVideos = async () => {
       setIsLoading(true);
+      setVideos([]); // ✨ Instantly clear old videos to prevent ghosting
       setError(false);
+
+      // ✨ Scroll to top on every fetch trigger (tab change or page change)
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
       try {
         const apiParams = {
           type: filter,
@@ -71,20 +73,34 @@ const VideoGallery: React.FC = () => {
         };
 
         const res = await axios.get("/eduprint/getvideos", { params: apiParams });
-        
-        if (res.data.success) {
-          setVideos(res.data.data);
-          setTotalPages(res.data.totalPages || 1);
+
+        if (isMounted) {
+          if (res.data?.success) {
+            setVideos(res.data.data || []);
+            setTotalPages(res.data.totalPages || 1);
+          } else {
+            setVideos([]);
+            setError(true);
+          }
         }
       } catch (err) {
-        console.error("Failed to load videos:", err);
-        setError(true);
+        if (isMounted) {
+          console.error("Failed to load videos:", err);
+          setError(true);
+          setVideos([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchVideos();
+
+    return () => {
+      isMounted = false;
+    };
   }, [filter, currentPage]);
 
   const openModal = (video: Video) => {
@@ -123,7 +139,7 @@ const VideoGallery: React.FC = () => {
         email: email,
         centerid: centerid,
         type: "videos",
-        mediaId: mediaId 
+        mediaId: mediaId
       });
 
       if (res.data.success) {
@@ -164,7 +180,7 @@ const VideoGallery: React.FC = () => {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
-    
+
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -189,8 +205,8 @@ const VideoGallery: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 py-10 bg-white">
-      <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm' : ''}`}>
+    <div className="min-h-screen px-4 py-10 bg-white relative">
+      <div className={`max-w-7xl mx-auto transition-all duration-300 ${isLoading ? 'blur-sm pointer-events-none' : ''}`}>
         <div className="max-w-7xl mx-auto">
           <motion.div
             className="mb-10"
@@ -234,12 +250,14 @@ const VideoGallery: React.FC = () => {
             {["All", "Demo", "Registration", "Promotion", "Festival"].map((tab) => (
               <button
                 key={tab}
-                onClick={() => setFilter(tab)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${
-                  filter === tab
+                onClick={() => {
+                  setFilter(tab);
+                  setCurrentPage(1); // ✨ Reset page directly here to prevent double fetch
+                }}
+                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all ${filter === tab
                     ? "bg-[#2C4E86] text-white border-[#2C4E86]"
                     : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -362,11 +380,10 @@ const VideoGallery: React.FC = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-md text-sm font-medium transition ${
-                      currentPage === page
+                    className={`w-10 h-10 flex items-center justify-center rounded-md text-sm font-medium transition ${currentPage === page
                         ? "bg-[#2C4E86] text-white"
                         : "text-gray-600 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {page}
                   </button>
@@ -391,10 +408,11 @@ const VideoGallery: React.FC = () => {
       <AnimatePresence>
         {isLoading && (
           <motion.div
-            className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-50 min-h-[50vh]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
             <QuarterBurstLoaderStatic />
           </motion.div>

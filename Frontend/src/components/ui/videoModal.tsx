@@ -5,7 +5,7 @@ import { FiDownload } from "react-icons/fi";
 import Swal from "sweetalert2";
 
 interface Video {
-  id: number;
+  id?: number;
   _id?: string;
   title: string;
   description: string;
